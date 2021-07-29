@@ -19,11 +19,21 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
+require_once('modules/php/constants.inc.php');
+require_once('modules/php/utils.php');
+require_once('modules/php/actions.php');
+require_once('modules/php/states.php');
+require_once('modules/php/args.php');
+require_once('modules/php/debug-util.php');
 
-class Noah extends Table
-{
-	function __construct( )
-	{
+class Noah extends Table {
+    use UtilTrait;
+    use ActionTrait;
+    use StateTrait;
+    use ArgsTrait;
+    use DebugUtilTrait;
+
+	function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.

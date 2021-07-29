@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Noah implementation : © <Your name here> <Your email address here>
+ * Nicodemus implementation : © <Your name here> <Your email address here>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -10,7 +10,7 @@
  * 
  * states.inc.php
  *
- * Noah game states description
+ * Nicodemus game states description
  *
  */
 
@@ -49,63 +49,87 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
- 
-$machinestates = array(
+require_once("modules/php/constants.inc.php");
+
+$basicGameStates = [
 
     // The initial state. Please do not modify.
-    1 => array(
+    ST_BGA_GAME_SETUP => [
         "name" => "gameSetup",
-        "description" => "",
+        "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
-    ),
-    
-    // Note: ID=2 => your first state
+        "transitions" => [ "" => ST_PLAYER_LOAD_ANIMAL ]
+    ],
 
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
+    ST_NEXT_PLAYER => [
         "name" => "nextPlayer",
-        "description" => '',
+        "description" => "",
         "type" => "game",
         "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/    
+        "transitions" => [
+            "nextPlayer" => ST_PLAYER_LOAD_ANIMAL, 
+            "endRound" => ST_END_ROUND,
+        ],
+    ],
    
     // Final state.
-    // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    // Please do not modify.
+    ST_END_GAME => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
         "action" => "stGameEnd",
-        "args" => "argGameEnd"
-    )
-
-);
-
+        "args" => "argGameEnd",
+    ],
+];
 
 
+$playerActionsGameStates = [
+
+    ST_PLAYER_LOAD_ANIMAL => [
+        "name" => "loadAnimal",
+        "description" => clienttranslate('${actplayer} must load an animal'),
+        "descriptionmyturn" => clienttranslate('${you} must load an animal'),
+        "type" => "activeplayer",
+        "args" => "argLoadAnimal",
+        "possibleactions" => [ 
+            "loadAnimal",
+        ],
+        "transitions" => [
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_MOVE_NOAH => [
+        "name" => "moveNoah",
+        "description" => clienttranslate('${actplayer} must move Noah'),
+        "descriptionmyturn" => clienttranslate('${you} must move Noah'),
+        "type" => "activeplayer",        
+        "args" => "argMoveNoah",
+        "possibleactions" => [ 
+            "moveNoah",
+        ],
+        "transitions" => [
+            "nextPlayer" => ST_NEXT_PLAYER,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+];
+
+
+$gameGameStates = [
+    ST_END_ROUND => [
+        "name" => "refillHand",
+        "description" => "",
+        "type" => "game",
+        "action" => "stRefillHand",
+        "transitions" => [ 
+            "newRound" => ST_NEXT_PLAYER,
+            "endGame" => ST_END_GAME
+        ],
+    ],
+];
+ 
+$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
