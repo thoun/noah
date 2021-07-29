@@ -14,18 +14,22 @@ trait StateTrait {
     function stNextPlayer() {     
         $playerId = self::getActivePlayerId();
 
-        self::incStat(1, 'turnsNumber');
-        self::incStat(1, 'turnsNumber', $playerId);
+        //self::incStat(1, 'turnsNumber');
+        //self::incStat(1, 'turnsNumber', $playerId);
 
-        /*if (intval(self::getGameStateValue(LAST_TURN)) == 1 && $playerId != $this->getFirstPlayerId()) {
-            $this->gamestate->nextState('endGame');
-        } else {*/
-            $this->activeNextPlayer();
-        
-            $playerId = self::getActivePlayerId();
+        if ($this->isEndOfRound()) {
+            $this->gamestate->nextState('endRound');
+        } else {
+            if (intval(self::getGameStateValue(PAIR_PLAY_AGAIN)) == 0) {
+                $this->activeNextPlayer();       
+                $playerId = self::getActivePlayerId();
+            } else {
+                self::setGameStateValue(PAIR_PLAY_AGAIN, 0);
+            }
+
             self::giveExtraTime($playerId);
 
             $this->gamestate->nextState('nextPlayer');
-        /*}*/
+        }
     }
 }

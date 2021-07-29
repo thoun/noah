@@ -42,14 +42,13 @@ class Noah extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ) );        
+        self::initGameStateLabels([
+            NOAH_POSITION => 10,
+            ROUND_NUMBER => 11,
+            PAIR_PLAY_AGAIN => 12,
+
+            VARIANT => 100,
+        ]);        
 	}
 	
     protected function getGameName( )
@@ -65,8 +64,7 @@ class Noah extends Table {
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame( $players, $options = []) {    
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -76,21 +74,22 @@ class Noah extends Table {
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_colors );
+        $values = [];
+        foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode($values, ',');
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        self::setGameStateInitialValue(NOAH_POSITION, 0);
+        self::setGameStateInitialValue(ROUND_NUMBER, 1);
+        self::setGameStateInitialValue(PAIR_PLAY_AGAIN, 1);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -115,18 +114,23 @@ class Noah extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
-        $result = array();
+    protected function getAllDatas() {
+        $result = [];
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $result['players'] = self::getCollectionFromDb($sql);
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+        $result['ferries'] = []; // TODO
+        $result['handAnimals'] = []; // TODO
+        $result['noahPosition'] = $this->getNoahPosition();
+        $result['turnNumber'] = 0; // TODO
+        $result['variant'] = false; // TODO
   
         return $result;
     }
@@ -141,11 +145,10 @@ class Noah extends Table {
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
-        // TODO: compute and return the game progression
-
-        return 0;
+    function getGameProgression() {
+        return $this->isVariant() ? 
+            max(round($this->getMaxPlayerScore() * 3.85), 100) :
+            intval($this->getGameStateValue(ROUND_NUMBER)) * 100 / 3;
     }
 
 

@@ -6,7 +6,7 @@ class Table {
 
     constructor(
         private game: NoahGame, 
-        players: NicodemusPlayer[],
+        players: NoahPlayer[],
         projects: Project[],
         machines: Machine[],
         resources: Resource[][],
@@ -72,10 +72,10 @@ class Table {
             this.machineStocks[i] = new ebg.stock() as Stock;
             this.machineStocks[i].setSelectionAppearance('class');
             this.machineStocks[i].selectionClass = 'selected';
-            this.machineStocks[i].create(this.game, $(`table-machine-spot-${i}`), MACHINE_WIDTH, MACHINE_HEIGHT);
+            this.machineStocks[i].create(this.game, $(`table-machine-spot-${i}`), ANIMAL_WIDTH, ANIMAL_HEIGHT);
             this.machineStocks[i].setSelectionMode(0);
             this.machineStocks[i].onItemCreate = (cardDiv: HTMLDivElement, type: number) => {
-                setupMachineCard(game, cardDiv, type);
+                setupAnimalCard(game, cardDiv, type);
 
                 const id = Number(cardDiv.id.split('_')[2]);
                 const machine = machines.find(m => m.id == id);
@@ -85,7 +85,7 @@ class Table {
             }
             dojo.connect(this.machineStocks[i], 'onChangeSelection', this, () => this.onMachineSelectionChanged(this.machineStocks[i].getSelectedItems(), this.machineStocks[i].container_div.id));
         }
-        setupMachineCards(this.machineStocks);
+        setupAnimalCards(this.machineStocks);
 
         for (let i=1; i<=10; i++) {
             machines.filter(machine => machine.location_arg == i).forEach(machine => this.machineStocks[i].addToStockWithId(getUniqueId(machine), ''+machine.id));

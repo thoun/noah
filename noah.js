@@ -79,14 +79,14 @@ var PROJECTS_IDS = [
     37,
     38,
 ];
-var MACHINE_WIDTH = 190;
-var MACHINE_HEIGHT = 190;
+var ANIMAL_WIDTH = 190;
+var ANIMAL_HEIGHT = 190;
 var PROJECT_WIDTH = 134;
 var PROJECT_HEIGHT = 93;
 function getUniqueId(object) {
     return object.type * 10 + object.subType;
 }
-function setupMachineCards(machineStocks) {
+function setupAnimalCards(machineStocks) {
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
     machineStocks.forEach(function (machineStock) {
         return MACHINES_IDS.forEach(function (cardId, index) {
@@ -127,7 +127,7 @@ function getMachineTooltip(type) {
     }
     return null;
 }
-function setupMachineCard(game, cardDiv, type) {
+function setupAnimalCard(game, cardDiv, type) {
     game.addTooltipHtml(cardDiv.id, getMachineTooltip(type));
 }
 function getProjectTooltip(type) {
@@ -258,11 +258,11 @@ var Table = /** @class */ (function () {
             this_2.machineStocks[i] = new ebg.stock();
             this_2.machineStocks[i].setSelectionAppearance('class');
             this_2.machineStocks[i].selectionClass = 'selected';
-            this_2.machineStocks[i].create(this_2.game, $("table-machine-spot-" + i), MACHINE_WIDTH, MACHINE_HEIGHT);
+            this_2.machineStocks[i].create(this_2.game, $("table-machine-spot-" + i), ANIMAL_WIDTH, ANIMAL_HEIGHT);
             this_2.machineStocks[i].setSelectionMode(0);
             this_2.machineStocks[i].onItemCreate = function (cardDiv, type) {
                 var _a;
-                setupMachineCard(game, cardDiv, type);
+                setupAnimalCard(game, cardDiv, type);
                 var id = Number(cardDiv.id.split('_')[2]);
                 var machine = machines.find(function (m) { return m.id == id; });
                 if ((_a = machine === null || machine === void 0 ? void 0 : machine.resources) === null || _a === void 0 ? void 0 : _a.length) {
@@ -275,7 +275,7 @@ var Table = /** @class */ (function () {
         for (var i = 1; i <= 10; i++) {
             _loop_3(i);
         }
-        setupMachineCards(this.machineStocks);
+        setupAnimalCards(this.machineStocks);
         var _loop_4 = function (i) {
             machines.filter(function (machine) { return machine.location_arg == i; }).forEach(function (machine) { return _this.machineStocks[i].addToStockWithId(getUniqueId(machine), '' + machine.id); });
         };
@@ -447,14 +447,7 @@ var isDebug = window.location.host == 'studio.boardgamearena.com';
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var Noah = /** @class */ (function () {
     function Noah() {
-        this.charcoaliumCounters = [];
-        this.woodCounters = [];
-        this.copperCounters = [];
-        this.crystalCounters = [];
-        this.selectedPlayerProjectsIds = [];
-        this.selectedTableProjectsIds = [];
         this.zoom = 1;
-        this.clickAction = 'play';
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
@@ -473,12 +466,13 @@ var Noah = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     Noah.prototype.setup = function (gamedatas) {
+        var _this = this;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        /*this.createPlayerPanels(gamedatas);
-        this.setHand(gamedatas.handMachines);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
+        //this.createPlayerPanels(gamedatas);
+        this.setHand(gamedatas.handAnimals);
+        /*this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
         this.table.onTableProjectSelectionChanged = selectProjectsIds => {
             this.selectedTableProjectsIds = selectProjectsIds;
             this.onProjectSelectionChanged();
@@ -498,13 +492,12 @@ var Noah = /** @class */ (function () {
 
         this.addHelp();*/
         this.setupNotifications();
-        /*this.setupPreferences();
-
-        document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
-        document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
+        //this.setupPreferences();
+        document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
+        document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
-        }*/
+        }
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -516,14 +509,12 @@ var Noah = /** @class */ (function () {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'chooseAction':
-                this.clickAction = 'play';
                 this.onEnteringStateChooseAction(args.args);
                 break;
             case 'choosePlayAction':
                 this.onEnteringStateChoosePlayAction(args.args);
                 break;
             case 'selectMachine':
-                this.clickAction = 'select';
                 this.onEnteringStateSelectMachine(args.args);
                 break;
             case 'selectProject':
@@ -596,7 +587,6 @@ var Noah = /** @class */ (function () {
                 this.onLeavingChoosePlayAction();
                 break;
             case 'selectMachine':
-                this.clickAction = 'select';
                 this.onLeavingStateSelectMachine();
             case 'selectProject':
             case 'chooseProject':
@@ -706,7 +696,7 @@ var Noah = /** @class */ (function () {
             div.style.transform = "scale(" + zoom + ")";
             div.style.margin = "0 " + ZOOM_LEVELS_MARGIN[newIndex] + "% " + (1 - zoom) * -100 + "% 0";
         }
-        this.playerMachineHand.updateDisplay();
+        this.playerHand.updateDisplay();
         document.getElementById('zoom-wrapper').style.height = div.getBoundingClientRect().height + "px";
     };
     Noah.prototype.zoomIn = function () {
@@ -754,35 +744,29 @@ var Noah = /** @class */ (function () {
         dojo.toggleClass('selectProjects-button', 'disabled', !selectionLength);
         dojo.toggleClass('skipProjects-button', 'disabled', !!selectionLength);
     };
-    Noah.prototype.setHand = function (machines) {
+    Noah.prototype.setHand = function (animals) {
         var _this = this;
-        this.playerMachineHand = new ebg.stock();
-        this.playerMachineHand.create(this, $('my-machines'), MACHINE_WIDTH, MACHINE_HEIGHT);
-        this.playerMachineHand.setSelectionMode(1);
-        this.playerMachineHand.setSelectionAppearance('class');
-        this.playerMachineHand.selectionClass = 'selected';
-        this.playerMachineHand.centerItems = true;
-        this.playerMachineHand.onItemCreate = function (cardDiv, type) { return setupMachineCard(_this, cardDiv, type); };
-        dojo.connect(this.playerMachineHand, 'onChangeSelection', this, function () { return _this.onPlayerMachineHandSelectionChanged(_this.playerMachineHand.getSelectedItems()); });
-        setupMachineCards([this.playerMachineHand]);
-        machines.forEach(function (machine) { return _this.playerMachineHand.addToStockWithId(getUniqueId(machine), '' + machine.id); });
-        var player = Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) === _this.getPlayerId(); });
-        if (player) {
-            var color = player.color.startsWith('00') ? 'blue' : 'red';
-            dojo.addClass('my-hand-label', color);
-            // document.getElementById('myhand-wrap').style.backgroundColor = `#${player.color}40`;
-        }
+        this.playerHand = new ebg.stock();
+        this.playerHand.create(this, $('my-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+        this.playerHand.setSelectionMode(1);
+        this.playerHand.setSelectionAppearance('class');
+        this.playerHand.selectionClass = 'selected';
+        this.playerHand.centerItems = true;
+        this.playerHand.onItemCreate = function (cardDiv, type) { return setupAnimalCard(_this, cardDiv, type); };
+        dojo.connect(this.playerHand, 'onChangeSelection', this, function () { return _this.onPlayerHandSelectionChanged(_this.playerHand.getSelectedItems()); });
+        setupAnimalCards([this.playerHand]);
+        animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
     };
     Noah.prototype.getProjectStocks = function () {
         return __spreadArray([], this.table.projectStocks.slice(1));
     };
     Noah.prototype.getMachineStocks = function () {
-        return __spreadArray([this.playerMachineHand], this.table.machineStocks.slice(1));
+        return __spreadArray([this.playerHand], this.table.machineStocks.slice(1));
     };
     Noah.prototype.setHandSelectable = function (selectable) {
-        this.playerMachineHand.setSelectionMode(selectable ? 1 : 0);
+        this.playerHand.setSelectionMode(selectable ? 1 : 0);
     };
-    Noah.prototype.onPlayerMachineHandSelectionChanged = function (items) {
+    Noah.prototype.onPlayerHandSelectionChanged = function (items) {
         if (items.length == 1) {
             var card = items[0];
             this.machineClick(card.id, 'hand');
@@ -1041,7 +1025,7 @@ var Noah = /** @class */ (function () {
         });
     };
     Noah.prototype.notif_machinePlayed = function (notif) {
-        this.playerMachineHand.removeFromStockById('' + notif.args.machine.id);
+        this.playerHand.removeFromStockById('' + notif.args.machine.id);
         this.table.machinePlayed(notif.args.playerId, notif.args.machine);
     };
     Noah.prototype.notif_tableMove = function (notif) {
@@ -1065,7 +1049,7 @@ var Noah = /** @class */ (function () {
         else if (notif.args.from > 0) {
             from = "player-icon-" + notif.args.from;
         }
-        notif.args.machines.forEach(function (machine) { return addToStockWithId(_this.playerMachineHand, getUniqueId(machine), '' + machine.id, from); });
+        notif.args.machines.forEach(function (machine) { return addToStockWithId(_this.playerHand, getUniqueId(machine), '' + machine.id, from); });
         if (notif.args.remainingMachines !== undefined) {
             this.setRemainingMachines(notif.args.remainingMachines);
         }
@@ -1079,7 +1063,7 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_discardHandMachines = function (notif) {
         var _this = this;
-        notif.args.machines.forEach(function (machine) { return _this.playerMachineHand.removeFromStockById('' + machine.id); });
+        notif.args.machines.forEach(function (machine) { return _this.playerHand.removeFromStockById('' + machine.id); });
     };
     Noah.prototype.notif_discardTableMachines = function (notif) {
         var _this = this;

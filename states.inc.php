@@ -121,10 +121,10 @@ $playerActionsGameStates = [
 
 $gameGameStates = [
     ST_END_ROUND => [
-        "name" => "refillHand",
+        "name" => "endRound",
         "description" => "",
         "type" => "game",
-        "action" => "stRefillHand",
+        "action" => "stEndRound",
         "transitions" => [ 
             "newRound" => ST_NEXT_PLAYER,
             "endGame" => ST_END_GAME

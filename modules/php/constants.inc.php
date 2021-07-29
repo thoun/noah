@@ -19,9 +19,11 @@ define('END_SCORE', 100);
 /*
  * Variables
  */
-/*define('FIRST_PLAYER', 'FIRST_PLAYER');
-define('PLAYED_MACHINE', 'PLAYED_MACHINE');
-define('LAST_TURN', 'LAST_TURN');*/
+define('NOAH_POSITION', 'NOAH_POSITION');
+define('ROUND_NUMBER', 'ROUND_NUMBER');
+define('PAIR_PLAY_AGAIN', 'PAIR_PLAY_AGAIN');
+
+define('VARIANT', 'VARIANT');
 
 /*
  * Global variables

@@ -58,8 +58,8 @@ const PROJECTS_IDS = [
   38,
 ];
 
-const MACHINE_WIDTH = 190;
-const MACHINE_HEIGHT = 190;
+const ANIMAL_WIDTH = 190;
+const ANIMAL_HEIGHT = 190;
 
 const PROJECT_WIDTH = 134;
 const PROJECT_HEIGHT = 93;
@@ -68,7 +68,7 @@ function getUniqueId(object: { type: number, subType: number }): number {
     return object.type * 10 + object.subType;
 }
 
-function setupMachineCards(machineStocks: Stock[]) {
+function setupAnimalCards(machineStocks: Stock[]) {
     const cardsurl = `${g_gamethemeurl}img/cards.jpg`;
 
     machineStocks.forEach(machineStock => 
@@ -128,7 +128,7 @@ function getMachineTooltip(type: number) {
     return null;
 }
 
-function setupMachineCard(game: Game, cardDiv: HTMLDivElement, type: number) {
+function setupAnimalCard(game: Game, cardDiv: HTMLDivElement, type: number) {
     (game as any).addTooltipHtml(cardDiv.id, getMachineTooltip(type));
 }
 

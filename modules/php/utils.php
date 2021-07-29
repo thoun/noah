@@ -59,36 +59,38 @@ trait UtilTrait {
         self::DbQuery("DELETE FROM `global_variables` where `name` = '$name'");
     }
 
-    /*function getMaxPlayerScore() {
+    function isVariant() {
+        return intval(self::getGameStateValue(VARIANT)) === 2;
+    }
+
+    function getMaxPlayerScore() {
         return intval(self::getUniqueValueFromDB("SELECT max(player_score) FROM player"));
-    }*/
+    }
+
+    function isEndOfRound() {
+        return false; // TODO
+    }
+
+    function getNoahPosition() {
+        return intval(self::getGameStateValue(NOAH_POSITION));
+    }
+
+    function setNoahPosition(int $position) {
+        self::setGameStateValue(NOAH_POSITION, $position);
+    }
 
     /*function setupCards() {
         // 56 machine cards    
-        $machines = [];
-        foreach(array_keys($this->MACHINES) as $projectId) {
-            $type = floor($projectId / 10);
-            $machines[] = [ 'type' => $type, 'type_arg' => $projectId % 10, 'nbr' => $type == 3 ? 2 : 4 ];
+        $animals = [];
+        foreach(array_keys($this->ANIMALS) as $animalId) {
+            $type = floor($animalId / 10);
+            $animals[] = [ 'type' => $type, 'type_arg' => $animalId % 10, 'nbr' => $type == 3 ? 2 : 4 ];
         }
-        $this->machines->createCards($machines, 'deck');
-        $this->machines->shuffle('deck');
+        $this->animals->createCards($animals, 'deck');
+        $this->animals->shuffle('deck');
         
-        //17 project tiles
-        $projects = [];
-        foreach(array_keys($this->PROJECTS) as $projectId) {
-            $projects[] = [ 'type' => floor($projectId / 10), 'type_arg' => $projectId % 10, 'nbr' => 1 ];
-        }
-        $this->projects->createCards($projects, 'deck');
-        $this->projects->shuffle('deck');
-
-        //12 charcoaliums & 24 resources : 8 wood, 8 copper, 8 crystal        
-        $resources = [
-            [ 'type' => 0, 'type_arg' => null, 'nbr' => 12 ],
-            [ 'type' => 1, 'type_arg' => null, 'nbr' => 8 ],
-            [ 'type' => 2, 'type_arg' => null, 'nbr' => 8 ],
-            [ 'type' => 3, 'type_arg' => null, 'nbr' => 8 ],
-        ];
-        $this->resources->createCards($resources, 'table');
+        // 8 ferries
+        $this->ferries->createCards([[ 'type' => 0, 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
     }
 
     function setInitialCardsAndResources(array $players) {

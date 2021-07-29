@@ -10,6 +10,26 @@ trait ActionTrait {
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in nicodemus.action.php)
     */
+
+    public function loadAnimal(int $id) {
+        self::checkAction('loadAnimal'); 
+        
+        $playerId = self::getActivePlayerId();
+
+        // TODO
+
+        $this->gamestate->nextState('moveNoah');
+    }
+
+    public function moveNoah(int $destination) {
+        self::checkAction('moveNoah'); 
+        
+        $playerId = self::getActivePlayerId();
+
+        // TODO
+
+        $this->gamestate->nextState('nextPlayer');
+    }
     
     /*public function playMachine(int $id) {
         self::checkAction('playMachine'); 

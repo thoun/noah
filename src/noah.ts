@@ -17,24 +17,13 @@ const isDebug = window.location.host == 'studio.boardgamearena.com';
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class Noah implements NoahGame {
-    private gamedatas: NicodemusGamedatas;
-    private charcoaliumCounters: Counter[] = [];
-    private woodCounters: Counter[] = [];
-    private copperCounters: Counter[] = [];
-    private crystalCounters: Counter[] = [];
-    private machineCounter: Counter;
-    private projectCounter: Counter;
+    private gamedatas: NoahGamedatas;
     private helpDialog: any;
 
-    private playerMachineHand: Stock;
+    private playerHand: Stock;
     private table: Table;
 
-    private selectedPlayerProjectsIds: number[] = []; 
-    private selectedTableProjectsIds: number[] = [];
-
     public zoom: number = 1;
-
-    public clickAction: 'play' | 'select' = 'play';
 
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -56,16 +45,16 @@ class Noah implements NoahGame {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
 
-    public setup(gamedatas: NicodemusGamedatas) {
+    public setup(gamedatas: NoahGamedatas) {
         log( "Starting game setup" );
         
         this.gamedatas = gamedatas;
 
         log('gamedatas', gamedatas);
 
-        /*this.createPlayerPanels(gamedatas);
-        this.setHand(gamedatas.handMachines);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
+        //this.createPlayerPanels(gamedatas);
+        this.setHand(gamedatas.handAnimals);
+        /*this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
         this.table.onTableProjectSelectionChanged = selectProjectsIds => {
             this.selectedTableProjectsIds = selectProjectsIds;
             this.onProjectSelectionChanged();
@@ -86,13 +75,13 @@ class Noah implements NoahGame {
         this.addHelp();*/
         this.setupNotifications();
 
-        /*this.setupPreferences();
+        //this.setupPreferences();
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
-        }*/
+        }
 
         log( "Ending game setup" );
     }
@@ -108,14 +97,12 @@ class Noah implements NoahGame {
 
         switch (stateName) {
             case 'chooseAction':
-                this.clickAction = 'play';
                 this.onEnteringStateChooseAction(args.args as ChooseActionArgs);
                 break;
             case 'choosePlayAction':
                 this.onEnteringStateChoosePlayAction(args.args as ChoosePlayActionArgs);
                 break;
             case 'selectMachine':
-                this.clickAction = 'select';
                 this.onEnteringStateSelectMachine(args.args as SelectMachineArgs);
                 break;
             case 'selectProject': case 'chooseProject':
@@ -198,7 +185,6 @@ class Noah implements NoahGame {
                 this.onLeavingChoosePlayAction();
                 break;
             case 'selectMachine':
-                this.clickAction = 'select';
                 this.onLeavingStateSelectMachine();
             case 'selectProject': case 'chooseProject':
                 this.onLeavingChooseProject();
@@ -317,7 +303,7 @@ class Noah implements NoahGame {
             div.style.margin = `0 ${ZOOM_LEVELS_MARGIN[newIndex]}% ${(1-zoom)*-100}% 0`;
         }
 
-        this.playerMachineHand.updateDisplay();
+        this.playerHand.updateDisplay();
 
         document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
     }
@@ -376,26 +362,19 @@ class Noah implements NoahGame {
         dojo.toggleClass('skipProjects-button', 'disabled', !!selectionLength);
     }
 
-    public setHand(machines: Machine[]) {
-        this.playerMachineHand = new ebg.stock() as Stock;
-        this.playerMachineHand.create(this, $('my-machines'), MACHINE_WIDTH, MACHINE_HEIGHT);
-        this.playerMachineHand.setSelectionMode(1);            
-        this.playerMachineHand.setSelectionAppearance('class');
-        this.playerMachineHand.selectionClass = 'selected';
-        this.playerMachineHand.centerItems = true;
-        this.playerMachineHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupMachineCard(this, cardDiv, type);
-        dojo.connect(this.playerMachineHand, 'onChangeSelection', this, () => this.onPlayerMachineHandSelectionChanged(this.playerMachineHand.getSelectedItems()));
+    public setHand(animals: Animal[]) {
+        this.playerHand = new ebg.stock() as Stock;
+        this.playerHand.create(this, $('my-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+        this.playerHand.setSelectionMode(1);            
+        this.playerHand.setSelectionAppearance('class');
+        this.playerHand.selectionClass = 'selected';
+        this.playerHand.centerItems = true;
+        this.playerHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
+        dojo.connect(this.playerHand, 'onChangeSelection', this, () => this.onPlayerHandSelectionChanged(this.playerHand.getSelectedItems()));
 
-        setupMachineCards([this.playerMachineHand]);
+        setupAnimalCards([this.playerHand]);
 
-        machines.forEach(machine => this.playerMachineHand.addToStockWithId(getUniqueId(machine), ''+machine.id));
-
-        const player = Object.values(this.gamedatas.players).find(player => Number(player.id) === this.getPlayerId());
-        if (player) {
-            const color = player.color.startsWith('00') ? 'blue' : 'red';
-            dojo.addClass('my-hand-label', color);
-            // document.getElementById('myhand-wrap').style.backgroundColor = `#${player.color}40`;
-        }
+        animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
     
     private getProjectStocks() {
@@ -403,14 +382,14 @@ class Noah implements NoahGame {
     }
     
     private getMachineStocks() {
-        return [this.playerMachineHand, ...this.table.machineStocks.slice(1)];
+        return [this.playerHand, ...this.table.machineStocks.slice(1)];
     }
 
     public setHandSelectable(selectable: boolean) {
-        this.playerMachineHand.setSelectionMode(selectable ? 1 : 0);
+        this.playerHand.setSelectionMode(selectable ? 1 : 0);
     }
 
-    public onPlayerMachineHandSelectionChanged(items: any) {
+    public onPlayerHandSelectionChanged(items: any) {
         if (items.length == 1) {
             const card = items[0];
             this.machineClick(card.id, 'hand');
@@ -429,7 +408,7 @@ class Noah implements NoahGame {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
 
-    private createPlayerPanels(gamedatas: NicodemusGamedatas) {
+    private createPlayerPanels(gamedatas: NoahGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);     
@@ -747,7 +726,7 @@ class Noah implements NoahGame {
     }
 
     notif_machinePlayed(notif: Notif<NotifMachinePlayedArgs>) {        
-        this.playerMachineHand.removeFromStockById(''+notif.args.machine.id);
+        this.playerHand.removeFromStockById(''+notif.args.machine.id);
         this.table.machinePlayed(notif.args.playerId, notif.args.machine);
     }
 
@@ -776,7 +755,7 @@ class Noah implements NoahGame {
         } else if (notif.args.from > 0) {
             from = `player-icon-${notif.args.from}`;
         }
-        notif.args.machines.forEach(machine => addToStockWithId(this.playerMachineHand, getUniqueId(machine), ''+machine.id, from));
+        notif.args.machines.forEach(machine => addToStockWithId(this.playerHand, getUniqueId(machine), ''+machine.id, from));
 
         if (notif.args.remainingMachines !== undefined) {
             this.setRemainingMachines(notif.args.remainingMachines);
@@ -794,7 +773,7 @@ class Noah implements NoahGame {
     }
 
     notif_discardHandMachines(notif: Notif<NotifDiscardMachinesArgs>) {
-        notif.args.machines.forEach(machine => this.playerMachineHand.removeFromStockById(''+machine.id));
+        notif.args.machines.forEach(machine => this.playerHand.removeFromStockById(''+machine.id));
     }
 
     notif_discardTableMachines(notif: Notif<NotifDiscardMachinesArgs>) {
