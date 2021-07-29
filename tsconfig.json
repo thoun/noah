@@ -1,0 +1,22 @@
+{
+    "rootDir": ".", 
+    "compilerOptions": {
+      "target": "es5",
+      "module": "none",
+      "lib": ["dom", "esnext"],  
+      "sourceMap": false,
+      "outFile": "noah.js",
+    },
+    "files": [
+        "src/framework.d.ts",
+        "src/counter.d.ts",
+        "src/stock.d.ts",
+        "src/noah.d.ts",
+        "src/slide-utils.ts",
+        "src/stock-utils.ts",
+        "src/text-icons-formatter.ts",
+        "src/table/table.ts",
+        "src/noah.ts",
+        "src/define.ts"
+    ]
+}

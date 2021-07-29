@@ -1,0 +1,283 @@
+@import url(../../../css/csslayer.css);
+
+@import 'table/table';
+@import 'players-tables/players-tables';
+@import 'discarded-machines-selector/discarded-machines-selector';
+@import 'help';
+.player-board {
+  @import 'playerboards';
+}
+
+html {
+    background: url('img/background.jpg') #eae3d3;
+    background-repeat: repeat;
+}
+
+.mode_3d #game_play_area_background {
+    background: url('img/background.jpg') #eae3d3;
+    background-repeat: repeat;
+}
+
+
+
+#zoom-wrapper {
+  position: relative;
+
+  #zoom-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    button {
+      width: 40px;
+      height: 40px;
+      background: url('img/zoom.svg');
+      background-size: auto 220%;
+
+      &:not(.disabled) {
+        cursor: pointer;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    #zoom-in {
+      background-position: 6% 94%;
+    }
+    #zoom-out {
+      background-position: 82% 94%;
+    }
+  }
+
+  #full-table {
+    transform-origin: left top;
+  }
+}
+
+
+.icon {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-image: url('img/icons.png');
+  background-size: auto 100%;
+
+  &.charcoalium {
+    background-position: 0% 0%;
+  }
+
+  &.wood {
+    background-position: 25% 0%;
+  }
+
+  &.copper {
+    background-position: 50% 0%;
+  }
+
+  &.crystal {
+    background-position: 75% 0%;
+  }
+
+  &.joker {
+    background-position: 100% 0%;
+  }
+}
+
+#page-title {
+  .icon {
+    width: 20px;
+    height: 20px;
+    margin: -5px 0;
+  }
+
+  .effect-in-text {
+    margin-bottom: -10px;
+  }
+
+  #applyEffect-button {
+    .effect {
+      margin-top: -5px;
+      margin-bottom: -5px;
+    }
+  }
+}
+
+.log {  
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin-bottom: -2px;
+  }
+}
+
+.gamelogreview {
+  .icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: -2px;
+  }
+}
+
+.dijitTooltipContents { 
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin-bottom: -2px;
+  }
+}
+
+.player-icon {
+  display: inline-block;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background-image: url('img/players.png');
+  background-size: auto 100%;
+
+  &.blue {
+    background-position: 0% 0%;
+  }
+
+  &.red {
+    background-position: 50% 0%;
+  }
+
+  &.first-player {
+    background-position: 100% 0%;
+  }
+}
+
+.stockitem {
+  border-radius: 10px;
+  margin: 5px;
+
+  &.selected {
+    box-shadow: 0 0 5px 6px white;
+  }
+    
+  &.disabled {
+      filter: contrast(0.5);
+      cursor: not-allowed;
+      // pointer-events: none;
+  }
+}
+
+.cube {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+
+  @for $i from 0 through 3 {
+    &.resource#{$i} {
+        background-image: url('img/resource#{$i}-cubes.png');
+    }
+  }
+
+  &.resource3 {
+    opacity: 0.8;
+  }
+
+  @for $i from 0 through 3 {
+    &.aspect#{$i} {
+        background-position: ($i * 100% / 3) 100%;
+    }
+  }
+  
+  @for $i from 0 through 7 {
+    &.resource0.aspect#{$i} {
+      background-position: ($i * 100% / 7) 100%;
+    }
+  }
+}
+
+#myhand-wrap {
+  display: flex;
+  padding: 0;
+
+  #my-hand-label {
+    display: flex;
+    padding-right: 5px;
+
+    &.blue {
+      background: linear-gradient(0.25turn, $blue 60%, transparent);
+    }
+    &.red {
+        background: linear-gradient(0.25turn, $red 60%, transparent);
+    }
+
+    h3 {
+      flex: 1;
+      text-align: center;
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);    
+      color: white;
+      padding: 5px;
+    }
+  }
+
+  #my-machines {
+    flex: 1;
+  }
+}
+
+.effect {
+  border-radius: 8px;
+  width: 80px; 
+  height: 31px;
+  background-image: url('img/cards.jpg');
+  display: inline-block;
+  vertical-align: inherit;
+  margin-left: 5px;
+  margin-bottom: 1px;
+
+  @for $i from 0 through 15 {
+    &.effect#{$i} {
+        background-position: (3.4% + ($i * 6.42%)) 10%;
+    }
+  }
+}
+
+.machine {
+  width: $machine-width; 
+  height: $machine-height;
+  background-image: url('img/cards.jpg');
+  
+  border-radius: 10px;
+  margin: 5px;
+
+  @for $i from 0 through 16 {
+    &.machine#{$i} {
+        background-position: ($i * 100% / 15) 0%;
+    }
+  }
+}
+
+.project {
+  width: $project-width; 
+  height: $project-height;
+  background-image: url('img/projects.jpg');
+  
+  border-radius: 10px;
+  margin: 5px;
+
+  @for $i from 0 through 16 {
+    &.project#{$i} {
+        background-position: ($i * 100% / 16) 0%;
+    }
+  }
+}
+
+.spectatorMode #myhand-wrap {
+  display: none;
+}
+
+#last-round {
+    margin: 5px -5px -5px;
+    text-align: center;
+    background: #a1311f;
+    color: white;
+}

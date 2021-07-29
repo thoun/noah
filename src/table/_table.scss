@@ -1,0 +1,120 @@
+#table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  #table-resources {
+    display: grid;
+    grid-template-columns: repeat(4, 250px);
+    grid-template-rows: 60px;
+    grid-column-gap: 50px;
+    justify-content: center;
+
+    &>div {
+      position: relative;
+    }
+  }
+}
+
+#table {
+  position: relative;
+  width: 1230px;
+  height: 539px;
+  background-image: url('img/board.jpg');
+  margin-top: 70px;
+
+  .point-marker {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    box-shadow: 1px 1px 2px 2px black;
+    border-radius: 50%;
+    background-image: url('img/points.png');
+    background-size: auto 100%;    
+  
+    &.blue {
+      background-position: 0% 0%;
+    }
+  
+    &.red {
+      background-position: 100% 0%;
+    }
+  }
+
+  .projects {
+    position: absolute;
+    top: -65px;
+    left: 0;
+
+    #project-deck {
+      position: absolute;
+      background-image: url('img/project-back.jpg');
+      width: 134px; 
+      height: 93px;
+      box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
+      cursor: default;
+    }
+
+    #table-projects {
+        position: absolute;
+        left: 176px;
+
+        .table-project-stock {
+            position: absolute;
+            top: 0px;
+        }
+    }
+  }
+
+  .machines {
+    position: absolute;
+    left: 6px;
+    top: 102px;
+
+    .cube.resource0 {
+      background-color: #FFFFFFAA;
+      box-shadow: 0 0 5px 6px #ffffffAA;
+      border-radius: 50%;
+      z-index: 12;
+    }
+
+    .machine-spot {
+      position: absolute;
+    }
+
+    #machine-deck {
+      position: absolute;
+      top: 208px;
+      left: 1020px;
+      background-image: url('img/card-back.jpg');
+      width: 190px; 
+      height: 190px;
+      box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
+      cursor: default;
+    }
+  }
+}
+
+.remaining-counter {
+  position: absolute;
+  width: 16px;
+  text-align: center;
+  //text-shadow: 1px 1px 1px white;
+  background-color: #FFFFFF88;
+  box-shadow: 0 0 5px 6px #ffffff88;
+  border-radius: 50%;
+}
+
+#remaining-project-counter {
+  top: 73px;
+  left: 144px;
+}
+
+#remaining-machine-counter {
+  top: 408px;
+  left: 1193px;
+}
+
+.deck {
+  z-index: 1;
+}
