@@ -1,5 +1,8 @@
 <?php
 
+require_once(__DIR__.'/objects/animal.php');
+require_once(__DIR__.'/objects/ferry.php');
+
 trait UtilTrait {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -64,11 +67,30 @@ trait UtilTrait {
     }
 
     function getMaxPlayerScore() {
-        return intval(self::getUniqueValueFromDB("SELECT max(player_score) FROM player"));
+        return -intval(self::getUniqueValueFromDB("SELECT min(player_score) FROM player"));
+    }
+
+    function getPlayersIds() {
+        $sql = "SELECT player_id FROM player WHERE player_eliminated = 0 ORDER BY player_no";
+        $dbResults = self::getCollectionFromDB($sql);
+        return array_map(function($dbResult) { return intval($dbResult['player_id']); }, array_values($dbResults));
     }
 
     function isEndOfRound() {
-        return false; // TODO
+        // if last ferry left table
+        if (intval($this->ferries->countCardInLocation('deck')) == 0 && intval($this->ferries->countCardInLocation('table')) < 5) {
+            return true;
+        }
+
+        // if one player has no cards in hand
+        $playersIds = $this->getPlayersIds();
+        foreach($playersIds as $playerId) {
+            if (intval($this->animals->countCardInLocation('hand', $playerId)) == 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function getNoahPosition() {
@@ -79,13 +101,31 @@ trait UtilTrait {
         self::setGameStateValue(NOAH_POSITION, $position);
     }
 
-    /*function setupCards() {
+    function getPlayerScore(int $playerId) {
+        return intval(self::getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
+    }
+
+    function incPlayerScore(int $playerId, int $incScore) {
+        self::DbQuery("UPDATE player SET player_score = player_score - $incScore WHERE player_id = $playerId");
+
+        self::notifyAllPlayers('points', '', [
+            'playerId' => $playerId,
+            'points' => $this->getPlayerScore($playerId),
+        ]);
+    }
+
+    function setupCards(int $playerCount) {
         // 56 machine cards    
         $animals = [];
-        foreach(array_keys($this->ANIMALS) as $animalId) {
-            $type = floor($animalId / 10);
-            $animals[] = [ 'type' => $type, 'type_arg' => $animalId % 10, 'nbr' => $type == 3 ? 2 : 4 ];
+        foreach($this->ANIMALS as $type => $animal) {
+            if ($animal->power == POWER_HERMAPHRODITE) {
+                $animals[] = [ 'type' => $type, 'type_arg' => 0, 'nbr' => $animal->cardsByGender[$playerCount] ];
+            } else {
+                $animals[] = [ 'type' => $type, 'type_arg' => 1, 'nbr' => $animal->cardsByGender[$playerCount] ];
+                $animals[] = [ 'type' => $type, 'type_arg' => 2, 'nbr' => $animal->cardsByGender[$playerCount] ];
+            }
         }
+        
         $this->animals->createCards($animals, 'deck');
         $this->animals->shuffle('deck');
         
@@ -93,76 +133,72 @@ trait UtilTrait {
         $this->ferries->createCards([[ 'type' => 0, 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
     }
 
-    function setInitialCardsAndResources(array $players) {
-        // set table and players machines
-        $this->machines->pickCardForLocation('deck', 'table', 1); 
-        foreach($players as $playerId => $player) {
-            $this->machines->pickCardsForLocation(5, 'deck', 'hand', $playerId);
-        }
+    function setGender(int $animalId, int $gender) {
+        self::DbQuery("UPDATE animal SET `card_type_arg` = $gender where `card_id` = $animalId");
+    }
 
-        // set table projects
-        for ($i=1; $i<=6; $i++) {
-            $this->projects->pickCardForLocation('deck', 'table', $i);
-        }
-
-        // set initial resources
-        foreach($players as $playerId => $player) {
-            if ($this->getFirstPlayerId() == $playerId) {
-                $this->addResource($playerId, 2, 0);
-            } else {
-                $this->addResource($playerId, 1, 0);
-                $this->addResource($playerId, 1, 1);
+    function setInitialCardsAndResources(array $playersIds) {
+        // set table ferries and first animal on it
+        for ($position=0; $position<5; $position++) {
+            $this->ferries->pickCardForLocation('deck', 'table', $position);
+            $card = $this->getAnimalFromDb($this->animals->pickCardForLocation('deck', 'table'.$position, 0)); 
+            if ($card->power == POWER_HERMAPHRODITE) {
+                $this->setGender($card->id, bga_rand(1, 2));
             }
         }
+
+        // set players animals
+        foreach($playersIds as $playerId) {
+            $this->animals->pickCardsForLocation(8, 'deck', 'hand', $playerId);
+        }
+
+        // TODO notifs (for 2+ round)
     }
 
-    function getRemainingMachines() {
-        return $this->machines->countCardInLocation('deck');
-    }
-
-    function getRemainingProjects() {
-        return $this->projects->countCardInLocation('deck');
-    }
-
-    function getMachineFromDb($dbObject) {
+    function getAnimalFromDb($dbObject) {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
-            throw new Error("machine doesn't exists ".json_encode($dbObject));
+            throw new Error("animal doesn't exists ".json_encode($dbObject));
         }
-        return new Machine($dbObject, $this->MACHINES);
+        return new Animal($dbObject, $this->ANIMALS);
     }
 
-    function getMachinesFromDb(array $dbObjects) {
-        return array_map(function($dbObject) { return $this->getMachineFromDb($dbObject); }, array_values($dbObjects));
+    function getAnimalsFromDb(array $dbObjects) {
+        return array_map(function($dbObject) { return $this->getAnimalFromDb($dbObject); }, array_values($dbObjects));
     }
 
-    function getMachinesWithResourcesFromDb(array $dbObjects) {
-        $machines = $this->getMachinesFromDb($dbObjects);
-    
-        foreach($machines as &$machine) {
-            $machine->resources = $this->getResourcesFromDb($this->resources->getCardsInLocation('machine', $machine->id));
+    function getFerryFromDb($dbObject) {
+        if (!$dbObject || !array_key_exists('id', $dbObject)) {
+            throw new Error("ferry doesn't exists ".json_encode($dbObject));
         }
-
-        return $machines;
-    }*/
-
-    function getPlayerScore(int $playerId) {
-        return intval(self::getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
+        return new Ferry($dbObject);
     }
 
-    function incPlayerScore(int $playerId, int $incScore) {
-        self::DbQuery("UPDATE player SET player_score = player_score + $incScore WHERE player_id = $playerId");
+    function getFerriesFromDb(array $dbObjects) {
+        return array_map(function($dbObject) { return $this->getFerryFromDb($dbObject); }, array_values($dbObjects));
+    }
 
-        if ($this->getMaxPlayerScore() >= 20) {
-            self::setGameStateValue(LAST_TURN, 1);
-            self::notifyAllPlayers('lastTurn', clienttranslate("There is not enough machines left on the deck, it's last turn !"), [
-                'playerId' => $playerId,
-                'points' => $this->getPlayerScore($playerId),
-            ]);
+    function getFerry(int $position) {
+        $ferries = $this->getFerriesFromDb($this->ferries->getCardsInLocation('table', $position));
+        if (count($ferries) > 0) {
+            $ferry = $ferries[0];
+            $ferry->animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.$position, null, 'location_arg'));
+            return $ferry;
+        } else {
+            return null;
         }
+    }
 
-        self::notifyAllPlayers('points', '', [
-            'playerId' => $playerId,
-            'points' => $this->getPlayerScore($playerId),
-        ]);
+    function getAnimalName(int $type) {
+        switch ($type) {
+            case 1: return _('snail');
+            case 2: return _('giraffe');
+            case 3: return _('mule');
+            case 4: return _('lion');
+            case 5: return _('woodpecker');
+            case 6: return _('cat');
+            case 7: return _('elephant');
+            case 8: return _('panda');
+        }
+        return null;
     }
 }

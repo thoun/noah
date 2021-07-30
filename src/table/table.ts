@@ -97,6 +97,10 @@ class Table {
             this.addResources(i, resourcesToPlace);
         }
     }
+    
+    public noahMoved(position: number) {
+        // TODO
+    }
 
     public getSelectedProjectsIds(): number[] {
         const selectedIds = [];

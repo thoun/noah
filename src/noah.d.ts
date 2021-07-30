@@ -10,11 +10,13 @@ interface Animal {
 }
 
 interface Ferry {
+    id: number;
+    location: string;
+    location_arg: number;
     animals: Animal[];
 }
 
 interface NoahPlayer extends Player {
-    playerNo: number;
 }
 
 /**
@@ -36,9 +38,10 @@ interface NoahGamedatas {
     // Add here variables you set up in getAllDatas
     ferries: Ferry[];
     noahPosition: number;
+
     handAnimals: Animal[];
 
-    turnNumber: number;
+    roundNumber: number;
     variant: boolean;
 }
 
@@ -50,7 +53,7 @@ interface LoadAnimalArgs {
 }
 
 interface MoveNoahArgs {
-    destination: number;
+    possibleDestinations: number[];
 }
 
 interface NotifAnimalLoadedArgs {

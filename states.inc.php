@@ -97,6 +97,7 @@ $playerActionsGameStates = [
             "loadAnimal",
         ],
         "transitions" => [
+            "nextPlayer" => ST_NEXT_PLAYER,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -126,7 +127,7 @@ $gameGameStates = [
         "type" => "game",
         "action" => "stEndRound",
         "transitions" => [ 
-            "newRound" => ST_NEXT_PLAYER,
+            "newRound" => ST_PLAYER_LOAD_ANIMAL,
             "endGame" => ST_END_GAME
         ],
     ],

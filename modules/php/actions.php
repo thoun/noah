@@ -12,52 +12,57 @@ trait ActionTrait {
     */
 
     public function loadAnimal(int $id) {
-        self::checkAction('loadAnimal'); 
+        self::checkAction('loadAnimal');
+        
+        $animal = $this->getAnimalFromDb($this->animals->getCard($id));
+
+        if (!$this->canLoadAnimal($animal)) {
+            throw new Error("Can't load this animal");
+        }
+
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        $animalCount = intval($this->animals->countCardInLocation($location));
+        $this->animals->moveCard($id, 'deck', $location, $animalCount);
+
+        if ($animalCount > 0 && $animal->type == $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-1))[0]->type) {
+            self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
+        }
         
         $playerId = self::getActivePlayerId();
 
-        // TODO
+        self::notifyAllPlayers('animalLoaded', clienttranslate('${player_name} loads animal ${animalName}'), [
+            'playerId' => $playerId,
+            'player_name' => self::getActivePlayerName(),
+            'animal' => $animal,
+            'position' => $position,
+            'animalName' => $this->getAnimalName($animal->type),
+        ]);
 
-        $this->gamestate->nextState('moveNoah');
+        if ($animal->power == DONT_MOVE_NOAH) {
+            $this->gamestate->nextState('nextPlayer');
+        } else {            
+            self::setGameStateValue(NOAH_NEXT_MOVE, 0);
+            $this->gamestate->nextState('moveNoah');
+        }
     }
 
     public function moveNoah(int $destination) {
         self::checkAction('moveNoah'); 
+
+        $possiblePositions = $this->getPossiblePositions();
+        if (array_search($destination,  $possiblePositions) === false) {
+            throw new Error("Invalid destination for Noah");
+        }
         
         $playerId = self::getActivePlayerId();
 
-        // TODO
+        self::setGameStateValue(NOAH_POSITION, $destination);
+
+        self::notifyAllPlayers('noahMoved', '', [
+            'position' => $destination,
+        ]);
 
         $this->gamestate->nextState('nextPlayer');
     }
-    
-    /*public function playMachine(int $id) {
-        self::checkAction('playMachine'); 
-        
-        $playerId = intval(self::getActivePlayerId());
-
-        $selectableMachines = $this->getSelectableMachinesForChooseAction($playerId);
-        if (!$this->array_some($selectableMachines, function ($m) use ($id) { return $m->id == $id; })) {
-            throw new Error("This machine cannot be played");
-        }
-
-        $freeTableSpot = $this->countMachinesOnTable() + 1;
-        $this->machines->moveCard($id, 'table', $freeTableSpot);
-        self::setGameStateValue(PLAYED_MACHINE, $id);
-
-        $machine = $this->getMachineFromDb($this->machines->getCard($id));
-
-        self::notifyAllPlayers('machinePlayed', clienttranslate('${player_name} plays ${machine_type} machine ${machineImage}'), [
-            'playerId' => $playerId,
-            'player_name' => self::getActivePlayerName(),
-            'machine' => $machine,
-            'machine_type' => $this->getColorName($machine->type),
-            'machineImage' => $this->getUniqueId($machine),
-        ]);
-
-        self::incStat(1, 'playedMachines');
-        self::incStat(1, 'playedMachines', $playerId);
-
-        $this->gamestate->nextState('choosePlayAction');
-    }*/
 }

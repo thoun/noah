@@ -68,14 +68,8 @@ class Noah implements NoahGame {
         this.projectCounter.create('remaining-project-counter');
         this.setRemainingProjects(gamedatas.remainingProjects);
 
-        if (gamedatas.endTurn) {
-            this.notif_lastTurn();
-        }
-
         this.addHelp();*/
         this.setupNotifications();
-
-        //this.setupPreferences();
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
@@ -110,12 +104,6 @@ class Noah implements NoahGame {
                 break;
             case 'chooseProjectDiscardedMachine':
                 this.onEnteringStateChooseProjectDiscardedMachine(args.args as ChooseProjectDiscardedMachineArgs);
-                break;
-            case 'gameEnd':                
-                const lastTurnBar = document.getElementById('last-round');
-                if (lastTurnBar) {
-                    lastTurnBar.style.display = 'none';
-                }
                 break;
         }
     }
@@ -324,38 +312,6 @@ class Noah implements NoahGame {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
 
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_control_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
-    }
-      
-    private onPreferenceChange(prefId: number, prefValue: number) {
-        switch (prefId) {
-            // KEEP
-            case 201: 
-                document.getElementById('full-table').appendChild(document.getElementById(prefValue == 2 ? 'table-wrapper' : 'playerstables'));
-                break;
-        }
-    }
-
     private onProjectSelectionChanged() {
         const selectionLength = this.selectedPlayerProjectsIds.length + this.selectedTableProjectsIds.length;
         dojo.toggleClass('selectProjects-button', 'disabled', !selectionLength);
@@ -374,7 +330,7 @@ class Noah implements NoahGame {
 
         setupAnimalCards([this.playerHand]);
 
-        animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+        // TODO animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
     
     private getProjectStocks() {
@@ -708,15 +664,8 @@ class Noah implements NoahGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['machinePlayed', ANIMATION_MS],
-            ['tableMove', ANIMATION_MS],
-            ['addMachinesToHand', ANIMATION_MS],
+            ['noahMoved', ANIMATION_MS],
             ['points', 1],
-            ['lastTurn', 1],
-            ['removeResources', ANIMATION_MS],
-            ['discardHandMachines', ANIMATION_MS],
-            ['discardTableMachines', ANIMATION_MS],
-            ['removeProject', ANIMATION_MS],
         ];
 
         notifs.forEach((notif) => {
@@ -725,88 +674,18 @@ class Noah implements NoahGame {
         });
     }
 
-    notif_machinePlayed(notif: Notif<NotifMachinePlayedArgs>) {        
+    /*notif_machinePlayed(notif: Notif<NotifMachinePlayedArgs>) {        
         this.playerHand.removeFromStockById(''+notif.args.machine.id);
         this.table.machinePlayed(notif.args.playerId, notif.args.machine);
-    }
+    }*/
 
-    notif_tableMove(notif: Notif<NotifTableMoveArgs>) {
-        Object.keys(notif.args.moved).forEach(key => {
-            const originalSpot = Number(key);
-            const machine: Machine = notif.args.moved[key];
-
-            moveToAnotherStock(
-                this.table.machineStocks[originalSpot], 
-                this.table.machineStocks[machine.location_arg], 
-                getUniqueId(machine), 
-                ''+machine.id
-            );
-
-            if (machine.resources?.length) {
-                this.table.addResources(0, machine.resources);
-            }
-        });
-    }
-
-    notif_addMachinesToHand(notif: Notif<NotifAddMachinesToHandArgs>) {
-        let from = undefined;
-        if (notif.args.from === 0) {
-            from = 'machine-deck';
-        } else if (notif.args.from > 0) {
-            from = `player-icon-${notif.args.from}`;
-        }
-        notif.args.machines.forEach(machine => addToStockWithId(this.playerHand, getUniqueId(machine), ''+machine.id, from));
-
-        if (notif.args.remainingMachines !== undefined) {
-            this.setRemainingMachines(notif.args.remainingMachines);
-        }
-    }
-
-    notif_points(notif: Notif<NotifPointsArgs>) {
-        this.setPoints(notif.args.playerId, notif.args.points);
-    }
-
-    notif_removeResources(notif: Notif<NotifResourcesArgs>) {
-        this.setResourceCount(notif.args.playerId, notif.args.resourceType, notif.args.count);
-
-        this.table.addResources(notif.args.resourceType, notif.args.resources);
-    }
-
-    notif_discardHandMachines(notif: Notif<NotifDiscardMachinesArgs>) {
-        notif.args.machines.forEach(machine => this.playerHand.removeFromStockById(''+machine.id));
-    }
-
-    notif_discardTableMachines(notif: Notif<NotifDiscardMachinesArgs>) {
-        notif.args.machines.forEach(machine => this.table.machineStocks[machine.location_arg].removeFromStockById(''+machine.id));
-    }
-
-    notif_removeProject(notif: Notif<NotifRemoveProjectArgs>) {
-            this.getProjectStocks().forEach(stock => stock.removeFromStockById(''+notif.args.project.id));
-    }
-
-    notif_lastTurn() {
-        if (document.getElementById('last-round')) {
-            return;
-        }
-        
-        dojo.place(`<div id="last-round">
-            ${_("This is the last round of the game!")}
-        </div>`, 'page-title');
-    }
-    
-    private getMachineColor(color: number) {
-        switch (color) {
-            case 1: return '#006fa1';
-            case 2: return '#702c91';
-            case 3: return '#a72c32';
-            case 4: return '#c48b10';
-        }
-        return null;
+    notif_noahMoved(notif: Notif<NotifNoahMovedArgs>) {
+        this.table.noahMoved(notif.args.position);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
-    public format_string_recursive(log: string, args: any) {
+    /*public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
                 // Representation of the color of a card
@@ -844,5 +723,5 @@ class Noah implements NoahGame {
             console.error(log,args,"Exception thrown", e.stack);
         }
         return (this as any).inherited(arguments);
-    }
+    }*/
 }

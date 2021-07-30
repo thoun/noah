@@ -22,6 +22,7 @@ define('END_SCORE', 100);
 define('NOAH_POSITION', 'NOAH_POSITION');
 define('ROUND_NUMBER', 'ROUND_NUMBER');
 define('PAIR_PLAY_AGAIN', 'PAIR_PLAY_AGAIN');
+define('NOAH_NEXT_MOVE', 'NOAH_NEXT_MOVE'); // 0 : don't move, 1 : male, 2 : female
 
 define('VARIANT', 'VARIANT');
 
@@ -30,4 +31,13 @@ define('VARIANT', 'VARIANT');
  */
 /*define('APPLY_EFFECT_CONTEXT', 'ApplyEffectContext');
 define('COMPLETED_PROJECTS', 'CompletedProjects');*/
+
+/*
+ * Powers
+ */
+define('POWER_HERMAPHRODITE', 1);
+define('POWER_LOOK_CARDS', 2);
+define('DONT_MOVE_NOAH', 3);
+define('EXCHANGE_CARD', 4);
+define('REDUCE_MAX_WEIGHT', 5);
 ?>

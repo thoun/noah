@@ -32,4 +32,45 @@ trait StateTrait {
             $this->gamestate->nextState('nextPlayer');
         }
     }
+
+    function stEndRound() {
+        // count points remaining in hands
+        $playersIds = $this->getPlayersIds();
+        foreach($playersIds as $playerId) {
+            $animals = $this->getAnimalsFromDb($this->animals->countCardInLocation('hand', $playerId));
+            $points = array_reduce($animals, function ($carry, $item) { return $carry + $item->points; });
+            $this->incPlayerScore($playerId, $points);
+        }
+        
+        // player with highest score starts        
+        $sql = "SELECT player_id FROM player where player_score=(select min(player_score) from player) limit 1";
+        $minScorePlayerId = self::getUniqueValueFromDB($sql);
+        $this->gamestate->changeActivePlayer($minScorePlayerId);
+        self::giveExtraTime($minScorePlayerId);
+
+        $roundNumber = intval(self::getGameStateValue(ROUND_NUMBER));
+
+        $endGame = null;
+        if ($this->isVariant()) {
+            $endGame = $this->getMaxPlayerScore() >= 26;
+        } else {
+            $endGame = $roundNumber >= 3;
+        }
+
+        if ($endGame) {
+            $this->gamestate->nextState('endGame');
+        } else {
+            self::setGameStateValue(ROUND_NUMBER, $roundNumber + 1);
+
+            // reset cards
+            $this->animals->moveAllCardsInLocation(null, 'deck');
+            $this->animals->shuffle('deck');
+            $this->ferries->moveAllCardsInLocation(null, 'deck');
+            $this->ferries->shuffle('deck');
+
+            $this->setInitialCardsAndResources($this->getPlayersIds());
+
+            $this->gamestate->nextState('newRound');
+        }
+    }
 }
