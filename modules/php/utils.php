@@ -127,7 +127,6 @@ trait UtilTrait {
         }
         
         $this->animals->createCards($animals, 'deck');
-        $this->animals->shuffle('deck');
         
         // 8 ferries
         $this->ferries->createCards([[ 'type' => 0, 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
@@ -146,13 +145,23 @@ trait UtilTrait {
                 $this->setGender($card->id, bga_rand(1, 2));
             }
         }
+        
+        $ferries = [];
+        for ($position=0; $position<5; $position++) {
+            $ferries[$position] = $this->getFerry($position);
+        }
+        self::notifyAllPlayers('newRound', '', [
+            'ferries' => $ferries,
+        ]);
 
         // set players animals
-        foreach($playersIds as $playerId) {
+        foreach ($playersIds as $playerId) {
             $this->animals->pickCardsForLocation(8, 'deck', 'hand', $playerId);
+            self::notifyPlayer('newHand', '', [
+                'playerId' => $playerId,
+                'animals' => $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId)),
+            ]);
         }
-
-        // TODO notifs (for 2+ round)
     }
 
     function getAnimalFromDb($dbObject) {

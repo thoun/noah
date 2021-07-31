@@ -664,8 +664,11 @@ class Noah implements NoahGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
+            ['animalLoaded', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
             ['points', 1],
+            ['newRound', 1],
+            ['newHand', 1],
         ];
 
         notifs.forEach((notif) => {
@@ -674,14 +677,22 @@ class Noah implements NoahGame {
         });
     }
 
-    /*notif_machinePlayed(notif: Notif<NotifMachinePlayedArgs>) {        
-        this.playerHand.removeFromStockById(''+notif.args.machine.id);
-        this.table.machinePlayed(notif.args.playerId, notif.args.machine);
-    }*/
+    notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
+        // TODO
+    }
 
     notif_noahMoved(notif: Notif<NotifNoahMovedArgs>) {
         this.table.noahMoved(notif.args.position);
     }
+
+    notif_newRound(notif: Notif<NotifNewRoundArgs>) {
+        // TODO
+    }
+
+    notif_newHand(notif: Notif<NotifNewHandArgs>) {
+        // TODO
+    }
+
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

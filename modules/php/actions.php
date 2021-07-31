@@ -38,13 +38,9 @@ trait ActionTrait {
             'position' => $position,
             'animalName' => $this->getAnimalName($animal->type),
         ]);
-
-        if ($animal->power == DONT_MOVE_NOAH) {
-            $this->gamestate->nextState('nextPlayer');
-        } else {            
-            self::setGameStateValue(NOAH_NEXT_MOVE, 0);
-            $this->gamestate->nextState('moveNoah');
-        }
+          
+        self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == DONT_MOVE_NOAH ? 0 : $animal->gender);
+        $this->gamestate->nextState('moveNoah');
     }
 
     public function moveNoah(int $destination) {
@@ -62,6 +58,14 @@ trait ActionTrait {
         self::notifyAllPlayers('noahMoved', '', [
             'position' => $destination,
         ]);
+
+        $this->gamestate->nextState('checkOptimalLoading');
+    }
+
+    public function giveCards($TODO) {
+        self::checkAction('giveCards'); 
+        
+        // TODO
 
         $this->gamestate->nextState('nextPlayer');
     }

@@ -54,6 +54,16 @@
         self::ajaxResponse();
     }
 
+    public function giveCards() {
+        self::setAjaxMode();
+
+        $TODO = self::getArg("destination", AT_posint, true);
+
+        $this->game->giveCards($TODO);
+
+        self::ajaxResponse();
+    }
+
 }
   
 

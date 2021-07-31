@@ -73,4 +73,16 @@ trait ArgsTrait {
             'possiblePositions' => $possiblePositions,
         ];
     }
+
+    function getDepartureNumber() {
+        return intval($this->ferries->countCardInLocation('discard')) + 1;
+    }
+
+    function argOptimalLoading() {
+        $departureNumber = $this->getDepartureNumber();
+
+        return [
+            'number' => $departureNumber,
+        ];
+    }
 }

@@ -59,7 +59,7 @@ $basicGameStates = [
         "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => [ "" => ST_PLAYER_LOAD_ANIMAL ]
+        "transitions" => [ "" => ST_START_ROUND ]
     ],
 
     ST_NEXT_PLAYER => [
@@ -91,13 +91,15 @@ $playerActionsGameStates = [
         "name" => "loadAnimal",
         "description" => clienttranslate('${actplayer} must load an animal'),
         "descriptionmyturn" => clienttranslate('${you} must load an animal'),
+        "descriptionimpossible" => clienttranslate('${actplayer} take back all animals present on the ferry'),
+        "descriptionmyturn" => clienttranslate('${you} take back all animals present on the ferry'),
         "type" => "activeplayer",
         "args" => "argLoadAnimal",
         "possibleactions" => [ 
             "loadAnimal",
+            "takeAllAnimals",
         ],
         "transitions" => [
-            "nextPlayer" => ST_NEXT_PLAYER,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -107,10 +109,27 @@ $playerActionsGameStates = [
         "name" => "moveNoah",
         "description" => clienttranslate('${actplayer} must move Noah'),
         "descriptionmyturn" => clienttranslate('${you} must move Noah'),
-        "type" => "activeplayer",        
+        "type" => "activeplayer",  
+        "action" => "stMoveNoah",      
         "args" => "argMoveNoah",
         "possibleactions" => [ 
             "moveNoah",
+        ],
+        "transitions" => [
+            "checkOptimalLoading" => ST_PLAYER_OPTIMAL_LOADING,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_OPTIMAL_LOADING => [
+        "name" => "optimalLoading",
+        "description" => clienttranslate('${actplayer} must give ${number} card(s) to opponents'),
+        "descriptionmyturn" => clienttranslate('${you} must give ${number} card(s) to opponents'),
+        "type" => "activeplayer",  
+        "action" => "stOptimalLoading",      
+        "args" => "argOptimalLoading",
+        "possibleactions" => [ 
+            "giveCards",
         ],
         "transitions" => [
             "nextPlayer" => ST_NEXT_PLAYER,
@@ -121,13 +140,23 @@ $playerActionsGameStates = [
 
 
 $gameGameStates = [
+    ST_START_ROUND => [
+        "name" => "startRound",
+        "description" => "",
+        "type" => "game",
+        "action" => "stStartRound",
+        "transitions" => [ 
+            "" => ST_PLAYER_LOAD_ANIMAL,
+        ],
+    ],
+
     ST_END_ROUND => [
         "name" => "endRound",
         "description" => "",
         "type" => "game",
         "action" => "stEndRound",
         "transitions" => [ 
-            "newRound" => ST_PLAYER_LOAD_ANIMAL,
+            "newRound" => ST_START_ROUND,
             "endGame" => ST_END_GAME
         ],
     ],

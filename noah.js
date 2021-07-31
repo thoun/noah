@@ -976,20 +976,28 @@ var Noah = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
+            ['animalLoaded', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
             ['points', 1],
+            ['newRound', 1],
+            ['newHand', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_" + notif[0]);
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
     };
-    /*notif_machinePlayed(notif: Notif<NotifMachinePlayedArgs>) {
-        this.playerHand.removeFromStockById(''+notif.args.machine.id);
-        this.table.machinePlayed(notif.args.playerId, notif.args.machine);
-    }*/
+    Noah.prototype.notif_animalLoaded = function (notif) {
+        // TODO
+    };
     Noah.prototype.notif_noahMoved = function (notif) {
         this.table.noahMoved(notif.args.position);
+    };
+    Noah.prototype.notif_newRound = function (notif) {
+        // TODO
+    };
+    Noah.prototype.notif_newHand = function (notif) {
+        // TODO
     };
     return Noah;
 }());

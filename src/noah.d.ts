@@ -64,3 +64,11 @@ interface NotifAnimalLoadedArgs {
 interface NotifNoahMovedArgs {
     position: number;
 }
+
+interface NotifNewRoundArgs {
+    ferries: Ferry[];
+}
+
+interface NotifNewHandArgs {
+    animals: Animal[];
+}

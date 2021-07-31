@@ -94,8 +94,8 @@ class Noah extends Table {
 
         // Init global values with their initial values
         self::setGameStateInitialValue(NOAH_POSITION, 0);
-        self::setGameStateInitialValue(ROUND_NUMBER, 1);
-        self::setGameStateInitialValue(PAIR_PLAY_AGAIN, 1);
+        self::setGameStateInitialValue(ROUND_NUMBER, 0);
+        self::setGameStateInitialValue(PAIR_PLAY_AGAIN, 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -103,7 +103,6 @@ class Noah extends Table {
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         
         $this->setupCards(count($players));
-        $this->setInitialCardsAndResources(array_keys($players));
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -129,9 +128,6 @@ class Noah extends Table {
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
-  
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
-
         
         $ferries = [];
         for ($position=0; $position<5; $position++) {
@@ -142,7 +138,7 @@ class Noah extends Table {
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
 
-        $result['roundNumber'] =  self::getGameStateValue(ROUND_NUMBER);
+        $result['roundNumber'] = self::getGameStateValue(ROUND_NUMBER);
         $result['variant'] = $this->isVariant();
   
         return $result;
