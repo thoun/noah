@@ -39,6 +39,12 @@ trait StateTrait {
 
         if (!$ferryComplete) {
             $this->gamestate->nextState('nextPlayer');
+        } else {
+            $playerId = self::getActivePlayerId();
+
+            if (intval($this->animals->countCardInLocation('hand', $playerId)) == 0) {
+                $this->gamestate->nextState('nextPlayer');
+            }
         }
     }
 

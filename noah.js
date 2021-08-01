@@ -981,6 +981,7 @@ var Noah = /** @class */ (function () {
             ['points', 1],
             ['newRound', 1],
             ['newHand', 1],
+            ['animalGiven', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_" + notif[0]);
@@ -998,6 +999,34 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_newHand = function (notif) {
         // TODO
+    };
+    Noah.prototype.notif_animalGiven = function (notif) {
+        // TODO
+    };
+    Noah.prototype.getAnimalColor = function (gender) {
+        switch (gender) {
+            // blue
+            case 1: return '#16bee6';
+            case 2: return '#e97aa3';
+            default: return 'black';
+        }
+    };
+    /* This enable to inject translatable styled things to logs or action bar */
+    /* @Override */
+    Noah.prototype.format_string_recursive = function (log, args) {
+        var _a, _b;
+        try {
+            if (log && args && !args.processed) {
+                // Representation of the color of a card
+                if (typeof args.animalName == 'string' && args.animalName[0] != '<' /* && typeof args.animal == 'object'*/) {
+                    args.animalName = "<strong style=\"color: " + this.getAnimalColor((_b = (_a = args.animal) === null || _a === void 0 ? void 0 : _a.gender) !== null && _b !== void 0 ? _b : 'black') + "\">" + args.animalName + "</strong>";
+                }
+            }
+        }
+        catch (e) {
+            console.error(log, args, "Exception thrown", e.stack);
+        }
+        return this.inherited(arguments);
     };
     return Noah;
 }());

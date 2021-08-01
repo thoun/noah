@@ -72,3 +72,11 @@ interface NotifNewRoundArgs {
 interface NotifNewHandArgs {
     animals: Animal[];
 }
+
+interface NotifAnimalGivenArgs {
+    playerId: number;
+    toPlayerId: number;
+    _private?: {
+        animal: Animal
+    };
+}

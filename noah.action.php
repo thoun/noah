@@ -57,9 +57,9 @@
     public function giveCards() {
         self::setAjaxMode();
 
-        $TODO = self::getArg("destination", AT_posint, true);
+        $giveCardsTo = json_decode(base64_decode(self::getArg("giveCardsTo", AT_base64, true)), true);
 
-        $this->game->giveCards($TODO);
+        $this->game->giveCards($giveCardsTo);
 
         self::ajaxResponse();
     }

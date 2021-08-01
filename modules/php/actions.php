@@ -23,7 +23,7 @@ trait ActionTrait {
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalCount = intval($this->animals->countCardInLocation($location));
-        $this->animals->moveCard($id, 'deck', $location, $animalCount);
+        $this->animals->moveCard($id, $location, $animalCount);
 
         if ($animalCount > 0 && $animal->type == $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-1))[0]->type) {
             self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
@@ -62,10 +62,42 @@ trait ActionTrait {
         $this->gamestate->nextState('checkOptimalLoading');
     }
 
-    public function giveCards($TODO) {
+    public function giveCards(array $giveCardsTo) {
         self::checkAction('giveCards'); 
-        
-        // TODO
+
+        $playerId = self::getActivePlayerId();
+
+        if (count($giveCardsTo) != $this->getNumberOfCardsToGive($playerId)) {
+            throw new Error("Invalid card count");
+        }
+
+        $handAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
+
+        foreach($giveCardsTo as $animalId => $toPlayerId) {
+            if (!$this->array_some($handAnimals, function ($animal) use ($animalId) { return $animal->id == $animalId; })) {
+                throw new Error("You can't give a card which is not in your hand");
+            }
+        }
+
+        foreach($giveCardsTo as $animalId => $toPlayerId) {
+            $this->animals->moveCard($animalId, 'hand', $toPlayerId);
+            $animal = $this->array_find($handAnimals, function ($animal) use ($animalId) { return $animal->id == $animalId; });
+
+            self::notifyAllPlayers('animalGiven', clienttranslate('${player_name} gives an animal to ${player_name2}'), [
+                'playerId' => $playerId,
+                'player_name' => self::getActivePlayerName(),
+                'toPlayerId' => $toPlayerId,
+                'player_name2' => self::getPlayerNameById($toPlayerId),
+                '_private' => [          // Using "_private" keyword, all data inside this array will be made private
+                    'active' => [       // Using "active" keyword inside "_private", you select active player(s)
+                        'animal' => $animal,
+                    ],
+                    $toPlayerId => [
+                        'animal' => $animal,
+                    ],
+                ],
+            ]);
+        }
 
         $this->gamestate->nextState('nextPlayer');
     }

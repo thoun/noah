@@ -74,15 +74,20 @@ trait ArgsTrait {
         ];
     }
 
-    function getDepartureNumber() {
-        return intval($this->ferries->countCardInLocation('discard')) + 1;
+    function getNumberOfCardsToGive(int $playerId) {
+        return min(
+            intval($this->ferries->countCardInLocation('discard')) + 1,
+            intval($this->animals->countCardInLocation('hand', $playerId)),
+        );
     }
 
     function argOptimalLoading() {
-        $departureNumber = $this->getDepartureNumber();
+        $playerId = self::getActivePlayerId();
+
+        $number = $this->getNumberOfCardsToGive($playerId);
 
         return [
-            'number' => $departureNumber,
+            'number' => $number,
         ];
     }
 }
