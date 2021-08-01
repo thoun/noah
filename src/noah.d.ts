@@ -38,6 +38,7 @@ interface NoahGamedatas {
     // Add here variables you set up in getAllDatas
     ferries: Ferry[];
     noahPosition: number;
+    remainingFerries: number;
 
     handAnimals: Animal[];
 

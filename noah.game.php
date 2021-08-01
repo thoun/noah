@@ -136,6 +136,7 @@ class Noah extends Table {
         }
         $result['ferries'] = $ferries;
         $result['noahPosition'] = $this->getNoahPosition();
+        $result['remainingFerries'] = intval($this->ferries->countCardInLocation('deck'));
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
 

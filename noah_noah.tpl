@@ -7,6 +7,7 @@
             <div id="my-animals"></div>
         </div>
         <div id="table">
+        <div id="remaining-ferry-counter"></div>
         </div>
     </div>
     <div id="zoom-controls">

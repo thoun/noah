@@ -484,13 +484,11 @@ var Noah = /** @class */ (function () {
 
         this.machineCounter = new ebg.counter();
         this.machineCounter.create('remaining-machine-counter');
-        this.setRemainingMachines(gamedatas.remainingMachines);
-
-        this.projectCounter = new ebg.counter();
-        this.projectCounter.create('remaining-project-counter');
-        this.setRemainingProjects(gamedatas.remainingProjects);
-
-        this.addHelp();*/
+        this.setRemainingMachines(gamedatas.remainingMachines);*/
+        this.ferriesCounter = new ebg.counter();
+        this.ferriesCounter.create('remaining-ferry-counter');
+        this.setRemainingFerries(gamedatas.remainingFerries);
+        //this.addHelp();
         this.setupNotifications();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
         document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
@@ -949,17 +947,11 @@ var Noah = /** @class */ (function () {
         }
         this.helpDialog.show();
     };
-    Noah.prototype.setRemainingMachines = function (remainingMachines) {
-        this.machineCounter.setValue(remainingMachines);
-        var visibility = remainingMachines > 0 ? 'visible' : 'hidden';
-        document.getElementById('machine-deck').style.visibility = visibility;
-        document.getElementById('remaining-machine-counter').style.visibility = visibility;
-    };
-    Noah.prototype.setRemainingProjects = function (remainingProjects) {
-        this.projectCounter.setValue(remainingProjects);
-        var visibility = remainingProjects > 0 ? 'visible' : 'hidden';
-        document.getElementById('project-deck').style.visibility = visibility;
-        document.getElementById('remaining-project-counter').style.visibility = visibility;
+    Noah.prototype.setRemainingFerries = function (remainingFerries) {
+        this.ferriesCounter.setValue(remainingFerries);
+        var visibility = remainingFerries > 0 ? 'visible' : 'hidden';
+        document.getElementById('ferry-deck').style.visibility = visibility;
+        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -1006,6 +998,7 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_departure = function (notif) {
         // TODO
+        this.setRemainingFerries(notif.args.remainingFerries);
     };
     Noah.prototype.getAnimalColor = function (gender) {
         switch (gender) {
