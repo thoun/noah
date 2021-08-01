@@ -978,10 +978,11 @@ var Noah = /** @class */ (function () {
         var notifs = [
             ['animalLoaded', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
+            ['departure', ANIMATION_MS],
             ['points', 1],
-            ['newRound', 1],
+            ['newRound', ANIMATION_MS],
             ['newHand', 1],
-            ['animalGiven', 1],
+            ['animalGiven', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_" + notif[0]);
@@ -1001,6 +1002,9 @@ var Noah = /** @class */ (function () {
         // TODO
     };
     Noah.prototype.notif_animalGiven = function (notif) {
+        // TODO
+    };
+    Noah.prototype.notif_departure = function (notif) {
         // TODO
     };
     Noah.prototype.getAnimalColor = function (gender) {

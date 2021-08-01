@@ -33,19 +33,39 @@ trait StateTrait {
     }
 
     function stOptimalLoading() {
-        $ferry = $this->getFerry($this->getNoahPosition());
+        $ferry = $this->getFerry(intval(self::getGameStateValue(LAST_LOADED_ANIMAL_POSITION)));
 
         $ferryComplete = $ferry->getCurrentWeight() == $ferry->getMaxWeight();
 
         if (!$ferryComplete) {
             $this->gamestate->nextState('nextPlayer');
         } else {
+            $this->applyOptimalLoading();
+
             $playerId = self::getActivePlayerId();
 
             if (intval($this->animals->countCardInLocation('hand', $playerId)) == 0) {
                 $this->gamestate->nextState('nextPlayer');
             }
         }
+    }
+
+    function applyOptimalLoading() {
+        $position = intval(self::getGameStateValue(LAST_LOADED_ANIMAL_POSITION));
+        $this->animals->moveAllCardsInLocation('table'.$position, 'discard');
+        $this->ferries->moveAllCardsInLocation('table', 'discard', $position);
+        $remainingFerries = intval($this->ferries->countCardInLocation('deck'));
+        $newFerry = $remainingFerries > 0;
+        if ($newFerry) {
+            $this->ferries->pickCardForLocation('deck', 'table', $position);
+            $remainingFerries--;
+        }
+        
+        self::notifyAllPlayers('departure', '', [
+            'position' => $position,
+            'newFerry' => $newFerry,
+            'remainingFerries' => $remainingFerries,
+        ]);
     }
 
     function stNextPlayer() {     

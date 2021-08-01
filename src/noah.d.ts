@@ -80,3 +80,9 @@ interface NotifAnimalGivenArgs {
         animal: Animal
     };
 }
+
+interface NotifDepartureArgs {
+    position: number;
+    newFerry: boolean;
+    remainingFerries: number;
+}

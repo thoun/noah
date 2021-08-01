@@ -39,6 +39,7 @@ trait ActionTrait {
             'animalName' => $this->getAnimalName($animal->type),
         ]);
           
+        self::setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
         self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == DONT_MOVE_NOAH ? 0 : $animal->gender);
         $this->gamestate->nextState('moveNoah');
     }

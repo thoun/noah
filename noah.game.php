@@ -47,6 +47,7 @@ class Noah extends Table {
             ROUND_NUMBER => 11,
             PAIR_PLAY_AGAIN => 12,
             NOAH_NEXT_MOVE => 13,
+            LAST_LOADED_ANIMAL_POSITION => 14,
 
             VARIANT => 100,
         ]); 

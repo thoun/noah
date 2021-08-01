@@ -666,10 +666,11 @@ class Noah implements NoahGame {
         const notifs = [
             ['animalLoaded', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
+            ['departure', ANIMATION_MS],
             ['points', 1],
-            ['newRound', 1],
+            ['newRound', ANIMATION_MS],
             ['newHand', 1],
-            ['animalGiven', 1],
+            ['animalGiven', ANIMATION_MS],
         ];
 
         notifs.forEach((notif) => {
@@ -695,6 +696,10 @@ class Noah implements NoahGame {
     }
 
     notif_animalGiven(notif: Notif<NotifAnimalGivenArgs>) {
+        // TODO
+    }
+
+    notif_departure(notif: Notif<NotifDepartureArgs>) {
         // TODO
     }
 

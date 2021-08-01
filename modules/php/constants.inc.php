@@ -25,6 +25,7 @@ define('NOAH_POSITION', 'NOAH_POSITION');
 define('ROUND_NUMBER', 'ROUND_NUMBER');
 define('PAIR_PLAY_AGAIN', 'PAIR_PLAY_AGAIN');
 define('NOAH_NEXT_MOVE', 'NOAH_NEXT_MOVE'); // 0 : don't move, 1 : male, 2 : female
+define('LAST_LOADED_ANIMAL_POSITION', 'LLAD');
 
 define('VARIANT', 'VARIANT');
 
