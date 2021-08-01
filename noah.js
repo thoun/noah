@@ -35,308 +35,84 @@ declare const _;
 declare const g_gamethemeurl;
 
 declare const board: HTMLDivElement;*/
-var MACHINES_IDS = [
-    1, 2, 3, 4, 5, 6, 7, 8,
-    // blue
-    11,
-    12,
-    13,
-    14,
-    15,
-    // purple
-    21,
-    22,
-    23,
-    24,
-    25,
-    // red
-    31,
-    32,
-    33,
-    34,
-    // yellow
-    41,
-    42,
+var ANIMALS_TYPES = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 ];
-var PROJECTS_IDS = [
-    // colors
-    10,
-    11,
-    12,
-    13,
-    14,
-    // points
-    20,
-    21,
-    22,
-    23,
-    // resources
-    31,
-    32,
-    33,
-    34,
-    35,
-    36,
-    37,
-    38,
+var ANIMALS_WITH_TRAITS = [
+    1, 2, 3, 4, 5
 ];
 var ANIMAL_WIDTH = 190;
 var ANIMAL_HEIGHT = 190;
-var PROJECT_WIDTH = 134;
-var PROJECT_HEIGHT = 93;
-function getUniqueId(object) {
-    return object.type * 10 + object.subType;
+var FERRY_WIDTH = ANIMAL_HEIGHT;
+var FERRY_HEIGHT = ANIMAL_WIDTH;
+function getUniqueId(animal) {
+    return animal.type * 10 + (animal.gender || 1);
 }
-function setupAnimalCards(machineStocks) {
+function setupAnimalCards(animalStock) {
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
-    machineStocks.forEach(function (machineStock) {
-        return MACHINES_IDS.forEach(function (cardId, index) {
-            return machineStock.addItemType(cardId, 0, cardsurl, index);
-        });
-    });
+    ANIMALS_TYPES.forEach(function (cardId, index) { return [1, 2].forEach(function (gender) {
+        return animalStock.addItemType(cardId * 10 + gender, cardId, cardsurl, index);
+    }); });
 }
-function setupProjectCards(projectStocks) {
-    var cardsurl = g_gamethemeurl + "img/projects.jpg";
-    projectStocks.forEach(function (projectStock) {
-        PROJECTS_IDS.forEach(function (cardId, index) {
-            return projectStock.addItemType(cardId, 0, cardsurl, index);
-        });
-    });
-}
-function getMachineTooltip(type) {
+function getAnimalTooltip(type) {
     switch (type) {
-        // blue
-        case 11: return _("Earn 1 wood for each machine on the Bric-a-brac with wood in its production zone, including this one.");
-        case 12: return _("Earn 1 charcoalium for each machine on the Bric-a-brac with charcoalium in its production zone, including this one.");
-        case 13: return _("Earn 1 copper for each machine on the Bric-a-brac with copper in its production zone, including this one.");
-        case 14: return _("Earn 1 crystal for each machine on the Bric-a-brac with crystal in its production zone, including this one.");
-        case 15: return formatTextIcons(_("Choose a type of resource ([resource1]|[resource2]|[resource3]). Earn 1 resource of this type for each machine on the Bric-a-brac with the [resource9] symbol in its production zone, including this one."));
-        // purple
-        case 21: return _("Discard a machine from your hand and earn 2 resources of your choice from those needed to repair it.");
-        case 22: return _("Discard 1 of the last 3 machines added to the Bric-a-brac before this one and earn 1 resource of your choice from those needed to repair it.");
-        case 23: return _("Discard 1 of the last 2 machines added to the Bric-a-brac before this one and earn 1 resource of your choice from those needed to repair it and 1 charcoalium.");
-        case 24: return _("You can exchange 1 charcoalium for 1 resource of your choice from the reserve and/or vice versa, up to three times total.");
-        case 25: return _("Discard the last machine added to the Bric-a-brac before this one and earn 2 resources of your choice from those needed to repair it.");
-        // red
-        case 31: return _("Steal from your opponent 1 charcoalium and 1 machine taken randomly from their hand.");
-        case 32: return _("Steal from your opponent 1 resource of your choice and 1 machine taken randomly from their hand.");
-        case 33: return _("Your opponent must randomly discard all but 2 machines from their hand and return 2 charcoalium to the reserve.");
-        case 34: return _("Your opponent must return 2 resources of your choice to the reserve.");
-        // yellow
-        case 41: return _("Draw 2 of the unused project tiles. Choose 1 to place face up in your workshop and return the other to the box. Only you can complete the project in your workshop.");
-        case 42: return _("Copy the effect of 1 machine from the Bric-a-brac of your choice.");
+        case 1: return _("Earn 1 wood for each machine on the Bric-a-brac with wood in its production zone, including this one.");
+        case 2: return _("Earn 1 charcoalium for each machine on the Bric-a-brac with charcoalium in its production zone, including this one.");
+        case 3: return _("Earn 1 copper for each machine on the Bric-a-brac with copper in its production zone, including this one.");
+        case 4: return _("Earn 1 crystal for each machine on the Bric-a-brac with crystal in its production zone, including this one.");
+        case 5: return formatTextIcons(_("Choose a type of resource ([resource1]|[resource2]|[resource3]). Earn 1 resource of this type for each machine on the Bric-a-brac with the [resource9] symbol in its production zone, including this one."));
     }
     return null;
 }
 function setupAnimalCard(game, cardDiv, type) {
-    game.addTooltipHtml(cardDiv.id, getMachineTooltip(type));
-}
-function getProjectTooltip(type) {
-    switch (type) {
-        // colors
-        case 10: return _("You must have at least 1 machine of each color in your workshop.");
-        case 11:
-        case 12:
-        case 13:
-        case 14: return _("You must have at least 2 machines of the indicated color in your workshop.");
-        // points
-        case 20: return _("You must have at least 2 identical machines in your workshop.");
-        case 21:
-        case 22:
-        case 23: return _("You must have at least 2 machines worth the indicated number of victory points in your workshop.");
-        // resources
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-        case 36:
-        case 37:
-        case 38: return formatTextIcons(_("You must have machines in your workshop that have the indicated resources and/or charcoalium in their production zones. [resource9] resources do not count towards these objectives."));
-    }
-    return null;
-}
-function setupProjectCard(game, cardDiv, type) {
-    game.addTooltipHtml(cardDiv.id, getProjectTooltip(type));
-}
-function moveToAnotherStock(sourceStock, destinationStock, uniqueId, cardId) {
-    if (sourceStock === destinationStock) {
-        return;
-    }
-    var sourceStockItemId = sourceStock.container_div.id + "_item_" + cardId;
-    if (document.getElementById(sourceStockItemId)) {
-        destinationStock.addToStockWithId(uniqueId, cardId, sourceStockItemId);
-        sourceStock.removeFromStockById(cardId);
-    }
-    else {
-        console.warn(sourceStockItemId + " not found in ", sourceStock);
-        destinationStock.addToStockWithId(uniqueId, cardId, sourceStock.container_div.id);
-    }
-    var destinationDiv = document.getElementById(destinationStock.container_div.id + "_item_" + cardId);
-    destinationDiv.style.zIndex = '10';
-    setTimeout(function () { return destinationDiv.style.zIndex = 'unset'; }, 1000);
-}
-function addToStockWithId(destinationStock, uniqueId, cardId, from) {
-    destinationStock.addToStockWithId(uniqueId, cardId, from);
-    var destinationDiv = document.getElementById(destinationStock.container_div.id + "_item_" + cardId);
-    destinationDiv.style.zIndex = '10';
-    setTimeout(function () { return destinationDiv.style.zIndex = 'unset'; }, 1000);
+    game.addTooltipHtml(cardDiv.id, getAnimalTooltip(type));
 }
 function formatTextIcons(rawText) {
     return rawText
-        .replace(/\[resource0\]/ig, '<span class="icon charcoalium"></span>')
-        .replace(/\[resource1\]/ig, '<span class="icon wood"></span>')
-        .replace(/\[resource2\]/ig, '<span class="icon copper"></span>')
-        .replace(/\[resource3\]/ig, '<span class="icon crystal"></span>')
-        .replace(/\[resource9\]/ig, '<span class="icon joker"></span>');
+        .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
 }
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var Table = /** @class */ (function () {
-    function Table(game, players, projects, machines, resources) {
+    function Table(game, players, ferries, noahPosition) {
         var _this = this;
         this.game = game;
-        this.projectStocks = [];
-        this.machineStocks = [];
         var html = '';
         // points
         players.forEach(function (player) {
-            return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker " + (player.color.startsWith('00') ? 'blue' : 'red') + "\"></div>";
+            return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
         });
-        dojo.place(html, 'table');
+        dojo.place(html, 'center-board');
         players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
-        // projects
-        html = '';
-        for (var i = 1; i <= 6; i++) {
-            html += "<div id=\"table-project-" + i + "\" class=\"table-project-stock\" style=\"left: " + 181 * (i - 1) + "px\"></div>";
-        }
-        dojo.place(html, 'table-projects');
-        var _loop_1 = function (i) {
-            this_1.projectStocks[i] = new ebg.stock();
-            this_1.projectStocks[i].setSelectionAppearance('class');
-            this_1.projectStocks[i].selectionClass = 'selected';
-            this_1.projectStocks[i].create(this_1.game, $("table-project-" + i), PROJECT_WIDTH, PROJECT_HEIGHT);
-            this_1.projectStocks[i].setSelectionMode(0);
-            this_1.projectStocks[i].onItemCreate = function (cardDiv, type) { return setupProjectCard(game, cardDiv, type); };
-            dojo.connect(this_1.projectStocks[i], 'onChangeSelection', this_1, function () {
-                _this.projectStocks[i].getSelectedItems()
-                    .filter(function (item) { return document.getElementById("table-project-" + i + "_item_" + item.id).classList.contains('disabled'); })
-                    .forEach(function (item) { return _this.projectStocks[i].unselectItem(item.id); });
-                _this.onProjectSelectionChanged();
-            });
-        };
-        var this_1 = this;
-        for (var i = 1; i <= 6; i++) {
-            _loop_1(i);
-        }
-        setupProjectCards(this.projectStocks);
-        var _loop_2 = function (i) {
-            projects.filter(function (project) { return project.location_arg == i; }).forEach(function (project) { return _this.projectStocks[i].addToStockWithId(getUniqueId(project), '' + project.id); });
-        };
-        for (var i = 1; i <= 6; i++) {
-            _loop_2(i);
-        }
-        // machines
-        html = "<div id=\"table-machines\" class=\"machines\">";
-        for (var i = 1; i <= 10; i++) {
-            var firstRow = i <= 5;
-            var left = (firstRow ? 204 : 0) + (i - (firstRow ? 1 : 6)) * 204;
-            var top_1 = firstRow ? 0 : 210;
-            html += "<div id=\"table-machine-spot-" + i + "\" class=\"machine-spot\" style=\"left: " + left + "px; top: " + top_1 + "px\"></div>";
-        }
-        html += "\n            <div id=\"machine-deck\" class=\"stockitem deck\"></div>\n            <div id=\"remaining-machine-counter\" class=\"remaining-counter\"></div>\n        </div>";
-        dojo.place(html, 'table');
-        var _loop_3 = function (i) {
-            this_2.machineStocks[i] = new ebg.stock();
-            this_2.machineStocks[i].setSelectionAppearance('class');
-            this_2.machineStocks[i].selectionClass = 'selected';
-            this_2.machineStocks[i].create(this_2.game, $("table-machine-spot-" + i), ANIMAL_WIDTH, ANIMAL_HEIGHT);
-            this_2.machineStocks[i].setSelectionMode(0);
-            this_2.machineStocks[i].onItemCreate = function (cardDiv, type) {
-                var _a;
-                setupAnimalCard(game, cardDiv, type);
-                var id = Number(cardDiv.id.split('_')[2]);
-                var machine = machines.find(function (m) { return m.id == id; });
-                if ((_a = machine === null || machine === void 0 ? void 0 : machine.resources) === null || _a === void 0 ? void 0 : _a.length) {
-                    _this.addResources(0, machine.resources);
-                }
-            };
-            dojo.connect(this_2.machineStocks[i], 'onChangeSelection', this_2, function () { return _this.onMachineSelectionChanged(_this.machineStocks[i].getSelectedItems(), _this.machineStocks[i].container_div.id); });
-        };
-        var this_2 = this;
-        for (var i = 1; i <= 10; i++) {
-            _loop_3(i);
-        }
-        setupAnimalCards(this.machineStocks);
-        var _loop_4 = function (i) {
-            machines.filter(function (machine) { return machine.location_arg == i; }).forEach(function (machine) { return _this.machineStocks[i].addToStockWithId(getUniqueId(machine), '' + machine.id); });
-        };
-        for (var i = 1; i <= 10; i++) {
-            _loop_4(i);
-        }
-        // resources
-        for (var i = 0; i <= 3; i++) {
-            var resourcesToPlace = resources[i];
-            this.addResources(i, resourcesToPlace);
-        }
+        // noah
+        var noahCoordinates = this.getNoahCoordinates(noahPosition);
+        html = "<div id=\"noah\" style=\"left: " + noahCoordinates[0] + "; top: " + noahCoordinates[1] + ";\"></div>";
+        dojo.place(html, 'center-board');
     }
+    Table.prototype.getNoahCoordinates = function (position) {
+        return [40, 80];
+    };
     Table.prototype.noahMoved = function (position) {
-        // TODO
-    };
-    Table.prototype.getSelectedProjectsIds = function () {
-        var selectedIds = [];
-        for (var i = 1; i <= 6; i++) {
-            selectedIds.push.apply(selectedIds, this.projectStocks[i].getSelectedItems().map(function (item) { return Number(item.id); }));
-        }
-        return selectedIds;
-    };
-    Table.prototype.onProjectSelectionChanged = function () {
-        var _a;
-        (_a = this.onTableProjectSelectionChanged) === null || _a === void 0 ? void 0 : _a.call(this, this.getSelectedProjectsIds());
-    };
-    Table.prototype.onMachineSelectionChanged = function (items, stockId) {
-        if (items.length == 1) {
-            var cardId = Number(items[0].id);
-            var datasetPayments = document.getElementById(stockId + "_item_" + cardId).dataset.payments;
-            var payments = (datasetPayments === null || datasetPayments === void 0 ? void 0 : datasetPayments.length) && datasetPayments[0] == '[' ? JSON.parse(datasetPayments) : undefined;
-            this.game.machineClick(cardId, 'table', payments);
-        }
-    };
-    Table.prototype.setProjectSelectable = function (selectable) {
-        this.projectStocks.forEach(function (stock) { return stock.setSelectionMode(selectable ? 2 : 0); });
-        if (!selectable) {
-            this.projectStocks.forEach(function (stock) { return stock.unselectAll(); });
-        }
-    };
-    Table.prototype.setMachineSelectable = function (selectable) {
-        this.machineStocks.forEach(function (stock) { return stock.setSelectionMode(selectable ? 1 : 0); });
-        if (!selectable) {
-            this.machineStocks.forEach(function (stock) { return stock.unselectAll(); });
-        }
+        var noahCoordinates = this.getNoahCoordinates(position);
+        dojo.fx.slideTo({
+            node: document.getElementById("noah"),
+            left: noahCoordinates[0],
+            top: noahCoordinates[1],
+            delay: 0,
+            duration: ANIMATION_MS,
+            easing: dojo.fx.easing.cubicInOut,
+            unit: "px"
+        }).play();
     };
     Table.prototype.setPoints = function (playerId, points, firstPosition) {
+        /*const equality = opponentScore === points;
+        const playerShouldShift = equality && playerId > opponentId;*/
         if (firstPosition === void 0) { firstPosition = false; }
-        var opponentId = this.game.getOpponentId(playerId);
-        var opponentScore = this.game.getPlayerScore(opponentId);
-        var equality = opponentScore === points;
-        var playerShouldShift = equality && playerId > opponentId;
-        var opponentShouldShift = equality && !playerShouldShift;
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
         var top = points % 2 ? 40 : 52;
         var left = 16 + points * 46.2;
-        if (playerShouldShift) {
+        /*if (playerShouldShift) {
             top -= 5;
             left -= 5;
-        }
+        }*/
         if (firstPosition) {
             markerDiv.style.top = top + "px";
             markerDiv.style.left = left + "px";
@@ -352,97 +128,9 @@ var Table = /** @class */ (function () {
                 unit: "px"
             }).play();
         }
-        if (opponentShouldShift) {
-            var opponentMarkerDiv = document.getElementById("player-" + opponentId + "-point-marker");
-            if (opponentMarkerDiv) {
-                dojo.fx.slideTo({
-                    node: opponentMarkerDiv,
-                    top: top - 5,
-                    left: left - 5,
-                    delay: 0,
-                    duration: ANIMATION_MS,
-                    easing: dojo.fx.easing.cubicInOut,
-                    unit: "px"
-                }).play();
-            }
-        }
-    };
-    Table.prototype.machinePlayed = function (playerId, machine) {
-        var fromHandId = "my-machines_item_" + machine.id;
-        var from = document.getElementById(fromHandId) ? fromHandId : "player-icon-" + playerId;
-        this.machineStocks[machine.location_arg].addToStockWithId(getUniqueId(machine), '' + machine.id, from);
-        dojo.addClass("table-machine-spot-" + machine.location_arg + "_item_" + machine.id, 'selected');
-    };
-    Table.prototype.getDistance = function (p1, p2) {
-        return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
-    };
-    Table.prototype.getPlaceOnTable = function (placed) {
-        var _this = this;
-        var newPlace = {
-            x: Math.random() * 228 + 16,
-            y: Math.random() * 38 + 16,
-        };
-        var protection = 0;
-        while (protection < 1000 && placed.some(function (place) { return _this.getDistance(newPlace, place) < 32; })) {
-            newPlace.x = Math.random() * 228 + 16;
-            newPlace.y = Math.random() * 38 + 16;
-            protection++;
-        }
-        return newPlace;
-    };
-    Table.prototype.getPlaceOnMachine = function (placed) {
-        return {
-            x: 166,
-            y: 166 - (32 * placed.length)
-        };
-    };
-    Table.prototype.addResources = function (type, resources) {
-        var _this = this;
-        var toMachine = type == 0 && resources.length && resources[0].location === 'machine';
-        var divId = "table-resources" + type;
-        if (toMachine) {
-            var machineId_1 = resources[0].location_arg;
-            var stock = this.machineStocks.find(function (stock) { return stock === null || stock === void 0 ? void 0 : stock.items.find(function (item) { return Number(item.id) == machineId_1; }); });
-            divId = stock.container_div.id + "_item_" + machineId_1;
-        }
-        var div = document.getElementById(divId);
-        if (!div) {
-            return;
-        }
-        var placed = div.dataset.placed ? JSON.parse(div.dataset.placed) : [];
-        // add tokens
-        resources.filter(function (resource) { return !placed.some(function (place) { return place.resourceId == resource.id; }); }).forEach(function (resource) {
-            var newPlace = toMachine ? _this.getPlaceOnMachine(placed) : _this.getPlaceOnTable(placed);
-            placed.push(__assign(__assign({}, newPlace), { resourceId: resource.id }));
-            var resourceDivId = "resource" + type + "-" + resource.id;
-            var resourceDiv = document.getElementById("resource" + type + "-" + resource.id);
-            if (resourceDiv) {
-                var originDiv = resourceDiv.parentElement;
-                var originPlaced = originDiv.dataset.placed ? JSON.parse(originDiv.dataset.placed) : [];
-                originDiv.dataset.placed = JSON.stringify(originPlaced.filter(function (place) { return place.resourceId != resource.id; }));
-                var tableMachinesDiv = document.getElementById('table-machines');
-                if ((tableMachinesDiv.contains(originDiv) && tableMachinesDiv.contains(div)) || originDiv.classList.contains('to_be_destroyed')) {
-                    div.appendChild(resourceDiv);
-                    console.log('outer', div.outerHTML);
-                }
-                else {
-                    slideToObjectAndAttach(resourceDiv, divId, newPlace.x - 16, newPlace.y - 16);
-                }
-            }
-            else {
-                var html = "<div id=\"" + resourceDivId + "\"\n                    class=\"cube resource" + type + " aspect" + resource.id % (type == 0 ? 8 : 4) + "\" \n                    style=\"left: " + (newPlace.x - 16) + "px; top: " + (newPlace.y - 16) + "px;\"\n                ></div>";
-                dojo.place(html, divId);
-            }
-        });
-        div.dataset.placed = JSON.stringify(placed);
     };
     return Table;
 }());
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
 var ANIMATION_MS = 500;
 var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
 var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0];
@@ -476,19 +164,11 @@ var Noah = /** @class */ (function () {
         log('gamedatas', gamedatas);
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        /*this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
-        this.table.onTableProjectSelectionChanged = selectProjectsIds => {
-            this.selectedTableProjectsIds = selectProjectsIds;
-            this.onProjectSelectionChanged();
-        };
-
-        this.machineCounter = new ebg.counter();
-        this.machineCounter.create('remaining-machine-counter');
-        this.setRemainingMachines(gamedatas.remainingMachines);*/
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition);
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(gamedatas.remainingFerries);
-        //this.addHelp();
+        this.addHelp();
         this.setupNotifications();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
         document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
@@ -505,64 +185,27 @@ var Noah = /** @class */ (function () {
     Noah.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
-            case 'chooseAction':
-                this.onEnteringStateChooseAction(args.args);
-                break;
-            case 'choosePlayAction':
-                this.onEnteringStateChoosePlayAction(args.args);
-                break;
-            case 'selectMachine':
-                this.onEnteringStateSelectMachine(args.args);
-                break;
-            case 'selectProject':
-            case 'chooseProject':
-                this.onEnteringStateChooseProject(args.args);
-                break;
-            case 'chooseProjectDiscardedMachine':
-                this.onEnteringStateChooseProjectDiscardedMachine(args.args);
+            case 'loadAnimal':
+                var allDisabled = !args.args.selectableAnimals.length;
+                this.setGamestateDescription(allDisabled ? 'impossible' : '');
+                this.onEnteringStateLoadAnimal(args.args);
                 break;
         }
     };
-    Noah.prototype.onEnteringStateChooseAction = function (args) {
+    Noah.prototype.setGamestateDescription = function (property) {
+        if (property === void 0) { property = ''; }
+        var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = "" + originalState['description' + property];
+        this.gamedatas.gamestate.descriptionmyturn = "" + originalState['descriptionmyturn' + property];
+        this.updatePageTitle();
+    };
+    Noah.prototype.onEnteringStateLoadAnimal = function (args) {
+        var _this = this;
         if (this.isCurrentPlayerActive()) {
-            this.setHandSelectable(true);
-            this.table.setMachineSelectable(true);
-            this.getMachineStocks().forEach(function (stock) { return stock.items.forEach(function (item) {
-                var machine = args.selectableMachines.find(function (machine) { return machine.id === Number(item.id); });
-                var divId = stock.container_div.id + "_item_" + item.id;
-                if (machine) {
-                    document.getElementById(divId).dataset.payments = JSON.stringify(machine.payments);
-                }
-                else {
-                    dojo.addClass(divId, 'disabled');
-                }
-            }); });
-        }
-    };
-    Noah.prototype.onEnteringStateChoosePlayAction = function (args) {
-        dojo.addClass("table-machine-spot-" + args.machine.location_arg + "_item_" + args.machine.id, 'selected');
-    };
-    Noah.prototype.onEnteringStateSelectMachine = function (args) {
-        var stocks = this.getMachineStocks();
-        stocks.forEach(function (stock) { return stock.items
-            .filter(function (item) { return !args.selectableMachines.some(function (machine) { return machine.id === Number(item.id); }); })
-            .forEach(function (item) { return dojo.addClass(stock.container_div.id + "_item_" + item.id, 'disabled'); }); });
-        stocks.forEach(function (stock) { return stock.setSelectionMode(1); });
-    };
-    Noah.prototype.onEnteringStateChooseProject = function (args) {
-        if (args.remainingProjects !== undefined) {
-            this.setRemainingProjects(args.remainingProjects);
-        }
-        if (this.isCurrentPlayerActive()) {
-            this.setHandSelectable(true);
-            this.table.setProjectSelectable(true);
-            this.getProjectStocks().forEach(function (stock) { return stock.items
-                .filter(function (item) { return !args.projects.some(function (project) { return project.id === Number(item.id); }); })
-                .forEach(function (item) { return dojo.addClass(stock.container_div.id + "_item_" + item.id, 'disabled'); }); });
-        }
-    };
-    Noah.prototype.onEnteringStateChooseProjectDiscardedMachine = function (args) {
-        if (this.isCurrentPlayerActive()) {
+            this.playerHand.items
+                .filter(function (item) { return !args.selectableAnimals.some(function (animal) { return animal.id === Number(item.id); }); })
+                .forEach(function (item) { return dojo.addClass(_this.playerHand.container_div.id + "_item_" + item.id, 'disabled'); });
+            this.playerHand.setSelectionMode(1);
         }
     };
     // onLeavingState: this method is called each time we are leaving a game state.
@@ -571,37 +214,12 @@ var Noah = /** @class */ (function () {
     Noah.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         switch (stateName) {
-            case 'chooseAction':
-                this.onLeavingChooseAction();
-                break;
-            case 'choosePlayAction':
-                this.onLeavingChoosePlayAction();
-                break;
-            case 'selectMachine':
-                this.onLeavingStateSelectMachine();
-            case 'selectProject':
-            case 'chooseProject':
-                this.onLeavingChooseProject();
-                break;
+            case 'loadAnimal':
+                this.onLeavingLoadAnimal();
         }
     };
-    Noah.prototype.onLeavingChooseAction = function () {
-        this.setHandSelectable(false);
-        this.table.setMachineSelectable(false);
-        dojo.query('.stockitem').removeClass('disabled');
-        dojo.query('.stockitem').forEach(function (div) { return div.dataset.payments = ''; });
-    };
-    Noah.prototype.onLeavingChoosePlayAction = function () {
-        dojo.query('.stockitem').removeClass('selected');
-    };
-    Noah.prototype.onLeavingStateSelectMachine = function () {
-        var stocks = this.getMachineStocks();
-        stocks.forEach(function (stock) { return stock.items
-            .forEach(function (item) { return dojo.removeClass(stock.container_div.id + "_item_" + item.id, 'disabled'); }); });
-        stocks.forEach(function (stock) { return stock.setSelectionMode(0); });
-    };
-    Noah.prototype.onLeavingChooseProject = function () {
-        this.table.setProjectSelectable(false);
+    Noah.prototype.onLeavingLoadAnimal = function () {
+        this.playerHand.setSelectionMode(0);
         dojo.query('.stockitem').removeClass('disabled');
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -611,59 +229,9 @@ var Noah = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'choosePlayAction':
-                    var choosePlayActionArgs_1 = args;
-                    this.addActionButton('getCharcoalium-button', _('Get charcoalium') + formatTextIcons(" (" + choosePlayActionArgs_1.machine.points + " [resource0])"), function () { return _this.getCharcoalium(); });
-                    if (choosePlayActionArgs_1.machine.produce == 9) {
-                        var _loop_5 = function (i) {
-                            this_3.addActionButton("getResource" + i + "-button", _('Get resource') + formatTextIcons(" ([resource" + i + "])"), function () { return _this.getResource(i); });
-                        };
-                        var this_3 = this;
-                        for (var i = 1; i <= 3; i++) {
-                            _loop_5(i);
-                        }
-                    }
-                    else {
-                        this.addActionButton('getResource-button', _('Get resource') + formatTextIcons(" ([resource" + choosePlayActionArgs_1.machine.produce + "])"), function () { return _this.getResource(choosePlayActionArgs_1.machine.produce); });
-                        if (choosePlayActionArgs_1.machine.type == 1 || choosePlayActionArgs_1.machine.produce == 0) {
-                            // for those machines, getting 1 resource is not the best option, so we "unlight" them
-                            dojo.removeClass('getResource-button', 'bgabutton_blue');
-                            dojo.addClass('getResource-button', 'bgabutton_gray');
-                        }
-                    }
-                    this.addActionButton('applyEffect-button', _('Apply effect') + (" <div class=\"effect effect" + MACHINES_IDS.indexOf(getUniqueId(choosePlayActionArgs_1.machine)) + "\"></div>"), function () { return _this.applyEffect(); });
-                    if (!choosePlayActionArgs_1.canApplyEffect) {
-                        dojo.addClass('applyEffect-button', 'disabled');
-                    }
-                    this.addTooltipHtml('applyEffect-button', getMachineTooltip(getUniqueId(choosePlayActionArgs_1.machine)));
-                    break;
-                case 'selectResource':
-                    var selectResourceArgs = args;
-                    selectResourceArgs.possibleCombinations.forEach(function (combination, index) {
-                        return _this.addActionButton("selectResourceCombination" + index + "-button", formatTextIcons(combination.map(function (type) { return "[resource" + type + "]"; }).join('')), function () { return _this.selectResource(combination); });
-                    });
-                    break;
-                case 'selectProject':
-                    var selectProjectArgs = args;
-                    selectProjectArgs.projects.forEach(function (project) {
-                        return _this.addActionButton("selectProject" + project.id + "-button", "<div class=\"project project" + PROJECTS_IDS.indexOf(getUniqueId(project)) + "\"></div>", function () { return _this.selectProject(project.id); });
-                    });
-                    break;
-                case 'selectExchange':
-                    var selectExchangeArgs = args;
-                    selectExchangeArgs.possibleExchanges.forEach(function (possibleExchange, index) {
-                        return _this.addActionButton("selectExchange" + index + "-button", formatTextIcons("[resource" + possibleExchange.from + "] &#x21E8; [resource" + possibleExchange.to + "]"), function () { return _this.selectExchange(possibleExchange); });
-                    });
-                    this.addActionButton('skipExchange-button', _('Skip'), function () { return _this.skipExchange(); }, null, null, 'red');
-                    break;
-                case 'chooseProject':
-                    this.addActionButton('selectProjects-button', _('Complete projects'), function () { return _this.selectProjects(_this.selectedPlayerProjectsIds.concat(_this.selectedTableProjectsIds)); });
-                    this.addActionButton('skipProjects-button', _('Skip'), function () { return _this.skipSelectProjects(); }, null, null, 'red');
-                    dojo.toggleClass('selectProjects-button', 'disabled', !this.table.getSelectedProjectsIds().length);
-                    dojo.toggleClass('skipProjects-button', 'disabled', !!this.table.getSelectedProjectsIds().length);
-                    break;
-                case 'chooseProjectDiscardedMachine':
-                    this.addActionButton('selectProjectDiscardedMachine-button', _('Discard selected machines'), function () { return _this.discardSelectedMachines(); });
+                case 'chooseGender':
+                    this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
+                    this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
                     break;
             }
         }
@@ -704,11 +272,6 @@ var Noah = /** @class */ (function () {
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
     };
-    Noah.prototype.onProjectSelectionChanged = function () {
-        var selectionLength = this.selectedPlayerProjectsIds.length + this.selectedTableProjectsIds.length;
-        dojo.toggleClass('selectProjects-button', 'disabled', !selectionLength);
-        dojo.toggleClass('skipProjects-button', 'disabled', !!selectionLength);
-    };
     Noah.prototype.setHand = function (animals) {
         var _this = this;
         this.playerHand = new ebg.stock();
@@ -719,22 +282,13 @@ var Noah = /** @class */ (function () {
         this.playerHand.centerItems = true;
         this.playerHand.onItemCreate = function (cardDiv, type) { return setupAnimalCard(_this, cardDiv, type); };
         dojo.connect(this.playerHand, 'onChangeSelection', this, function () { return _this.onPlayerHandSelectionChanged(_this.playerHand.getSelectedItems()); });
-        setupAnimalCards([this.playerHand]);
-        // TODO animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
-    };
-    Noah.prototype.getProjectStocks = function () {
-        return __spreadArray([], this.table.projectStocks.slice(1));
-    };
-    Noah.prototype.getMachineStocks = function () {
-        return __spreadArray([this.playerHand], this.table.machineStocks.slice(1));
-    };
-    Noah.prototype.setHandSelectable = function (selectable) {
-        this.playerHand.setSelectionMode(selectable ? 1 : 0);
+        setupAnimalCards(this.playerHand);
+        animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
     };
     Noah.prototype.onPlayerHandSelectionChanged = function (items) {
         if (items.length == 1) {
             var card = items[0];
-            this.machineClick(card.id, 'hand');
+            this.loadAnimal(card.id);
         }
     };
     Noah.prototype.getPlayerId = function () {
@@ -747,201 +301,120 @@ var Noah = /** @class */ (function () {
         var _a, _b;
         return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
     };
-    Noah.prototype.createPlayerPanels = function (gamedatas) {
-        var _this = this;
-        Object.values(gamedatas.players).forEach(function (player) {
-            var playerId = Number(player.id);
+    /*private createPlayerPanels(gamedatas: NoahGamedatas) {
+
+        Object.values(gamedatas.players).forEach(player => {
+            const playerId = Number(player.id);
+
             // charcoalium & resources counters
-            dojo.place("<div class=\"counters\">\n                <div id=\"charcoalium-counter-wrapper-" + player.id + "\" class=\"charcoalium-counter\">\n                    <div class=\"icon charcoalium\"></div> \n                    <span id=\"charcoalium-counter-" + player.id + "\"></span>\n                </div>\n            </div>\n            <div class=\"counters\">\n                <div id=\"wood-counter-wrapper-" + player.id + "\" class=\"wood-counter\">\n                    <div class=\"icon wood\"></div> \n                    <span id=\"wood-counter-" + player.id + "\"></span>\n                </div>\n                <div id=\"copper-counter-wrapper-" + player.id + "\" class=\"copper-counter\">\n                    <div class=\"icon copper\"></div> \n                    <span id=\"copper-counter-" + player.id + "\"></span>\n                </div>\n                <div id=\"crystal-counter-wrapper-" + player.id + "\" class=\"crystal-counter\">\n                    <div class=\"icon crystal\"></div> \n                    <span id=\"crystal-counter-" + player.id + "\"></span>\n                </div>\n            </div>", "player_board_" + player.id);
-            var charcoaliumCounter = new ebg.counter();
-            charcoaliumCounter.create("charcoalium-counter-" + playerId);
+            dojo.place(`<div class="counters">
+                <div id="charcoalium-counter-wrapper-${player.id}" class="charcoalium-counter">
+                    <div class="icon charcoalium"></div>
+                    <span id="charcoalium-counter-${player.id}"></span>
+                </div>
+            </div>
+            <div class="counters">
+                <div id="wood-counter-wrapper-${player.id}" class="wood-counter">
+                    <div class="icon wood"></div>
+                    <span id="wood-counter-${player.id}"></span>
+                </div>
+                <div id="copper-counter-wrapper-${player.id}" class="copper-counter">
+                    <div class="icon copper"></div>
+                    <span id="copper-counter-${player.id}"></span>
+                </div>
+                <div id="crystal-counter-wrapper-${player.id}" class="crystal-counter">
+                    <div class="icon crystal"></div>
+                    <span id="crystal-counter-${player.id}"></span>
+                </div>
+            </div>`, `player_board_${player.id}`);
+
+            const charcoaliumCounter = new ebg.counter();
+            charcoaliumCounter.create(`charcoalium-counter-${playerId}`);
             charcoaliumCounter.setValue(player.resources[0].length);
-            _this.charcoaliumCounters[playerId] = charcoaliumCounter;
-            var woodCounter = new ebg.counter();
-            woodCounter.create("wood-counter-" + playerId);
+            this.charcoaliumCounters[playerId] = charcoaliumCounter;
+
+            const woodCounter = new ebg.counter();
+            woodCounter.create(`wood-counter-${playerId}`);
             woodCounter.setValue(player.resources[1].length);
-            _this.woodCounters[playerId] = woodCounter;
-            var copperCounter = new ebg.counter();
-            copperCounter.create("copper-counter-" + playerId);
+            this.woodCounters[playerId] = woodCounter;
+
+            const copperCounter = new ebg.counter();
+            copperCounter.create(`copper-counter-${playerId}`);
             copperCounter.setValue(player.resources[2].length);
-            _this.copperCounters[playerId] = copperCounter;
-            var crystalCounter = new ebg.counter();
-            crystalCounter.create("crystal-counter-" + playerId);
+            this.copperCounters[playerId] = copperCounter;
+
+            const crystalCounter = new ebg.counter();
+            crystalCounter.create(`crystal-counter-${playerId}`);
             crystalCounter.setValue(player.resources[3].length);
-            _this.crystalCounters[playerId] = crystalCounter;
+            this.crystalCounters[playerId] = crystalCounter;
+
             if (player.playerNo == 1) {
-                dojo.place("<div id=\"player-icon-first-player\" class=\"player-icon first-player\"></div>", "player_board_" + player.id);
-                _this.addTooltipHtml('player-icon-first-player', _("First player"));
+                dojo.place(`<div id="player-icon-first-player" class="player-icon first-player"></div>`, `player_board_${player.id}`);
+                (this as any).addTooltipHtml('player-icon-first-player', _("First player"));
             }
         });
-        this.addTooltipHtmlToClass('charcoalium-counter', _("Charcoalium"));
-        this.addTooltipHtmlToClass('wood-counter', _("Wood"));
-        this.addTooltipHtmlToClass('copper-counter', _("Copper"));
-        this.addTooltipHtmlToClass('crystal-counter', _("Crystal"));
-    };
-    Noah.prototype.machineClick = function (id, from, payments) {
-        var _this = this;
-        if (this.clickAction === 'select') {
-            this.selectMachine(id);
-        }
-        else if (this.clickAction === 'play') {
-            /*const paymentDiv = document.getElementById('paymentButtons');
-            if (paymentDiv) {
-                paymentDiv.innerHTML = '';
-            } else {
-                dojo.place(`<div id="paymentButtons"></div>`, 'generalactions')
-            }*/
-            document.querySelectorAll("[id^='selectPaymentButton']").forEach(function (elem) { return dojo.destroy(elem.id); });
-            if (from === 'hand') {
-                this.playMachine(id);
-            }
-            else if (from === 'table') {
-                if (payments.length > 1) {
-                    payments.forEach(function (payment, index) {
-                        var label = dojo.string.substitute(_('Use ${jokers} as ${unpaidResources} and pay ${paidResources}'), {
-                            jokers: payment.jokers.map(function (_) { return '[resource9]'; }).join(''),
-                            unpaidResources: payment.jokers.map(function (joker) { return "[resource" + joker + "]"; }).join(''),
-                            paidResources: payment.remainingCost.filter(function (resource) { return resource > 0; }).map(function (resource) { return "[resource" + resource + "]"; }).join(''),
-                        });
-                        _this.addActionButton("selectPaymentButton" + index + "-button", formatTextIcons(label), function () { return _this.repairMachine(id, payment); });
-                    });
-                }
-                else {
-                    this.repairMachine(id, payments[0]);
-                }
-            }
-        }
-    };
-    Noah.prototype.playMachine = function (id) {
-        if (!this.checkAction('playMachine')) {
+
+        (this as any).addTooltipHtmlToClass('charcoalium-counter', _("Charcoalium"));
+        (this as any).addTooltipHtmlToClass('wood-counter', _("Wood"));
+        (this as any).addTooltipHtmlToClass('copper-counter', _("Copper"));
+        (this as any).addTooltipHtmlToClass('crystal-counter', _("Crystal"));
+    }*/
+    Noah.prototype.loadAnimal = function (id) {
+        if (!this.checkAction('loadAnimal')) {
             return;
         }
-        this.takeAction('playMachine', {
+        this.takeAction('loadAnimal', {
             id: id
         });
     };
-    Noah.prototype.repairMachine = function (id, payment) {
-        if (!this.checkAction('repairMachine')) {
+    Noah.prototype.setGender = function (gender) {
+        if (!this.checkAction('setGender')) {
             return;
         }
-        var base64 = btoa(JSON.stringify(payment));
-        this.takeAction('repairMachine', {
-            id: id,
-            payment: base64
+        this.takeAction('setGender', {
+            gender: gender
         });
     };
-    Noah.prototype.getCharcoalium = function () {
-        if (!this.checkAction('getCharcoalium')) {
+    Noah.prototype.moveNoah = function (destination) {
+        if (!this.checkAction('moveNoah')) {
             return;
         }
-        this.takeAction('getCharcoalium');
-    };
-    Noah.prototype.getResource = function (resource) {
-        if (!this.checkAction('getResource')) {
-            return;
-        }
-        this.takeAction('getResource', {
-            resource: resource
+        this.takeAction('moveNoah', {
+            destination: destination
         });
     };
-    Noah.prototype.applyEffect = function () {
-        if (!this.checkAction('applyEffect')) {
+    Noah.prototype.giveCards = function (id, giveCardsTo) {
+        if (!this.checkAction('giveCards')) {
             return;
         }
-        this.takeAction('applyEffect');
-    };
-    Noah.prototype.selectProjects = function (ids) {
-        if (!this.checkAction('selectProjects')) {
-            return;
-        }
-        this.takeAction('selectProjects', {
-            ids: ids.join(',')
-        });
-    };
-    Noah.prototype.skipSelectProjects = function () {
-        if (!this.checkAction('skipSelectProjects')) {
-            return;
-        }
-        this.takeAction('skipSelectProjects');
-    };
-    Noah.prototype.selectResource = function (resourcesTypes) {
-        if (!this.checkAction('selectResource')) {
-            return;
-        }
-        this.takeAction('selectResource', {
-            resourcesTypes: resourcesTypes.join(',')
-        });
-    };
-    Noah.prototype.selectMachine = function (id) {
-        if (!this.checkAction('selectMachine')) {
-            return;
-        }
-        this.takeAction('selectMachine', {
-            id: id
-        });
-    };
-    Noah.prototype.selectProject = function (id) {
-        if (!this.checkAction('selectProject')) {
-            return;
-        }
-        this.takeAction('selectProject', {
-            id: id
-        });
-    };
-    Noah.prototype.selectExchange = function (exchange) {
-        if (!this.checkAction('selectExchange')) {
-            return;
-        }
-        this.takeAction('selectExchange', exchange);
-    };
-    Noah.prototype.skipExchange = function () {
-        if (!this.checkAction('skipExchange')) {
-            return;
-        }
-        this.takeAction('skipExchange');
-    };
-    Noah.prototype.discardSelectedMachines = function () {
-        if (!this.checkAction('discardSelectedMachines')) {
-            return;
-        }
-        var base64 = btoa(JSON.stringify(/*this.discardedMachineSelector.getCompleteProjects()*/ 'TODO'));
-        this.takeAction('discardSelectedMachines', {
-            completeProjects: base64
+        var base64 = btoa(JSON.stringify(giveCardsTo));
+        this.takeAction('giveCards', {
+            giveCardsTo: base64
         });
     };
     Noah.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
-        this.ajaxcall("/nicodemus/nicodemus/" + action + ".html", data, this, function () { });
+        this.ajaxcall("/noah/noah/" + action + ".html", data, this, function () { });
     };
     Noah.prototype.setPoints = function (playerId, points) {
         var _a;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
         this.table.setPoints(playerId, points);
     };
-    Noah.prototype.setResourceCount = function (playerId, resource, number) {
-        var counters = [this.charcoaliumCounters, this.woodCounters, this.copperCounters, this.crystalCounters];
-        counters[resource][playerId].toValue(number);
-    };
     Noah.prototype.addHelp = function () {
         var _this = this;
-        dojo.place("<button id=\"nicodemus-help-button\">?</button>", 'left-side');
-        dojo.connect($('nicodemus-help-button'), 'onclick', this, function () { return _this.showHelp(); });
+        dojo.place("<button id=\"noah-help-button\">?</button>", 'left-side');
+        dojo.connect($('noah-help-button'), 'onclick', this, function () { return _this.showHelp(); });
     };
     Noah.prototype.showHelp = function () {
         if (!this.helpDialog) {
             this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create('nicodemusHelpDialog');
+            this.helpDialog.create('noahHelpDialog');
             this.helpDialog.setTitle(_("Cards help"));
-            var html = "<div id=\"help-popin\">\n                <h1>" + _("Machines effects") + "</h1>\n                <div id=\"help-machines\" class=\"help-section\">\n                    <table>";
-            MACHINES_IDS.forEach(function (number, index) { return html += "<tr><td><div id=\"machine" + index + "\" class=\"machine\"></div></td><td>" + getMachineTooltip(number) + "</td></tr>"; });
-            html += "</table>\n                </div>\n                <h1>" + _("Projects") + "</h1>\n                <div id=\"help-projects\" class=\"help-section\">\n                    <table><tr><td class=\"grid\">";
-            PROJECTS_IDS.slice(1, 5).forEach(function (number, index) { return html += "<div id=\"project" + (index + 1) + "\" class=\"project\"></div>"; });
-            html += "</td></tr><tr><td>" + getProjectTooltip(11) + "</td></tr>\n                <tr><td><div id=\"project0\" class=\"project\"></div></td></tr><tr><td>" + getProjectTooltip(10) + "</td></tr><tr><td class=\"grid\">";
-            PROJECTS_IDS.slice(6, 9).forEach(function (number, index) { return html += "<div id=\"project" + (index + 6) + "\" class=\"project\"></div>"; });
-            html += "</td></tr><tr><td>" + getProjectTooltip(21) + "</td></tr>\n                <tr><td><div id=\"project5\" class=\"project\"></div></td></tr><tr><td>" + getProjectTooltip(20) + "</td></tr><tr><td class=\"grid\">";
-            PROJECTS_IDS.slice(9).forEach(function (number, index) { return html += "<div id=\"project" + (index + 9) + "\" class=\"project\"></div>"; });
-            html += "</td></tr><tr><td>" + getProjectTooltip(31) + "</td></tr></table>\n                </div>\n            </div>";
+            var html = "<div id=\"help-popin\">\n                <h1>" + _("Animal traits") + "</h1>\n                <div id=\"help-animals\" class=\"help-section\">\n                    <table>";
+            ANIMALS_WITH_TRAITS.forEach(function (number, index) { return html += "<tr><td><div id=\"animal" + index + "\" class=\"animal\"></div></td><td>" + getAnimalTooltip(number) + "</td></tr>"; });
+            html += "</table>\n                </div>\n            </div>";
             // Show the dialog
             this.helpDialog.setContent(html);
         }
@@ -961,7 +434,7 @@ var Noah = /** @class */ (function () {
         In this method, you associate each of your game notifications with your local method to handle it.
 
         Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
-                your nicodemus.game.php file.
+                your noah.game.php file.
 
     */
     Noah.prototype.setupNotifications = function () {
@@ -980,6 +453,10 @@ var Noah = /** @class */ (function () {
             dojo.subscribe(notif[0], _this, "notif_" + notif[0]);
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
+    };
+    Noah.prototype.notif_points = function (notif) {
+        this.setPoints(notif.args.playerId, notif.args.points);
+        this.table.setPoints(notif.args.playerId, notif.args.points);
     };
     Noah.prototype.notif_animalLoaded = function (notif) {
         // TODO

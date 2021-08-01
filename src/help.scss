@@ -1,18 +1,16 @@
 
-$machine-width: 190px; 
-$machine-height: 190px;
-$project-width: 134px; 
-$project-height: 93px;
+$animal-width: 190px; 
+$animal-height: 190px;
 
-#nicodemus-help-button {
+#noah-help-button {
     position: fixed;
     bottom: 75px;
     left: 5px;
     width: 50px;
     height: 50px;
-    background: #a1311f;
+    background: white;
     font-weight: bold;
-    color: white;
+    color: black;
     border-radius: 25px;
     box-shadow: 3px 5px 5px 0px rgb(0 0 0);
     cursor: pointer;
@@ -22,15 +20,14 @@ $project-height: 93px;
 
 /* we show help button if user has no mouse ( = no tooltips) */
 @media (hover: hover) {
-    #nicodemus-help-button {
+    #noah-help-button {
         //display: none;
         bottom: 5px;
     }
 }
 
-#popin_nicodemusHelpDialog {
-    background: url('img/background.jpg') #eae3d3;
-    background-repeat: repeat;
+#popin_noahHelpDialog {
+    background: #8fccec;
     max-width: 100vw;
     max-height: 80vh;
     overflow: hidden;
@@ -59,34 +56,15 @@ $project-height: 93px;
         }
     }
 
-    #help-machines {
-        .machine {
-            width: $machine-width; 
-            height: $machine-height;
+    #help-animals {
+        .animal {
+            width: $animal-width; 
+            height: $animal-height;
             background-image: url('img/cards.jpg');
         }
         @for $i from 0 through 15 {
-            #machine#{$i} {
+            #animal#{$i} {
                 background-position: ($i * 100% / 15) 0%;
-            }
-        }
-    }
-
-    #help-projects {
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .project {
-            width: $project-width; 
-            height: $project-height;
-            background-image: url('img/projects.jpg');
-        }
-        
-        @for $i from 0 through 16 {
-            #project#{$i} {
-                background-position: ($i * 100% / 16) 0%;
             }
         }
     }

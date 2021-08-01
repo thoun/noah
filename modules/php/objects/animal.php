@@ -19,7 +19,7 @@ class Animal extends AnimalCard {
     public $location;
     public $location_arg; // order on table$position
     public /*int*/ $type; // race
-    public $gender; // 0 : hermaphrodite (gender not yet set), 1 : male, 2 : female
+    public /*int*/ $gender; // 0 : hermaphrodite (gender not yet set), 1 : male, 2 : female
 
     public function __construct($dbCard, $ANIMALS) {
         $this->id = intval($dbCard['id']);

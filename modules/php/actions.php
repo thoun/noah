@@ -8,7 +8,7 @@ trait ActionTrait {
     
     /*
         Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in nicodemus.action.php)
+        (note: each method below must match an input method in noah.action.php)
     */
 
     public function loadAnimal(int $id) {
@@ -20,6 +20,35 @@ trait ActionTrait {
             throw new Error("Can't load this animal");
         }
 
+
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
+        $nbr = count($animalsInFerry);
+
+        if ($nbr < 2 && $animal->power == POWER_HERMAPHRODITE) { // need to set gender
+            $this->gamestate->nextState('chooseGender');
+        } else {
+            $this->applyLoadAnimal($id);
+        }
+    }
+
+    function setGender(int $gender) {
+        self::checkAction('setGender'); 
+        
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
+        $nbr = count($animalsInFerry);
+        if ($nbr < 1 || $nbr > 2 || $animals[$nbr - 1]->power != POWER_HERMAPHRODITE) {
+            throw new Error("No animal need to set gender");
+        }
+
+        $this->applySetGender($animals[$nbr - 1]->id, $gender);
+        $this->applyLoadAnimal($animals[$nbr - 1]->id);
+    }
+
+    function applyLoadAnimal(int $id) {
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalCount = intval($this->animals->countCardInLocation($location));

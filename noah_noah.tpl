@@ -7,7 +7,10 @@
             <div id="my-animals"></div>
         </div>
         <div id="table">
-        <div id="remaining-ferry-counter"></div>
+            <div id="center-board">
+            <div id="ferry-deck"></div>
+            <div id="remaining-ferry-counter"></div>
+            </div>
         </div>
     </div>
     <div id="zoom-controls">

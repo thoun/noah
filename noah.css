@@ -1,120 +1,24 @@
 @import url(../../../css/csslayer.css);
-#table-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#table-wrapper #table-resources {
-  display: grid;
-  grid-template-columns: repeat(4, 250px);
-  grid-template-rows: 60px;
-  grid-column-gap: 50px;
-  justify-content: center;
-}
-#table-wrapper #table-resources > div {
-  position: relative;
-}
-
-#table {
-  position: relative;
-  width: 1230px;
-  height: 539px;
-  background-image: url("img/board.jpg");
-  margin-top: 70px;
-}
-#table .point-marker {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  box-shadow: 1px 1px 2px 2px black;
-  border-radius: 50%;
-  background-image: url("img/points.png");
-  background-size: auto 100%;
-}
-#table .point-marker.blue {
-  background-position: 0% 0%;
-}
-#table .point-marker.red {
-  background-position: 100% 0%;
-}
-#table .projects {
-  position: absolute;
-  top: -65px;
-  left: 0;
-}
-#table .projects #project-deck {
-  position: absolute;
-  background-image: url("img/project-back.jpg");
-  width: 134px;
-  height: 93px;
-  box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
-  cursor: default;
-}
-#table .projects #table-projects {
-  position: absolute;
-  left: 176px;
-}
-#table .projects #table-projects .table-project-stock {
-  position: absolute;
-  top: 0px;
-}
-#table .machines {
-  position: absolute;
-  left: 6px;
-  top: 102px;
-}
-#table .machines .cube.resource0 {
-  background-color: #FFFFFFAA;
-  box-shadow: 0 0 5px 6px #ffffffAA;
-  border-radius: 50%;
-  z-index: 12;
-}
-#table .machines .machine-spot {
-  position: absolute;
-}
-#table .machines #machine-deck {
-  position: absolute;
-  top: 208px;
-  left: 1020px;
-  background-image: url("img/card-back.jpg");
-  width: 190px;
-  height: 190px;
-  box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
-  cursor: default;
-}
-
 .remaining-counter {
   position: absolute;
-  width: 16px;
   text-align: center;
-  background-color: #FFFFFF88;
-  box-shadow: 0 0 5px 6px #ffffff88;
-  border-radius: 50%;
+  text-shadow: 1px 1px 1px white;
 }
 
-#remaining-project-counter {
+#remaining-animal-counter {
   top: 73px;
   left: 144px;
 }
 
-#remaining-machine-counter {
-  top: 408px;
-  left: 1193px;
-}
-
-.deck {
-  z-index: 1;
-}
-
-#nicodemus-help-button {
+#noah-help-button {
   position: fixed;
   bottom: 75px;
   left: 5px;
   width: 50px;
   height: 50px;
-  background: #a1311f;
+  background: white;
   font-weight: bold;
-  color: white;
+  color: black;
   border-radius: 25px;
   box-shadow: 3px 5px 5px 0px black;
   cursor: pointer;
@@ -124,13 +28,12 @@
 
 /* we show help button if user has no mouse ( = no tooltips) */
 @media (hover: hover) {
-  #nicodemus-help-button {
+  #noah-help-button {
     bottom: 5px;
   }
 }
-#popin_nicodemusHelpDialog {
-  background: url("img/background.jpg") #eae3d3;
-  background-repeat: repeat;
+#popin_noahHelpDialog {
+  background: #8fccec;
   max-width: 100vw;
   max-height: 80vh;
   overflow: hidden;
@@ -153,117 +56,57 @@
   border-spacing: 10px;
   border-collapse: separate;
 }
-#help-popin #help-machines .machine {
+#help-popin #help-animals .animal {
   width: 190px;
   height: 190px;
   background-image: url("img/cards.jpg");
 }
-#help-popin #help-machines #machine0 {
+#help-popin #help-animals #animal0 {
   background-position: 0% 0%;
 }
-#help-popin #help-machines #machine1 {
+#help-popin #help-animals #animal1 {
   background-position: 6.6666666667% 0%;
 }
-#help-popin #help-machines #machine2 {
+#help-popin #help-animals #animal2 {
   background-position: 13.3333333333% 0%;
 }
-#help-popin #help-machines #machine3 {
+#help-popin #help-animals #animal3 {
   background-position: 20% 0%;
 }
-#help-popin #help-machines #machine4 {
+#help-popin #help-animals #animal4 {
   background-position: 26.6666666667% 0%;
 }
-#help-popin #help-machines #machine5 {
+#help-popin #help-animals #animal5 {
   background-position: 33.3333333333% 0%;
 }
-#help-popin #help-machines #machine6 {
+#help-popin #help-animals #animal6 {
   background-position: 40% 0%;
 }
-#help-popin #help-machines #machine7 {
+#help-popin #help-animals #animal7 {
   background-position: 46.6666666667% 0%;
 }
-#help-popin #help-machines #machine8 {
+#help-popin #help-animals #animal8 {
   background-position: 53.3333333333% 0%;
 }
-#help-popin #help-machines #machine9 {
+#help-popin #help-animals #animal9 {
   background-position: 60% 0%;
 }
-#help-popin #help-machines #machine10 {
+#help-popin #help-animals #animal10 {
   background-position: 66.6666666667% 0%;
 }
-#help-popin #help-machines #machine11 {
+#help-popin #help-animals #animal11 {
   background-position: 73.3333333333% 0%;
 }
-#help-popin #help-machines #machine12 {
+#help-popin #help-animals #animal12 {
   background-position: 80% 0%;
 }
-#help-popin #help-machines #machine13 {
+#help-popin #help-animals #animal13 {
   background-position: 86.6666666667% 0%;
 }
-#help-popin #help-machines #machine14 {
+#help-popin #help-animals #animal14 {
   background-position: 93.3333333333% 0%;
 }
-#help-popin #help-machines #machine15 {
-  background-position: 100% 0%;
-}
-#help-popin #help-projects .grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-#help-popin #help-projects .project {
-  width: 134px;
-  height: 93px;
-  background-image: url("img/projects.jpg");
-}
-#help-popin #help-projects #project0 {
-  background-position: 0% 0%;
-}
-#help-popin #help-projects #project1 {
-  background-position: 6.25% 0%;
-}
-#help-popin #help-projects #project2 {
-  background-position: 12.5% 0%;
-}
-#help-popin #help-projects #project3 {
-  background-position: 18.75% 0%;
-}
-#help-popin #help-projects #project4 {
-  background-position: 25% 0%;
-}
-#help-popin #help-projects #project5 {
-  background-position: 31.25% 0%;
-}
-#help-popin #help-projects #project6 {
-  background-position: 37.5% 0%;
-}
-#help-popin #help-projects #project7 {
-  background-position: 43.75% 0%;
-}
-#help-popin #help-projects #project8 {
-  background-position: 50% 0%;
-}
-#help-popin #help-projects #project9 {
-  background-position: 56.25% 0%;
-}
-#help-popin #help-projects #project10 {
-  background-position: 62.5% 0%;
-}
-#help-popin #help-projects #project11 {
-  background-position: 68.75% 0%;
-}
-#help-popin #help-projects #project12 {
-  background-position: 75% 0%;
-}
-#help-popin #help-projects #project13 {
-  background-position: 81.25% 0%;
-}
-#help-popin #help-projects #project14 {
-  background-position: 87.5% 0%;
-}
-#help-popin #help-projects #project15 {
-  background-position: 93.75% 0%;
-}
-#help-popin #help-projects #project16 {
+#help-popin #help-animals #animal15 {
   background-position: 100% 0%;
 }
 

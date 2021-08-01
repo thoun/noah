@@ -11,9 +11,8 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
-    function stStartRound() {
-        
-        self::setGameStateValue(ROUND_NUMBER, $roundNumber + 1);
+    function stStartRound() {        
+        self::setGameStateValue(ROUND_NUMBER, intval($this->getGameStateValue(ROUND_NUMBER)) + 1);
 
         // reset cards
         $this->animals->moveAllCardsInLocation(null, 'deck');

@@ -44,6 +44,16 @@
         self::ajaxResponse();
     }
   	
+    public function setGender() {
+        self::setAjaxMode();
+
+        $gender = self::getArg("gender", AT_posint, true);
+
+        $this->game->setGender($gender);
+
+        self::ajaxResponse();
+    }
+  	
     public function moveNoah() {
         self::setAjaxMode();
 

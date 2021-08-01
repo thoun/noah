@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Nicodemus implementation : © <Your name here> <Your email address here>
+ * Noah implementation : © <Your name here> <Your email address here>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -10,7 +10,7 @@
  * 
  * states.inc.php
  *
- * Nicodemus game states description
+ * Noah game states description
  *
  */
 
@@ -91,8 +91,8 @@ $playerActionsGameStates = [
         "name" => "loadAnimal",
         "description" => clienttranslate('${actplayer} must load an animal'),
         "descriptionmyturn" => clienttranslate('${you} must load an animal'),
-        "descriptionimpossible" => clienttranslate('${actplayer} take back all animals present on the ferry'),
-        "descriptionmyturn" => clienttranslate('${you} take back all animals present on the ferry'),
+        "descriptionimpossible" => clienttranslate('${actplayer} must take back all animals present on the ferry'),
+        "descriptionmyturnimpossible" => clienttranslate('${you} must take back all animals present on the ferry'),
         "type" => "activeplayer",
         "args" => "argLoadAnimal",
         "possibleactions" => [ 
@@ -100,7 +100,22 @@ $playerActionsGameStates = [
             "takeAllAnimals",
         ],
         "transitions" => [
+            "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_GENDER => [
+        "name" => "chooseGender",
+        "description" => clienttranslate('${actplayer} must choose gender'),
+        "descriptionmyturn" => clienttranslate('${you} must choose gender'),
+        "type" => "activeplayer",  
+        "possibleactions" => [ 
+            "setGender",
+        ],
+        "transitions" => [
+            "moveNoah" => ST_PLAYER_OPTIMAL_LOADING,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
     ],

@@ -56,21 +56,13 @@ class Noah implements NoahGame {
 
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        /*this.table = new Table(this, Object.values(gamedatas.players), gamedatas.tableProjects, gamedatas.tableMachines, gamedatas.resources);
-        this.table.onTableProjectSelectionChanged = selectProjectsIds => {
-            this.selectedTableProjectsIds = selectProjectsIds;
-            this.onProjectSelectionChanged();
-        };
-
-        this.machineCounter = new ebg.counter();
-        this.machineCounter.create('remaining-machine-counter');
-        this.setRemainingMachines(gamedatas.remainingMachines);*/
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition);
 
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(gamedatas.remainingFerries);
 
-        //this.addHelp();
+        this.addHelp();
         this.setupNotifications();
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
@@ -92,72 +84,27 @@ class Noah implements NoahGame {
         log( 'Entering state: '+stateName , args.args );
 
         switch (stateName) {
-            case 'chooseAction':
-                this.onEnteringStateChooseAction(args.args as ChooseActionArgs);
-                break;
-            case 'choosePlayAction':
-                this.onEnteringStateChoosePlayAction(args.args as ChoosePlayActionArgs);
-                break;
-            case 'selectMachine':
-                this.onEnteringStateSelectMachine(args.args as SelectMachineArgs);
-                break;
-            case 'selectProject': case 'chooseProject':
-                this.onEnteringStateChooseProject(args.args as SelectProjectArgs);
-                break;
-            case 'chooseProjectDiscardedMachine':
-                this.onEnteringStateChooseProjectDiscardedMachine(args.args as ChooseProjectDiscardedMachineArgs);
+            case 'loadAnimal':
+                const allDisabled = !(args.args as EnteringLoadAnimalArgs).selectableAnimals.length;
+                this.setGamestateDescription(allDisabled ? 'impossible' : '');
+                this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
         }
-    }
-
-    private onEnteringStateChooseAction(args: ChooseActionArgs) {
-        if((this as any).isCurrentPlayerActive()) {
-            this.setHandSelectable(true);
-            this.table.setMachineSelectable(true);
-
-            this.getMachineStocks().forEach(stock => stock.items.forEach(item => {
-                const machine = args.selectableMachines.find(machine => machine.id === Number(item.id));
-                const divId = `${stock.container_div.id}_item_${item.id}`;
-                if (machine) {
-                    document.getElementById(divId).dataset.payments = JSON.stringify(machine.payments);
-                } else {
-                    dojo.addClass(divId, 'disabled');
-                }
-            }));
-        }
-    }
-
-    private onEnteringStateChoosePlayAction(args: ChoosePlayActionArgs) {
-        dojo.addClass(`table-machine-spot-${args.machine.location_arg}_item_${args.machine.id}`, 'selected');
     }
     
-    private onEnteringStateSelectMachine(args: SelectMachineArgs) {
-        const stocks = this.getMachineStocks();
-        stocks.forEach(stock => stock.items
-            .filter(item => !args.selectableMachines.some(machine => machine.id === Number(item.id)))
-            .forEach(item => dojo.addClass(`${stock.container_div.id}_item_${item.id}`, 'disabled'))
-        );
-        stocks.forEach(stock => stock.setSelectionMode(1));
+    private setGamestateDescription(property: string = '') {
+        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
+        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`; 
+        (this as any).updatePageTitle();        
     }
-
-    private onEnteringStateChooseProject(args: SelectProjectArgs) {
-        if (args.remainingProjects !== undefined) {
-            this.setRemainingProjects(args.remainingProjects);
-        }
-
-        if((this as any).isCurrentPlayerActive()) {
-            this.setHandSelectable(true);
-            this.table.setProjectSelectable(true);
-
-            this.getProjectStocks().forEach(stock => stock.items
-                .filter(item => !args.projects.some(project => project.id === Number(item.id)))
-                .forEach(item => dojo.addClass(`${stock.container_div.id}_item_${item.id}`, 'disabled'))
-            );
-        }
-    }
-
-    private onEnteringStateChooseProjectDiscardedMachine(args: ChooseProjectDiscardedMachineArgs) {
-        if((this as any).isCurrentPlayerActive()) {
+    
+    private onEnteringStateLoadAnimal(args: EnteringLoadAnimalArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.playerHand.items
+                .filter(item => !args.selectableAnimals.some(animal => animal.id === Number(item.id)))
+                .forEach(item => dojo.addClass(`${this.playerHand.container_div.id}_item_${item.id}`, 'disabled'));
+            this.playerHand.setSelectionMode(1);
         }
     }
 
@@ -168,41 +115,13 @@ class Noah implements NoahGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'chooseAction':
-                this.onLeavingChooseAction();
-                break;
-            case 'choosePlayAction':
-                this.onLeavingChoosePlayAction();
-                break;
-            case 'selectMachine':
-                this.onLeavingStateSelectMachine();
-            case 'selectProject': case 'chooseProject':
-                this.onLeavingChooseProject();
-                break;
+            case 'loadAnimal':
+                this.onLeavingLoadAnimal();
         }
     }
 
-    onLeavingChooseAction() {
-        this.setHandSelectable(false);
-        this.table.setMachineSelectable(false);
-        dojo.query('.stockitem').removeClass('disabled');
-        dojo.query('.stockitem').forEach(div => div.dataset.payments = '');
-    }
-
-    onLeavingChoosePlayAction() {
-        dojo.query('.stockitem').removeClass('selected');
-    }
-    
-    private onLeavingStateSelectMachine() {
-        const stocks = this.getMachineStocks();
-        stocks.forEach(stock => stock.items
-            .forEach(item => dojo.removeClass(`${stock.container_div.id}_item_${item.id}`, 'disabled'))
-        );
-        stocks.forEach(stock => stock.setSelectionMode(0));
-    }
-
-    onLeavingChooseProject() {
-        this.table.setProjectSelectable(false);
+    onLeavingLoadAnimal() {
+        this.playerHand.setSelectionMode(0);
         dojo.query('.stockitem').removeClass('disabled');
     }
 
@@ -211,60 +130,11 @@ class Noah implements NoahGame {
     //
     public onUpdateActionButtons(stateName: string, args: any) {
         if((this as any).isCurrentPlayerActive()) {
-            switch (stateName) {                
-                case 'choosePlayAction': 
-                    const choosePlayActionArgs = args as ChoosePlayActionArgs;
-                    (this as any).addActionButton('getCharcoalium-button', _('Get charcoalium') + formatTextIcons(` (${choosePlayActionArgs.machine.points} [resource0])`), () => this.getCharcoalium());
-                    if (choosePlayActionArgs.machine.produce == 9) {
-                        for (let i=1; i<=3; i++) {
-                            (this as any).addActionButton(`getResource${i}-button`, _('Get resource') + formatTextIcons(` ([resource${i}])`), () => this.getResource(i));
-                        }
-                    } else {
-                        (this as any).addActionButton('getResource-button', _('Get resource') + formatTextIcons(` ([resource${choosePlayActionArgs.machine.produce}])`), () => this.getResource(choosePlayActionArgs.machine.produce));
-                        if (choosePlayActionArgs.machine.type == 1 || choosePlayActionArgs.machine.produce == 0) {
-                            // for those machines, getting 1 resource is not the best option, so we "unlight" them
-                            dojo.removeClass('getResource-button', 'bgabutton_blue');
-                            dojo.addClass('getResource-button', 'bgabutton_gray');
-                        }
-                    }
-                    (this as any).addActionButton('applyEffect-button', _('Apply effect') + ` <div class="effect effect${MACHINES_IDS.indexOf(getUniqueId(choosePlayActionArgs.machine))}"></div>`, () => this.applyEffect());
-                    if (!choosePlayActionArgs.canApplyEffect) {
-                        dojo.addClass('applyEffect-button', 'disabled');
-                    }
-                    (this as any).addTooltipHtml('applyEffect-button', getMachineTooltip(getUniqueId(choosePlayActionArgs.machine)));
-                    break;
+            switch (stateName) {
 
-                case 'selectResource':
-                    const selectResourceArgs = args as SelectResourceArgs;
-                    selectResourceArgs.possibleCombinations.forEach((combination, index) => 
-                        (this as any).addActionButton(`selectResourceCombination${index}-button`, formatTextIcons(combination.map(type => `[resource${type}]`).join('')), () => this.selectResource(combination))
-                    );
-                    break;
-
-                case 'selectProject':
-                    const selectProjectArgs = args as SelectProjectArgs;
-                    selectProjectArgs.projects.forEach(project => 
-                        (this as any).addActionButton(`selectProject${project.id}-button`, `<div class="project project${PROJECTS_IDS.indexOf(getUniqueId(project))}"></div>`, () => this.selectProject(project.id))
-                    );
-                    break;
-
-                case 'selectExchange':
-                    const selectExchangeArgs = args as SelectExchangeArgs;
-                    selectExchangeArgs.possibleExchanges.forEach((possibleExchange, index) => 
-                        (this as any).addActionButton(`selectExchange${index}-button`, formatTextIcons(`[resource${possibleExchange.from}] &#x21E8; [resource${possibleExchange.to}]`), () => this.selectExchange(possibleExchange))
-                    );
-                    (this as any).addActionButton('skipExchange-button', _('Skip'), () => this.skipExchange(), null, null, 'red');
-                    break;
-
-                case 'chooseProject':
-                    (this as any).addActionButton('selectProjects-button', _('Complete projects'), () => this.selectProjects(this.selectedPlayerProjectsIds.concat(this.selectedTableProjectsIds)));
-                    (this as any).addActionButton('skipProjects-button', _('Skip'), () => this.skipSelectProjects(), null, null, 'red');
-                    dojo.toggleClass('selectProjects-button', 'disabled', !this.table.getSelectedProjectsIds().length);
-                    dojo.toggleClass('skipProjects-button', 'disabled', !!this.table.getSelectedProjectsIds().length);
-                    break;
-
-                case 'chooseProjectDiscardedMachine':
-                    (this as any).addActionButton('selectProjectDiscardedMachine-button', _('Discard selected machines'), () => this.discardSelectedMachines());
+                case 'chooseGender':
+                    (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
+                    (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
                     break;
             }
         }
@@ -314,12 +184,6 @@ class Noah implements NoahGame {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
 
-    private onProjectSelectionChanged() {
-        const selectionLength = this.selectedPlayerProjectsIds.length + this.selectedTableProjectsIds.length;
-        dojo.toggleClass('selectProjects-button', 'disabled', !selectionLength);
-        dojo.toggleClass('skipProjects-button', 'disabled', !!selectionLength);
-    }
-
     public setHand(animals: Animal[]) {
         this.playerHand = new ebg.stock() as Stock;
         this.playerHand.create(this, $('my-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
@@ -330,27 +194,15 @@ class Noah implements NoahGame {
         this.playerHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
         dojo.connect(this.playerHand, 'onChangeSelection', this, () => this.onPlayerHandSelectionChanged(this.playerHand.getSelectedItems()));
 
-        setupAnimalCards([this.playerHand]);
+        setupAnimalCards(this.playerHand);
 
-        // TODO animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
-    }
-    
-    private getProjectStocks() {
-        return [...this.table.projectStocks.slice(1)];
-    }
-    
-    private getMachineStocks() {
-        return [this.playerHand, ...this.table.machineStocks.slice(1)];
-    }
-
-    public setHandSelectable(selectable: boolean) {
-        this.playerHand.setSelectionMode(selectable ? 1 : 0);
+        animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
 
     public onPlayerHandSelectionChanged(items: any) {
         if (items.length == 1) {
             const card = items[0];
-            this.machineClick(card.id, 'hand');
+            this.loadAnimal(card.id);
         }
     }
 
@@ -366,7 +218,7 @@ class Noah implements NoahGame {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
 
-    private createPlayerPanels(gamedatas: NoahGamedatas) {
+    /*private createPlayerPanels(gamedatas: NoahGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);     
@@ -423,209 +275,78 @@ class Noah implements NoahGame {
         (this as any).addTooltipHtmlToClass('wood-counter', _("Wood"));
         (this as any).addTooltipHtmlToClass('copper-counter', _("Copper"));
         (this as any).addTooltipHtmlToClass('crystal-counter', _("Crystal"));
-    }
+    }*/
 
-    public machineClick(id: number, from: 'hand' | 'table', payments?: Payment[]) {
-        if (this.clickAction === 'select') {
-            this.selectMachine(id);
-        } else if (this.clickAction === 'play') {
-            /*const paymentDiv = document.getElementById('paymentButtons');
-            if (paymentDiv) {
-                paymentDiv.innerHTML = '';
-            } else {
-                dojo.place(`<div id="paymentButtons"></div>`, 'generalactions')
-            }*/
-            document.querySelectorAll(`[id^='selectPaymentButton']`).forEach(elem => dojo.destroy(elem.id));
-
-            if (from === 'hand') {
-                this.playMachine(id);
-            } else if (from === 'table') {
-                if (payments.length > 1) {
-                    payments.forEach((payment, index) => {
-                        const label = dojo.string.substitute(_('Use ${jokers} as ${unpaidResources} and pay ${paidResources}'), {
-                            jokers: payment.jokers.map(_ => '[resource9]').join(''),
-                            unpaidResources: payment.jokers.map(joker => `[resource${joker}]`).join(''),
-                            paidResources: payment.remainingCost.filter(resource => resource > 0).map(resource => `[resource${resource}]`).join(''),
-                        });
-                        (this as any).addActionButton(`selectPaymentButton${index}-button`, formatTextIcons(label), () => this.repairMachine(id, payment))
-                    });
-                } else {
-                    this.repairMachine(id, payments[0]);
-                }
-            }
-        }
-    }
-
-    private playMachine(id: number) {
-        if(!(this as any).checkAction('playMachine')) {
+    private loadAnimal(id: number) {
+        if(!(this as any).checkAction('loadAnimal')) {
             return;
         }
 
-        this.takeAction('playMachine', {
+        this.takeAction('loadAnimal', {
             id
         });
     }
 
-    private repairMachine(id: number, payment: Payment) {
-        if(!(this as any).checkAction('repairMachine')) {
+    private setGender(gender: number) {
+        if(!(this as any).checkAction('setGender')) {
             return;
         }
 
-        const base64 = btoa(JSON.stringify(payment));
-
-        this.takeAction('repairMachine', {
-            id,
-            payment: base64
+        this.takeAction('setGender', {
+            gender
         });
     }
 
-    public getCharcoalium() {
-        if(!(this as any).checkAction('getCharcoalium')) {
+    private moveNoah(destination: number) {
+        if(!(this as any).checkAction('moveNoah')) {
             return;
         }
 
-        this.takeAction('getCharcoalium');
-    }
-
-    public getResource(resource: number) {
-        if(!(this as any).checkAction('getResource')) {
-            return;
-        }
-
-        this.takeAction('getResource', {
-            resource
+        this.takeAction('moveNoah', {
+            destination
         });
     }
 
-    public applyEffect() {
-        if(!(this as any).checkAction('applyEffect')) {
+    private giveCards(id: number, giveCardsTo: number[]) { // key = card id, value = toPlayerId
+        if(!(this as any).checkAction('giveCards')) {
             return;
         }
 
-        this.takeAction('applyEffect');
-    }
+        const base64 = btoa(JSON.stringify(giveCardsTo));
 
-    private selectProjects(ids: number[]) {
-        if(!(this as any).checkAction('selectProjects')) {
-            return;
-        }
-
-        this.takeAction('selectProjects', { 
-            ids: ids.join(',')
+        this.takeAction('giveCards', {
+            giveCardsTo: base64
         });
-    }
-
-    public skipSelectProjects() {
-        if(!(this as any).checkAction('skipSelectProjects')) {
-            return;
-        }
-
-        this.takeAction('skipSelectProjects');
-    }
-
-    public selectResource(resourcesTypes: number[]) {
-        if(!(this as any).checkAction('selectResource')) {
-            return;
-        }
-
-        this.takeAction('selectResource', { 
-            resourcesTypes: resourcesTypes.join(',')
-        });
-    }
-
-    public selectMachine(id: number) {
-        if(!(this as any).checkAction('selectMachine')) {
-            return;
-        }
-
-        this.takeAction('selectMachine', {
-            id
-        });
-    }
-
-    public selectProject(id: number) {
-        if(!(this as any).checkAction('selectProject')) {
-            return;
-        }
-
-        this.takeAction('selectProject', {
-            id
-        });
-    }
-
-    public selectExchange(exchange: Exchange) {
-        if(!(this as any).checkAction('selectExchange')) {
-            return;
-        }
-
-        this.takeAction('selectExchange', exchange);
-    }
-
-    public skipExchange() {
-        if(!(this as any).checkAction('skipExchange')) {
-            return;
-        }
-
-        this.takeAction('skipExchange');
-    }
-
-    public discardSelectedMachines() {
-        if(!(this as any).checkAction('discardSelectedMachines')) {
-            return;
-        }
-
-        const base64 = btoa(JSON.stringify(/*this.discardedMachineSelector.getCompleteProjects()*/'TODO'));
-
-        this.takeAction('discardSelectedMachines', {
-            completeProjects: base64
-        });        
     }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
-        (this as any).ajaxcall(`/nicodemus/nicodemus/${action}.html`, data, this, () => {});
+        (this as any).ajaxcall(`/noah/noah/${action}.html`, data, this, () => {});
     }
     
     private setPoints(playerId: number, points: number) {
         (this as any).scoreCtrl[playerId]?.toValue(points);
         this.table.setPoints(playerId, points);
     }
-    
-    private setResourceCount(playerId: number, resource: number, number: number) {
-        const counters = [this.charcoaliumCounters, this.woodCounters, this.copperCounters, this.crystalCounters];
-        counters[resource][playerId].toValue(number);
-    }
 
     private addHelp() {
-        dojo.place(`<button id="nicodemus-help-button">?</button>`, 'left-side');
-        dojo.connect( $('nicodemus-help-button'), 'onclick', this, () => this.showHelp());
+        dojo.place(`<button id="noah-help-button">?</button>`, 'left-side');
+        dojo.connect( $('noah-help-button'), 'onclick', this, () => this.showHelp());
     }
 
     private showHelp() {
         if (!this.helpDialog) {
             this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create( 'nicodemusHelpDialog' );
+            this.helpDialog.create( 'noahHelpDialog' );
             this.helpDialog.setTitle( _("Cards help") );
             
             var html = `<div id="help-popin">
-                <h1>${_("Machines effects")}</h1>
-                <div id="help-machines" class="help-section">
+                <h1>${_("Animal traits")}</h1>
+                <div id="help-animals" class="help-section">
                     <table>`;
-                MACHINES_IDS.forEach((number, index) => html += `<tr><td><div id="machine${index}" class="machine"></div></td><td>${getMachineTooltip(number)}</td></tr>`);
+                ANIMALS_WITH_TRAITS.forEach((number, index) => html += `<tr><td><div id="animal${index}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
                 html += `</table>
-                </div>
-                <h1>${_("Projects")}</h1>
-                <div id="help-projects" class="help-section">
-                    <table><tr><td class="grid">`;
-                PROJECTS_IDS.slice(1, 5).forEach((number, index) => html += `<div id="project${index + 1}" class="project"></div>`);
-                html += `</td></tr><tr><td>${getProjectTooltip(11)}</td></tr>
-                <tr><td><div id="project0" class="project"></div></td></tr><tr><td>${getProjectTooltip(10)}</td></tr><tr><td class="grid">`;
-                PROJECTS_IDS.slice(6, 9).forEach((number, index) => html += `<div id="project${index + 6}" class="project"></div>`);
-                html += `</td></tr><tr><td>${getProjectTooltip(21)}</td></tr>
-                <tr><td><div id="project5" class="project"></div></td></tr><tr><td>${getProjectTooltip(20)}</td></tr><tr><td class="grid">`;
-                PROJECTS_IDS.slice(9).forEach((number, index) => html += `<div id="project${index + 9}" class="project"></div>`);
-                html += `</td></tr><tr><td>${getProjectTooltip(31)}</td></tr></table>
                 </div>
             </div>`;
             
@@ -652,7 +373,7 @@ class Noah implements NoahGame {
         In this method, you associate each of your game notifications with your local method to handle it.
 
         Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
-                your nicodemus.game.php file.
+                your noah.game.php file.
 
     */
     setupNotifications() {
@@ -672,6 +393,11 @@ class Noah implements NoahGame {
             dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
+    }
+
+    notif_points(notif: Notif<NotifPointsArgs>) {
+        this.setPoints(notif.args.playerId, notif.args.points);
+        this.table.setPoints(notif.args.playerId, notif.args.points);
     }
 
     notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        

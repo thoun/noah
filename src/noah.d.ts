@@ -2,7 +2,7 @@
 interface Animal {
     id: number;
     type: number; // race
-    subType: number; // gender
+    gender: number;
     location: string;
     location_arg: number;
     weight: number;
@@ -49,8 +49,13 @@ interface NoahGamedatas {
 interface NoahGame extends Game {
 }
 
-interface LoadAnimalArgs {
+interface EnteringLoadAnimalArgs {
     selectableAnimals: Animal[];
+}
+
+interface NotifPointsArgs {
+    playerId: number;
+    points: number;
 }
 
 interface MoveNoahArgs {

@@ -140,7 +140,7 @@ class Noah extends Table {
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
 
-        $result['roundNumber'] = self::getGameStateValue(ROUND_NUMBER);
+        $result['roundNumber'] = intval(self::getGameStateValue(ROUND_NUMBER));
         $result['variant'] = $this->isVariant();
   
         return $result;

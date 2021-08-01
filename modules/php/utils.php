@@ -115,7 +115,7 @@ trait UtilTrait {
     }
 
     function setupCards(int $playerCount) {
-        // 56 machine cards    
+        // animal cards    
         $animals = [];
         foreach($this->ANIMALS as $type => $animal) {
             if ($animal->power == POWER_HERMAPHRODITE) {
@@ -132,7 +132,7 @@ trait UtilTrait {
         $this->ferries->createCards([[ 'type' => 0, 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
     }
 
-    function setGender(int $animalId, int $gender) {
+    function applySetGender(int $animalId, int $gender) {
         self::DbQuery("UPDATE animal SET `card_type_arg` = $gender where `card_id` = $animalId");
     }
 
@@ -142,7 +142,7 @@ trait UtilTrait {
             $this->ferries->pickCardForLocation('deck', 'table', $position);
             $card = $this->getAnimalFromDb($this->animals->pickCardForLocation('deck', 'table'.$position, 0)); 
             if ($card->power == POWER_HERMAPHRODITE) {
-                $this->setGender($card->id, bga_rand(1, 2));
+                $this->applySetGender($card->id, bga_rand(1, 2));
             }
         }
         
@@ -157,7 +157,7 @@ trait UtilTrait {
         // set players animals
         foreach ($playersIds as $playerId) {
             $this->animals->pickCardsForLocation(8, 'deck', 'hand', $playerId);
-            self::notifyPlayer('newHand', '', [
+            self::notifyPlayer($playerId, 'newHand', '', [
                 'playerId' => $playerId,
                 'animals' => $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId)),
             ]);
