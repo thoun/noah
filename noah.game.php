@@ -49,7 +49,10 @@ class Noah extends Table {
             NOAH_NEXT_MOVE => 13,
             LAST_LOADED_ANIMAL_POSITION => 14,
 
-            VARIANT => 100,
+            OPTION_VARIANT => 100,
+            OPTION_FROG => 101,
+            OPTION_CROCODILE => 102,
+            OPTION_ROOMATES => 103,
         ]); 
 
         $this->animals = self::getNew("module.common.deck");

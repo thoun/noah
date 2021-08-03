@@ -23,8 +23,18 @@ trait ArgsTrait {
         }
 
         $animalCount = count($ferry->animals);
-        if ($animalCount >= 2) {
-            return $newAnimal->gender == $ferry->animals[$animalCount - 2]->gender; // gender must always be the same as 2 cards before
+        // gender must always be the same as 2 cards before
+        if ($animalCount >= 2 && $newAnimal->gender != $ferry->animals[$animalCount - 2]->gender) {
+            return false;
+        }
+
+        // on roomates ferry, every animal must be of different race
+        if ($ferry->roomates) {
+            foreach($ferry->animals as $animal) {
+                if ($animal->type == $newAnimal->type) {
+                    return false;
+                }
+            }
         }
 
         return true;

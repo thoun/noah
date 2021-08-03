@@ -24,13 +24,17 @@ require_once('modules/php/objects/animal.php');
 $this->ANIMALS = [ // (int $cardsByGender, int $weight, int $points, int $power = 0)
     1 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 1, 2, POWER_HERMAPHRODITE), // The Snail
     2 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 8, 0, POWER_LOOK_CARDS), // The Giraffe // TODO power
-    3 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 6, 1, DONT_MOVE_NOAH), // The Mule
-    4 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 5, 1, EXCHANGE_CARD), // The Lion // TODO power
-    5 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 0, 2, REDUCE_MAX_WEIGHT), // The Woodpecker
+    3 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 6, 1, POWER_DONT_MOVE_NOAH), // The Mule / donkey?
+    4 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 5, 1, POWER_EXCHANGE_CARD), // The Lion // TODO power
+    5 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 0, 2, POWER_REDUCE_MAX_WEIGHT), // The Woodpecker
     6 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 2, 1), // Cat
     7 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 10, 0), // Elephant
     8 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 4, 4), // Panda
     9 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 0, 2), // Perrot
     10 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 3, 1), // Kangaroo
     // TODO check if other animals
+
+    // Bonus cards
+    20 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 1, 5, POWER_ADJUSTABLE_WEIGHT), // Frog // TODO power
+    21 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 6, 0, POWER_CROCODILE), // Crocodile // TODO crocodile teeth power
 ];

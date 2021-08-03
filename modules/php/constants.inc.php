@@ -30,7 +30,10 @@ define('PAIR_PLAY_AGAIN', 'PAIR_PLAY_AGAIN');
 define('NOAH_NEXT_MOVE', 'NOAH_NEXT_MOVE'); // 0 : don't move, 1 : male, 2 : female
 define('LAST_LOADED_ANIMAL_POSITION', 'LLAD');
 
-define('VARIANT', 'VARIANT');
+define('OPTION_VARIANT', 'OPTION_VARIANT');
+define('OPTION_FROG', 'OPTION_FROG');
+define('OPTION_CROCODILE', 'OPTION_CROCODILE');
+define('OPTION_ROOMATES', 'OPTION_ROOMATES');
 
 /*
  * Global variables
@@ -43,7 +46,9 @@ define('COMPLETED_PROJECTS', 'CompletedProjects');*/
  */
 define('POWER_HERMAPHRODITE', 1);
 define('POWER_LOOK_CARDS', 2);
-define('DONT_MOVE_NOAH', 3);
-define('EXCHANGE_CARD', 4);
-define('REDUCE_MAX_WEIGHT', 5);
+define('POWER_DONT_MOVE_NOAH', 3);
+define('POWER_EXCHANGE_CARD', 4);
+define('POWER_REDUCE_MAX_WEIGHT', 5);
+define('POWER_ADJUSTABLE_WEIGHT', 20);
+define('POWER_CROCODILE', 21);
 ?>

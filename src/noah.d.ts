@@ -14,6 +14,7 @@ interface Ferry {
     location: string;
     location_arg: number;
     animals: Animal[];
+    roomates: boolean;
 }
 
 interface NoahPlayer extends Player {

@@ -20,7 +20,6 @@ trait ActionTrait {
             throw new Error("Can't load this animal");
         }
 
-
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
@@ -67,9 +66,13 @@ trait ActionTrait {
             'position' => $position,
             'animalName' => $this->getAnimalName($animal->type),
         ]);
+
+        if ($animal->power == POWER_CROCODILE) {
+            $this->decPlayerScore(2);
+        }
           
         self::setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
-        self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == DONT_MOVE_NOAH ? 0 : $animal->gender);
+        self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
         $this->gamestate->nextState('moveNoah');
     }
 

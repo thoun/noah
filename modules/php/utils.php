@@ -63,7 +63,19 @@ trait UtilTrait {
     }
 
     function isVariant() {
-        return intval(self::getGameStateValue(VARIANT)) === 2;
+        return intval(self::getGameStateValue(OPTION_VARIANT)) === 2;
+    }
+
+    function useFrog() {
+        return intval(self::getGameStateValue(OPTION_FROG)) === 2;
+    }
+
+    function useCrocodile() {
+        return intval(self::getGameStateValue(OPTION_CROCODILE)) === 2;
+    }
+
+    function useRoomates() {
+        return intval(self::getGameStateValue(OPTION_ROOMATES)) === 2;
     }
 
     function getMaxPlayerScore() {
@@ -114,10 +126,27 @@ trait UtilTrait {
         ]);
     }
 
+    function decPlayerScore(int $playerId, int $decScore) {
+        $newScore = max(0, $this->getPlayerScore($playerId) + 2);
+        self::DbQuery("UPDATE player SET player_score = $newScore WHERE player_id = $playerId");
+
+        self::notifyAllPlayers('points', '', [
+            'playerId' => $playerId,
+            'points' => $newScore,
+        ]);
+    }
+
     function setupCards(int $playerCount) {
         // animal cards    
         $animals = [];
+        $useFrog = $this->useFrog();
+        $useCrocodile = $this->useCrocodile();
         foreach($this->ANIMALS as $type => $animal) {
+            if ($useFrog && $type == 1) { continue; } // frog remove snails
+            if (!$useFrog && $type == 20) { continue; } // frog not used
+            if ($useCrocodile && $type == 3) { continue; } // crocodile remove donkeys
+            if (!$useCrocodile && $type == 21) { continue; } // crocodile not used
+
             if ($animal->power == POWER_HERMAPHRODITE) {
                 $animals[] = [ 'type' => $type, 'type_arg' => 0, 'nbr' => $animal->cardsByGender[$playerCount] ];
             } else {
@@ -129,7 +158,7 @@ trait UtilTrait {
         $this->animals->createCards($animals, 'deck');
         
         // 8 ferries
-        $this->ferries->createCards([[ 'type' => 0, 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
+        $this->ferries->createCards([[ 'type' => ($this->useRoomates() ? 1 : 0), 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
     }
 
     function applySetGender(int $animalId, int $gender) {

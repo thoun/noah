@@ -39,4 +39,46 @@ $game_options = [
         ],
         'default' => 1,
     ],
+
+    101 => [
+        'name' => totranslate('Use bonus card : Frog'),
+        'values' => [
+            1 => [
+                'name' => totranslate('Disabled'),
+            ],
+            2 => [
+                'name' => totranslate('Enabled'),
+                'description' => totranslate("Frog cards replace Snail cards."),
+            ],
+        ],
+        'default' => 1,
+    ],
+
+    102 => [
+        'name' => totranslate('Use bonus card : Crocodile'),
+        'values' => [
+            1 => [
+                'name' => totranslate('Disabled'),
+            ],
+            2 => [
+                'name' => totranslate('Enabled'),
+                'description' => totranslate("Crocodile cards replace Donkey cards."),
+            ],
+        ],
+        'default' => 1,
+    ],
+
+    101 => [
+        'name' => totranslate('Use bonus card : Roomates'),
+        'values' => [
+            1 => [
+                'name' => totranslate('Disabled'),
+            ],
+            2 => [
+                'name' => totranslate('Enabled'),
+                'description' => totranslate("In the Ark, it is impossible to place twice the same animal, whether male or female"),
+            ],
+        ],
+        'default' => 1,
+    ],
 ];

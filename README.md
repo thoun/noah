@@ -33,7 +33,8 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 Make sure ftp-sync.json and node_modules are in .gitignore
 
 ## TODO
-Optimal loading
+Optimal loading cards distribution
 powers
-bonus animals
+TOCHECK frog : do we ask player to choose 1 to 5 if he can do optimal loading, or do we always do optimal loading if possible ?
+TOCHECK roomates : text says only 1 of each animal on the ark, but it's in the ferry ? all ferries become roomates ferries ?
 solo mode?

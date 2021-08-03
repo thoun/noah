@@ -4,11 +4,13 @@ class Ferry {
     public $location;
     public $location_arg;
     public $animals;
+    public $roomates;
 
     public function __construct($dbCard) {
         $this->id = intval($dbCard['id']);
         $this->location = $dbCard['location'];
         $this->location_arg = intval($dbCard['location_arg']);
+        $this->roomates = boolval($dbCard['type']);
     } 
 
     public function getCurrentWeight() {
@@ -21,7 +23,7 @@ class Ferry {
 
     public function getMaxWeight() {
         foreach($this->animals as $animal) {
-            if ($animal->power == REDUCE_MAX_WEIGHT) {
+            if ($animal->power == POWER_REDUCE_MAX_WEIGHT) {
                 return 13;
             }
             return 21;
