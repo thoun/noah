@@ -1,13 +1,84 @@
 @import url(../../../css/csslayer.css);
-.remaining-counter {
+#table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#table .ferry-spot {
+  top: 233px;
+  left: 116px;
+  position: absolute;
+  width: 185px;
+  transform-origin: top center;
+}
+#table .ferry-spot.position0 {
+  transform: rotate(0deg) translateY(130px);
+}
+#table .ferry-spot.position1 {
+  transform: rotate(72deg) translateY(130px);
+}
+#table .ferry-spot.position2 {
+  transform: rotate(144deg) translateY(130px);
+}
+#table .ferry-spot.position3 {
+  transform: rotate(216deg) translateY(130px);
+}
+#table .ferry-spot.position4 {
+  transform: rotate(288deg) translateY(130px);
+}
+#table .ferry-spot .ferry-card {
+  background: url("img/ferry-back.jpg");
+  width: 185px;
+  height: 132px;
+  cursor: default;
+  margin: 0;
+}
+#table .ferry-spot .animal-card {
+  position: absolute;
+  left: 40px;
+  width: 132px;
+  height: 185px;
+  background-image: url("img/cards.jpg");
+  border-radius: 10px;
+}
+#table #center-board {
+  position: relative;
+  width: 466px;
+  height: 466px;
+  background: url("img/board.png");
+}
+#table #center-board #noah {
+  position: absolute;
+  background: url("img/noah.png");
+  width: 150px;
+  height: 120px;
+  z-index: 5;
+}
+#table #center-board .point-marker {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  box-shadow: 1px 1px 2px 2px black;
+  border-radius: 50%;
+}
+#table #center-board #ferry-deck {
+  position: absolute;
+  top: 100px;
+  left: 150px;
+  background: url("img/ferry-back.jpg");
+  width: 185px;
+  height: 132px;
+  box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
+  cursor: default;
+}
+#table #center-board .remaining-counter {
   position: absolute;
   text-align: center;
   text-shadow: 1px 1px 1px white;
 }
-
-#remaining-animal-counter {
-  top: 73px;
-  left: 144px;
+#table #center-board #remaining-ferry-counter {
+  top: 280px;
+  left: 244px;
 }
 
 #noah-help-button {

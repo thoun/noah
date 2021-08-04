@@ -8,8 +8,8 @@
         </div>
         <div id="table">
             <div id="center-board">
-            <div id="ferry-deck"></div>
-            <div id="remaining-ferry-counter"></div>
+                <div id="ferry-deck" class="stockitem"></div>
+                <div id="remaining-ferry-counter" class="remaining-counter"></div>
             </div>
         </div>
     </div>

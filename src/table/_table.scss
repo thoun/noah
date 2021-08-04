@@ -1,10 +1,54 @@
-.remaining-counter {
-  position: absolute;
-  text-align: center;
-  text-shadow: 1px 1px 1px white;
-}
+#table {
+  @import 'ferry/ferry';
 
-#remaining-animal-counter {
-  top: 73px;
-  left: 144px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  #center-board {
+    position: relative;
+    width: 466px;
+    height: 466px;
+    background: url('img/board.png');
+
+    #noah {    
+      position: absolute;
+      background: url('img/noah.png');
+      width: 150px;
+      height: 120px;
+
+      z-index: 5;
+    }
+
+    .point-marker {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      box-shadow: 1px 1px 2px 2px black;
+      border-radius: 50%;
+    }
+
+    #ferry-deck {
+      position: absolute;
+      top: 100px;
+      left: 150px;
+      background: url('img/ferry-back.jpg');
+      width: 185px;
+      height: 132px;
+      box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
+      cursor: default;
+    }
+
+    .remaining-counter {
+      position: absolute;
+      text-align: center;
+      text-shadow: 1px 1px 1px white;
+    }
+    
+    #remaining-ferry-counter {
+      top: 280px;
+      left: 244px;
+    }
+
+  }
 }

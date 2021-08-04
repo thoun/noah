@@ -15,6 +15,7 @@
         "src/slide-utils.ts",
         "src/stock-utils.ts",
         "src/text-icons-formatter.ts",
+        "src/table/ferry/ferry.ts",
         "src/table/table.ts",
         "src/noah.ts",
         "src/define.ts"

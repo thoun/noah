@@ -14,8 +14,8 @@ const ANIMALS_WITH_TRAITS = [
     1,2,3,4,5
 ];
 
-const ANIMAL_WIDTH = 190;
-const ANIMAL_HEIGHT = 190;
+const ANIMAL_WIDTH = 132;
+const ANIMAL_HEIGHT = 185;
 
 const FERRY_WIDTH = ANIMAL_HEIGHT;
 const FERRY_HEIGHT = ANIMAL_WIDTH;
@@ -32,7 +32,7 @@ function setupAnimalCards(animalStock: Stock) {
             cardId * 10 + gender, 
             cardId, 
             cardsurl, 
-            index
+            index + gender
         )
     ));
 }

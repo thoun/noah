@@ -41,8 +41,8 @@ var ANIMALS_TYPES = [
 var ANIMALS_WITH_TRAITS = [
     1, 2, 3, 4, 5
 ];
-var ANIMAL_WIDTH = 190;
-var ANIMAL_HEIGHT = 190;
+var ANIMAL_WIDTH = 132;
+var ANIMAL_HEIGHT = 185;
 var FERRY_WIDTH = ANIMAL_HEIGHT;
 var FERRY_HEIGHT = ANIMAL_WIDTH;
 function getUniqueId(animal) {
@@ -51,7 +51,7 @@ function getUniqueId(animal) {
 function setupAnimalCards(animalStock) {
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
     ANIMALS_TYPES.forEach(function (cardId, index) { return [1, 2].forEach(function (gender) {
-        return animalStock.addItemType(cardId * 10 + gender, cardId, cardsurl, index);
+        return animalStock.addItemType(cardId * 10 + gender, cardId, cardsurl, index + gender);
     }); });
 }
 function getAnimalTooltip(type) {
@@ -71,10 +71,26 @@ function formatTextIcons(rawText) {
     return rawText
         .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
 }
+var FerrySpot = /** @class */ (function () {
+    function FerrySpot(game, position, ferry) {
+        this.game = game;
+        this.position = position;
+        this.animals = ferry.animals;
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div class=\"stockitem ferry-card\"></div>\n            \n        ";
+        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: -100% 0%;\"></div>\n        "; });
+        html += "</div>";
+        dojo.place(html, 'center-board');
+    }
+    return FerrySpot;
+}());
+var NOAH_RADIUS = 150;
+var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
     function Table(game, players, ferries, noahPosition) {
         var _this = this;
         this.game = game;
+        this.noahPosition = noahPosition;
+        this.spots = [];
         var html = '';
         // points
         players.forEach(function (player) {
@@ -84,13 +100,32 @@ var Table = /** @class */ (function () {
         players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
         // noah
         var noahCoordinates = this.getNoahCoordinates(noahPosition);
-        html = "<div id=\"noah\" style=\"left: " + noahCoordinates[0] + "; top: " + noahCoordinates[1] + ";\"></div>";
+        html = "<div id=\"noah\" style=\"left: " + noahCoordinates[0] + "px; top: " + noahCoordinates[1] + "px;\"></div>";
         dojo.place(html, 'center-board');
+        for (var i = 0; i < 5; i++) {
+            this.spots.push(new FerrySpot(game, i, ferries[i]));
+        }
+        this.updateMargins();
+        // TODO TEMP
+        document.getElementById('noah').addEventListener('click', function () { return _this.noahMoved(_this.noahPosition + 1); });
     }
+    Table.prototype.getPointsCoordinates = function (points) {
+        var angle = (Math.max(1, Math.min(points, MAX_SCORE)) / MAX_SCORE) * Math.PI * 2; // in radians
+        var left = NOAH_RADIUS * Math.sin(angle);
+        var top = NOAH_RADIUS * Math.cos(angle);
+        if (points === 0) {
+            top += 50;
+        }
+        return [left, top];
+    };
     Table.prototype.getNoahCoordinates = function (position) {
-        return [40, 80];
+        var angle = (position / 5) * Math.PI * 2; // in radians
+        var left = 233 + NOAH_RADIUS * Math.sin(angle);
+        var top = 233 + NOAH_RADIUS * Math.cos(angle);
+        return [left, top];
     };
     Table.prototype.noahMoved = function (position) {
+        this.noahPosition = position;
         var noahCoordinates = this.getNoahCoordinates(position);
         dojo.fx.slideTo({
             node: document.getElementById("noah"),
@@ -107,8 +142,9 @@ var Table = /** @class */ (function () {
         const playerShouldShift = equality && playerId > opponentId;*/
         if (firstPosition === void 0) { firstPosition = false; }
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
-        var top = points % 2 ? 40 : 52;
-        var left = 16 + points * 46.2;
+        var coordinates = this.getPointsCoordinates(points);
+        var left = coordinates[0];
+        var top = coordinates[1];
         /*if (playerShouldShift) {
             top -= 5;
             left -= 5;
@@ -128,6 +164,34 @@ var Table = /** @class */ (function () {
                 unit: "px"
             }).play();
         }
+    };
+    Table.prototype.updateMargins = function () {
+        var board = document.getElementById('center-board');
+        var boardBR = board.getBoundingClientRect();
+        var topMargin = 0;
+        var bottomMargin = 0;
+        var sideMargin = 0;
+        this.spots.forEach(function (spot) {
+            var spotDiv = document.getElementById("ferry-spot-" + spot.position);
+            spotDiv.style.height = (spot.animals.length ? 100 + 185 + ((spot.animals.length - 1) * 30) : 132) + "px";
+            var spotBR = spotDiv.getBoundingClientRect();
+            if (spotBR.y < boardBR.y - topMargin) {
+                topMargin = boardBR.y - spotBR.y;
+            }
+            if (spotBR.y + spotBR.height > boardBR.y + boardBR.height + bottomMargin) {
+                bottomMargin = (spotBR.y + spotBR.height) - (boardBR.y + boardBR.height);
+            }
+            if (spotBR.x < boardBR.x - sideMargin) {
+                sideMargin = boardBR.x - spotBR.x;
+            }
+            if (spotBR.x + spotBR.width > boardBR.x + boardBR.width + sideMargin) {
+                sideMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
+            }
+        });
+        board.style.marginTop = topMargin + "px";
+        board.style.marginBottom = bottomMargin + "px";
+        board.style.marginLeft = sideMargin + "px";
+        board.style.marginRight = sideMargin + "px";
     };
     return Table;
 }());
