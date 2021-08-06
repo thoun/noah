@@ -20,14 +20,13 @@ class Table {
         dojo.place(html, 'center-board');
         players.forEach(player => this.setPoints(Number(player.id), Number(player.score), true));
 
-        // noah
-        const noahCoordinates = this.getNoahCoordinates(noahPosition);
-        html = `<div id="noah" style="left: ${noahCoordinates[0]}px; top: ${noahCoordinates[1]}px;"></div>`;
-        dojo.place(html, 'center-board');
-
+        // ferries
         for (let i=0;i<5;i++) {
             this.spots.push(new FerrySpot(game, i, ferries[i]));
         }
+
+        // noah
+        dojo.place(`<div id="noah"></div>`, `noah-spot-${noahPosition}`);
 
         this.updateMargins();
 
@@ -45,29 +44,11 @@ class Table {
 
         return [left, top];
     }
-
-    private getNoahCoordinates(position: number) {
-        const angle = (position/5)*Math.PI*2; // in radians
-        const left = 233 + NOAH_RADIUS*Math.sin(angle);
-        const top = 233 + NOAH_RADIUS*Math.cos(angle);
-
-        return [left, top];
-    }
     
     public noahMoved(position: number) {
         this.noahPosition = position;
 
-        const noahCoordinates = this.getNoahCoordinates(position);
-
-        dojo.fx.slideTo({
-            node: document.getElementById(`noah`),
-            left: noahCoordinates[0],
-            top: noahCoordinates[1],
-            delay: 0,
-            duration: ANIMATION_MS,
-            easing: dojo.fx.easing.cubicInOut,
-            unit: "px"
-        }).play();
+        slideToObjectAndAttach(document.getElementById(`noah`), `noah-spot-${position}`);
     }
 
     public setPoints(playerId: number, points: number, firstPosition = false) {

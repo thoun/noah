@@ -26,6 +26,21 @@
 #table .ferry-spot.position4 {
   transform: rotate(288deg) translateY(130px);
 }
+#table .ferry-spot .noah-spot {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+}
+#table .ferry-spot .noah-spot.selectable {
+  cursor: pointer;
+  pointer-events: all;
+  border: 5px dashed red;
+}
 #table .ferry-spot .ferry-card {
   background: url("img/ferry-back.jpg");
   width: 185px;

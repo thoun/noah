@@ -48,11 +48,17 @@ interface NoahGamedatas {
 }
 
 interface NoahGame extends Game {
+    moveNoah(destination: number): void;
 }
 
 interface EnteringLoadAnimalArgs {
     selectableAnimals: Animal[];
 }
+
+interface EnteringMoveNoahArgs {
+    possiblePositions: number[];
+}
+
 
 interface NotifPointsArgs {
     playerId: number;

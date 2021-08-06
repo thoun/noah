@@ -89,6 +89,9 @@ class Noah implements NoahGame {
                 this.setGamestateDescription(allDisabled ? 'impossible' : '');
                 this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
+            case 'moveNoah':
+                this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
+                break;
         }
     }
     
@@ -108,6 +111,13 @@ class Noah implements NoahGame {
         }
     }
 
+    
+    private onEnteringStateMoveNoah(args: EnteringMoveNoahArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            args.possiblePositions.forEach(position => dojo.addClass(`noah-spot-${position}`, 'selectable'));
+        }
+    }
+
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
     //
@@ -116,13 +126,21 @@ class Noah implements NoahGame {
 
         switch (stateName) {
             case 'loadAnimal':
-                this.onLeavingLoadAnimal();
+                this.onLeavingStateLoadAnimal();
+                break;
+            case 'moveNoah':
+                this.onLeavingStateMoveNoah();
+                break;
         }
     }
 
-    onLeavingLoadAnimal() {
+    onLeavingStateLoadAnimal() {
         this.playerHand.setSelectionMode(0);
         dojo.query('.stockitem').removeClass('disabled');
+    }
+
+    onLeavingStateMoveNoah() {
+        dojo.query('.noah-spot').removeClass('selectable');
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -297,7 +315,7 @@ class Noah implements NoahGame {
         });
     }
 
-    private moveNoah(destination: number) {
+    public moveNoah(destination: number) {
         if(!(this as any).checkAction('moveNoah')) {
             return;
         }

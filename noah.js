@@ -73,13 +73,15 @@ function formatTextIcons(rawText) {
 }
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
+        var _this = this;
         this.game = game;
         this.position = position;
         this.animals = ferry.animals;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div class=\"stockitem ferry-card\"></div>\n            \n        ";
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"noah-spot-" + position + "\" class=\"noah-spot\"></div>\n            <div class=\"stockitem ferry-card\"></div>\n            \n        ";
         this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: -100% 0%;\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
+        document.getElementById("noah-spot-" + position).addEventListener('click', function () { return _this.game.moveNoah(position); });
     }
     return FerrySpot;
 }());
@@ -98,13 +100,12 @@ var Table = /** @class */ (function () {
         });
         dojo.place(html, 'center-board');
         players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
-        // noah
-        var noahCoordinates = this.getNoahCoordinates(noahPosition);
-        html = "<div id=\"noah\" style=\"left: " + noahCoordinates[0] + "px; top: " + noahCoordinates[1] + "px;\"></div>";
-        dojo.place(html, 'center-board');
+        // ferries
         for (var i = 0; i < 5; i++) {
             this.spots.push(new FerrySpot(game, i, ferries[i]));
         }
+        // noah
+        dojo.place("<div id=\"noah\"></div>", "noah-spot-" + noahPosition);
         this.updateMargins();
         // TODO TEMP
         document.getElementById('noah').addEventListener('click', function () { return _this.noahMoved(_this.noahPosition + 1); });
@@ -118,24 +119,9 @@ var Table = /** @class */ (function () {
         }
         return [left, top];
     };
-    Table.prototype.getNoahCoordinates = function (position) {
-        var angle = (position / 5) * Math.PI * 2; // in radians
-        var left = 233 + NOAH_RADIUS * Math.sin(angle);
-        var top = 233 + NOAH_RADIUS * Math.cos(angle);
-        return [left, top];
-    };
     Table.prototype.noahMoved = function (position) {
         this.noahPosition = position;
-        var noahCoordinates = this.getNoahCoordinates(position);
-        dojo.fx.slideTo({
-            node: document.getElementById("noah"),
-            left: noahCoordinates[0],
-            top: noahCoordinates[1],
-            delay: 0,
-            duration: ANIMATION_MS,
-            easing: dojo.fx.easing.cubicInOut,
-            unit: "px"
-        }).play();
+        slideToObjectAndAttach(document.getElementById("noah"), "noah-spot-" + position);
     };
     Table.prototype.setPoints = function (playerId, points, firstPosition) {
         /*const equality = opponentScore === points;
@@ -254,6 +240,9 @@ var Noah = /** @class */ (function () {
                 this.setGamestateDescription(allDisabled ? 'impossible' : '');
                 this.onEnteringStateLoadAnimal(args.args);
                 break;
+            case 'moveNoah':
+                this.onEnteringStateMoveNoah(args.args);
+                break;
         }
     };
     Noah.prototype.setGamestateDescription = function (property) {
@@ -272,6 +261,11 @@ var Noah = /** @class */ (function () {
             this.playerHand.setSelectionMode(1);
         }
     };
+    Noah.prototype.onEnteringStateMoveNoah = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            args.possiblePositions.forEach(function (position) { return dojo.addClass("noah-spot-" + position, 'selectable'); });
+        }
+    };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
     //
@@ -279,12 +273,19 @@ var Noah = /** @class */ (function () {
         log('Leaving state: ' + stateName);
         switch (stateName) {
             case 'loadAnimal':
-                this.onLeavingLoadAnimal();
+                this.onLeavingStateLoadAnimal();
+                break;
+            case 'moveNoah':
+                this.onLeavingStateMoveNoah();
+                break;
         }
     };
-    Noah.prototype.onLeavingLoadAnimal = function () {
+    Noah.prototype.onLeavingStateLoadAnimal = function () {
         this.playerHand.setSelectionMode(0);
         dojo.query('.stockitem').removeClass('disabled');
+    };
+    Noah.prototype.onLeavingStateMoveNoah = function () {
+        dojo.query('.noah-spot').removeClass('selectable');
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).

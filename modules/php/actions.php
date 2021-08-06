@@ -47,7 +47,8 @@ trait ActionTrait {
         $this->applyLoadAnimal($animals[$nbr - 1]->id);
     }
 
-    function applyLoadAnimal(int $id) {
+    function applyLoadAnimal(int $id) {        
+        $animal = $this->getAnimalFromDb($this->animals->getCard($id));
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalCount = intval($this->animals->countCardInLocation($location));

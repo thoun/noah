@@ -58,22 +58,33 @@ trait ArgsTrait {
     }
 
     function getPossiblePositions() {
-        $position = $this->getNoahPosition();
+        $currentPosition = $this->getNoahPosition();
 
+        $possiblePositions = [];
+
+        $possiblePositionsFromActualPlace = [];
         $nextMove = intval($this->getGameStateValue(NOAH_NEXT_MOVE));
-        if ($nextMove == 1) {
-            return [
-                ($position + 2) % 5,
-                ($position + 3) % 5,
+        if ($nextMove == 0) {
+            $possiblePositionsFromActualPlace = [$currentPosition];
+        } else if ($nextMove == 1) {
+            $possiblePositionsFromActualPlace = [
+                ($currentPosition + 2) % 5,
+                ($currentPosition + 3) % 5,
             ];
         } else if ($nextMove == 2) {
-            return [
-                ($position + 1) % 5,
-                ($position + 4) % 5,
+            $possiblePositionsFromActualPlace = [
+                ($currentPosition + 1) % 5,
+                ($currentPosition + 4) % 5,
             ];
         }
 
-        return null;
+        foreach($possiblePositionsFromActualPlace as $possiblePosition) {
+            if (intval($this->ferries->countCardInLocation('table', $possiblePosition)) > 0) {
+                $possiblePositions[] = $possiblePosition;
+            }
+        }
+
+        return $possiblePositions;
     }
 
     function argMoveNoah() {
