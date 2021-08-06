@@ -8,7 +8,7 @@ declare const g_gamethemeurl;
 declare const board: HTMLDivElement;*/
 
 const ANIMALS_TYPES = [
-    1,2,3,4,5,6,7,8,9,10
+    1,2,3,4,5,6,7,8,9,10, 20,21
 ];
 const ANIMALS_WITH_TRAITS = [
     1,2,3,4,5
@@ -32,7 +32,7 @@ function setupAnimalCards(animalStock: Stock) {
             cardId * 10 + gender, 
             cardId, 
             cardsurl, 
-            index + gender
+            index*2 + gender
         )
     ));
 }
@@ -49,5 +49,5 @@ function getAnimalTooltip(type: number) {
 }
 
 function setupAnimalCard(game: Game, cardDiv: HTMLDivElement, type: number) {
-    (game as any).addTooltipHtml(cardDiv.id, getAnimalTooltip(type));
+    (game as any).addTooltipHtml(cardDiv.id, `Type : ${type}<br>` + getAnimalTooltip(type));
 }

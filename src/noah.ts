@@ -209,6 +209,7 @@ class Noah implements NoahGame {
         this.playerHand.setSelectionAppearance('class');
         this.playerHand.selectionClass = 'selected';
         this.playerHand.centerItems = true;
+        this.playerHand.image_items_per_row = 10;
         this.playerHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
         dojo.connect(this.playerHand, 'onChangeSelection', this, () => this.onPlayerHandSelectionChanged(this.playerHand.getSelectedItems()));
 

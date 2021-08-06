@@ -12,24 +12,24 @@
   transform-origin: top center;
 }
 #table .ferry-spot.position0 {
-  transform: rotate(0deg) translateY(130px);
+  transform: rotate(0deg) translateY(180px);
 }
 #table .ferry-spot.position1 {
-  transform: rotate(72deg) translateY(130px);
+  transform: rotate(72deg) translateY(180px);
 }
 #table .ferry-spot.position2 {
-  transform: rotate(144deg) translateY(130px);
+  transform: rotate(144deg) translateY(180px);
 }
 #table .ferry-spot.position3 {
-  transform: rotate(216deg) translateY(130px);
+  transform: rotate(216deg) translateY(180px);
 }
 #table .ferry-spot.position4 {
-  transform: rotate(288deg) translateY(130px);
+  transform: rotate(288deg) translateY(180px);
 }
 #table .ferry-spot .noah-spot {
   position: absolute;
   left: 20px;
-  top: 10px;
+  top: -100px;
   width: 150px;
   height: 150px;
   border-radius: 50%;

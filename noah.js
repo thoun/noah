@@ -36,7 +36,7 @@ declare const g_gamethemeurl;
 
 declare const board: HTMLDivElement;*/
 var ANIMALS_TYPES = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21
 ];
 var ANIMALS_WITH_TRAITS = [
     1, 2, 3, 4, 5
@@ -51,7 +51,7 @@ function getUniqueId(animal) {
 function setupAnimalCards(animalStock) {
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
     ANIMALS_TYPES.forEach(function (cardId, index) { return [1, 2].forEach(function (gender) {
-        return animalStock.addItemType(cardId * 10 + gender, cardId, cardsurl, index + gender);
+        return animalStock.addItemType(cardId * 10 + gender, cardId, cardsurl, index * 2 + gender);
     }); });
 }
 function getAnimalTooltip(type) {
@@ -65,7 +65,7 @@ function getAnimalTooltip(type) {
     return null;
 }
 function setupAnimalCard(game, cardDiv, type) {
-    game.addTooltipHtml(cardDiv.id, getAnimalTooltip(type));
+    game.addTooltipHtml(cardDiv.id, "Type : " + type + "<br>" + getAnimalTooltip(type));
 }
 function formatTextIcons(rawText) {
     return rawText
@@ -78,11 +78,19 @@ var FerrySpot = /** @class */ (function () {
         this.position = position;
         this.animals = ferry.animals;
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"noah-spot-" + position + "\" class=\"noah-spot\"></div>\n            <div class=\"stockitem ferry-card\"></div>\n            \n        ";
-        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: -100% 0%;\"></div>\n        "; });
+        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
         document.getElementById("noah-spot-" + position).addEventListener('click', function () { return _this.game.moveNoah(position); });
     }
+    FerrySpot.prototype.getBackgroundPosition = function (animal) {
+        var imagePosition = animal.type * 2 + animal.gender;
+        var image_items_per_row = 10;
+        var row = Math.floor(imagePosition / image_items_per_row);
+        var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+        var yBackgroundPercent = row * 100;
+        return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
+    };
     return FerrySpot;
 }());
 var NOAH_RADIUS = 150;
@@ -345,6 +353,7 @@ var Noah = /** @class */ (function () {
         this.playerHand.setSelectionAppearance('class');
         this.playerHand.selectionClass = 'selected';
         this.playerHand.centerItems = true;
+        this.playerHand.image_items_per_row = 10;
         this.playerHand.onItemCreate = function (cardDiv, type) { return setupAnimalCard(_this, cardDiv, type); };
         dojo.connect(this.playerHand, 'onChangeSelection', this, function () { return _this.onPlayerHandSelectionChanged(_this.playerHand.getSelectedItems()); });
         setupAnimalCards(this.playerHand);

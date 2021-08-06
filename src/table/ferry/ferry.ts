@@ -16,12 +16,21 @@ class FerrySpot {
             
         `;
         this.animals.forEach((animal, index) => html += `
-            <div id="ferry-spot-${position}-animal${index}" class="animal-card" style="top : ${100 + index * 30}px; background-position: -100% 0%;"></div>
+            <div id="ferry-spot-${position}-animal${index}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
         `);
         html += `</div>`;
 
         dojo.place(html, 'center-board');
 
         document.getElementById(`noah-spot-${position}`).addEventListener('click', () => this.game.moveNoah(position));
+    }
+
+    private getBackgroundPosition(animal: Animal) {
+        const imagePosition = animal.type * 2 + animal.gender;
+        const image_items_per_row = 10;
+        var row = Math.floor(imagePosition / image_items_per_row);
+        const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+        const yBackgroundPercent = row * 100;
+        return `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
     }
 }
