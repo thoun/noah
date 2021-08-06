@@ -145,58 +145,31 @@
   border-spacing: 10px;
   border-collapse: separate;
 }
-#help-popin #help-animals .animal {
-  width: 190px;
-  height: 190px;
+#help-popin .help-animals .animal {
+  width: 132px;
+  height: 185px;
   background-image: url("img/cards.jpg");
 }
-#help-popin #help-animals #animal0 {
-  background-position: 0% 0%;
+#help-popin .help-animals #animal1 {
+  background-position: 11.1111111111% 0%;
 }
-#help-popin #help-animals #animal1 {
-  background-position: 6.6666666667% 0%;
-}
-#help-popin #help-animals #animal2 {
-  background-position: 13.3333333333% 0%;
-}
-#help-popin #help-animals #animal3 {
-  background-position: 20% 0%;
-}
-#help-popin #help-animals #animal4 {
-  background-position: 26.6666666667% 0%;
-}
-#help-popin #help-animals #animal5 {
+#help-popin .help-animals #animal2 {
   background-position: 33.3333333333% 0%;
 }
-#help-popin #help-animals #animal6 {
-  background-position: 40% 0%;
-}
-#help-popin #help-animals #animal7 {
-  background-position: 46.6666666667% 0%;
-}
-#help-popin #help-animals #animal8 {
-  background-position: 53.3333333333% 0%;
-}
-#help-popin #help-animals #animal9 {
-  background-position: 60% 0%;
-}
-#help-popin #help-animals #animal10 {
+#help-popin .help-animals #animal3 {
   background-position: 66.6666666667% 0%;
 }
-#help-popin #help-animals #animal11 {
-  background-position: 73.3333333333% 0%;
+#help-popin .help-animals #animal4 {
+  background-position: 77.7777777778% 0%;
 }
-#help-popin #help-animals #animal12 {
-  background-position: 80% 0%;
-}
-#help-popin #help-animals #animal13 {
-  background-position: 86.6666666667% 0%;
-}
-#help-popin #help-animals #animal14 {
-  background-position: 93.3333333333% 0%;
-}
-#help-popin #help-animals #animal15 {
+#help-popin .help-animals #animal5 {
   background-position: 100% 0%;
+}
+#help-popin .help-animals #animal20 {
+  background-position: 55.5555555556% 100%;
+}
+#help-popin .help-animals #animal21 {
+  background-position: 88.8888888889% 100%;
 }
 
 .player-board .counters {

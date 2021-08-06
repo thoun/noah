@@ -1,6 +1,6 @@
 
-$animal-width: 190px; 
-$animal-height: 190px;
+$animal-width: 132px; 
+$animal-height: 185px;
 
 #noah-help-button {
     position: fixed;
@@ -56,16 +56,34 @@ $animal-height: 190px;
         }
     }
 
-    #help-animals {
+    .help-animals {
         .animal {
             width: $animal-width; 
             height: $animal-height;
             background-image: url('img/cards.jpg');
         }
-        @for $i from 0 through 15 {
-            #animal#{$i} {
-                background-position: ($i * 100% / 15) 0%;
-            }
+
+        #animal1 {
+            background-position: (100% / 9) 0%;
+        }
+        #animal2 {
+            background-position: (300% / 9) 0%;
+        }
+        #animal3 {
+            background-position: (600% / 9) 0%;
+        }
+        #animal4 {
+            background-position: (700% / 9) 0%;
+        }
+        #animal5 {
+            background-position: (900% / 9) 0%;
+        }
+
+        #animal20 {
+            background-position: (500% / 9) 100%;
+        }
+        #animal21 {
+            background-position: (800% / 9) 100%;
         }
     }
 }

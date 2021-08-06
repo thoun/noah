@@ -360,11 +360,18 @@ class Noah implements NoahGame {
             this.helpDialog.create( 'noahHelpDialog' );
             this.helpDialog.setTitle( _("Cards help") );
             
-            var html = `<div id="help-popin">
+            var html = `
+            <div id="help-popin">
                 <h1>${_("Animal traits")}</h1>
-                <div id="help-animals" class="help-section">
+                <div class="help-section help-animals">
                     <table>`;
-                ANIMALS_WITH_TRAITS.forEach((number, index) => html += `<tr><td><div id="animal${index}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+                ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+                html += `</table>
+                </div>
+                <h1>${_("Bonus animal traits")}</h1>
+                <div class="help-section help-animals">
+                    <table>`;
+                BONUS_ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
                 html += `</table>
                 </div>
             </div>`;

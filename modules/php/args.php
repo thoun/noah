@@ -16,7 +16,7 @@ trait ArgsTrait {
         $ferry = $this->getFerry($this->getNoahPosition());
 
         $currentWeight = $ferry->getCurrentWeight();
-        $maxWeight = $ferry->getMaxWeight();
+        $maxWeight = $ferry->getMaxWeight($newAnimal->power == POWER_REDUCE_MAX_WEIGHT);
 
         if ($currentWeight + $newAnimal->weight > $maxWeight) {
             return false;

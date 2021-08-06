@@ -21,13 +21,17 @@ class Ferry {
         return $currentWeight;
     }
 
-    public function getMaxWeight() {
+    public function getMaxWeight($forceToThirteen = false) {
+        if ($forceToThirteen) {
+            return 13;
+        }
+
         foreach($this->animals as $animal) {
             if ($animal->power == POWER_REDUCE_MAX_WEIGHT) {
                 return 13;
             }
-            return 21;
         }
+        return 21;
     }
     
 }

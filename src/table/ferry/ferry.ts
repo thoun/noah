@@ -26,7 +26,9 @@ class FerrySpot {
     }
 
     private getBackgroundPosition(animal: Animal) {
-        const imagePosition = animal.type * 2 + animal.gender;
+        const imagePosition = animal.type >= 20 ?
+            24 + (animal.type - 20) * 2 + animal.gender :
+            (animal.type - 1) * 2 + animal.gender;
         const image_items_per_row = 10;
         var row = Math.floor(imagePosition / image_items_per_row);
         const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
