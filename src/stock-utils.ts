@@ -8,10 +8,10 @@ declare const g_gamethemeurl;
 declare const board: HTMLDivElement;*/
 
 const ANIMALS_TYPES = [
-    1,2,3,4,5,6,7,8,9,10, 20,21
+    1,2,3,4,5,6,7,8,9,10,11,12, 20,21
 ];
 const ANIMALS_WITH_TRAITS = [
-    1,2,3,4,5
+    1,2,3,4,5, 20,21
 ];
 
 const ANIMAL_WIDTH = 132;

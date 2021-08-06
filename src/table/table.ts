@@ -117,4 +117,8 @@ class Table {
         board.style.marginLeft = `${sideMargin}px`;
         board.style.marginRight = `${sideMargin}px`;        
     }
+
+    public addAnimal(animal: Animal) {
+        this.spots[this.noahPosition].addAnimal(animal);
+    }
 }

@@ -11,13 +11,15 @@
     height: 466px;
     background: url('img/board.png');
 
-    #noah {    
+    #noah {
       position: absolute;
       background: url('img/noah.png');
-      width: 150px;
+      background-position: 50% 50%;
+      width: 120px;
       height: 120px;
-
       z-index: 5;
+      box-shadow: 0 0 5px 5px white;
+      border-radius: 50%;
     }
 
     .point-marker {

@@ -33,4 +33,12 @@ class FerrySpot {
         const yBackgroundPercent = row * 100;
         return `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
     }
+
+    public addAnimal(animal: Animal) {
+        const html = `<div id="ferry-spot-${this.position}-animal${this.animals.length}" class="animal-card" style="top : ${100 + this.animals.length * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
+
+        this.animals.push(animal);
+
+        dojo.place(html, `ferry-spot-${this.position}`);
+    }
 }

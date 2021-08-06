@@ -420,7 +420,8 @@ class Noah implements NoahGame {
     }
 
     notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
-        // TODO
+        this.playerHand.removeFromStockById(''+notif.args.animal.id);
+        this.table.addAnimal(notif.args.animal);
     }
 
     notif_noahMoved(notif: Notif<NotifNoahMovedArgs>) {

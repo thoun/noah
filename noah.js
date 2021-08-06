@@ -36,10 +36,10 @@ declare const g_gamethemeurl;
 
 declare const board: HTMLDivElement;*/
 var ANIMALS_TYPES = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 21
 ];
 var ANIMALS_WITH_TRAITS = [
-    1, 2, 3, 4, 5
+    1, 2, 3, 4, 5, 20, 21
 ];
 var ANIMAL_WIDTH = 132;
 var ANIMAL_HEIGHT = 185;
@@ -90,6 +90,11 @@ var FerrySpot = /** @class */ (function () {
         var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
         var yBackgroundPercent = row * 100;
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
+    };
+    FerrySpot.prototype.addAnimal = function (animal) {
+        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + this.animals.length + "\" class=\"animal-card\" style=\"top : " + (100 + this.animals.length * 30) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
+        this.animals.push(animal);
+        dojo.place(html, "ferry-spot-" + this.position);
     };
     return FerrySpot;
 }());
@@ -186,6 +191,9 @@ var Table = /** @class */ (function () {
         board.style.marginBottom = bottomMargin + "px";
         board.style.marginLeft = sideMargin + "px";
         board.style.marginRight = sideMargin + "px";
+    };
+    Table.prototype.addAnimal = function (animal) {
+        this.spots[this.noahPosition].addAnimal(animal);
     };
     return Table;
 }());
@@ -533,7 +541,8 @@ var Noah = /** @class */ (function () {
         this.table.setPoints(notif.args.playerId, notif.args.points);
     };
     Noah.prototype.notif_animalLoaded = function (notif) {
-        // TODO
+        this.playerHand.removeFromStockById('' + notif.args.animal.id);
+        this.table.addAnimal(notif.args.animal);
     };
     Noah.prototype.notif_noahMoved = function (notif) {
         this.table.noahMoved(notif.args.position);
