@@ -149,6 +149,12 @@ class Noah implements NoahGame {
     public onUpdateActionButtons(stateName: string, args: any) {
         if((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'loadAnimal':
+                    const loadAnimalArgs = args as EnteringLoadAnimalArgs;
+                    if (!loadAnimalArgs.selectableAnimals.length) {
+                        (this as any).addActionButton('takeAllAnimals-button', _('Take all animals'), () => this.takeAllAnimals(), null, null, 'red');
+                    }
+                    break;
 
                 case 'chooseGender':
                     (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
@@ -237,65 +243,6 @@ class Noah implements NoahGame {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
 
-    /*private createPlayerPanels(gamedatas: NoahGamedatas) {
-
-        Object.values(gamedatas.players).forEach(player => {
-            const playerId = Number(player.id);     
-
-            // charcoalium & resources counters
-            dojo.place(`<div class="counters">
-                <div id="charcoalium-counter-wrapper-${player.id}" class="charcoalium-counter">
-                    <div class="icon charcoalium"></div> 
-                    <span id="charcoalium-counter-${player.id}"></span>
-                </div>
-            </div>
-            <div class="counters">
-                <div id="wood-counter-wrapper-${player.id}" class="wood-counter">
-                    <div class="icon wood"></div> 
-                    <span id="wood-counter-${player.id}"></span>
-                </div>
-                <div id="copper-counter-wrapper-${player.id}" class="copper-counter">
-                    <div class="icon copper"></div> 
-                    <span id="copper-counter-${player.id}"></span>
-                </div>
-                <div id="crystal-counter-wrapper-${player.id}" class="crystal-counter">
-                    <div class="icon crystal"></div> 
-                    <span id="crystal-counter-${player.id}"></span>
-                </div>
-            </div>`, `player_board_${player.id}`);
-
-            const charcoaliumCounter = new ebg.counter();
-            charcoaliumCounter.create(`charcoalium-counter-${playerId}`);
-            charcoaliumCounter.setValue(player.resources[0].length);
-            this.charcoaliumCounters[playerId] = charcoaliumCounter;
-
-            const woodCounter = new ebg.counter();
-            woodCounter.create(`wood-counter-${playerId}`);
-            woodCounter.setValue(player.resources[1].length);
-            this.woodCounters[playerId] = woodCounter;
-
-            const copperCounter = new ebg.counter();
-            copperCounter.create(`copper-counter-${playerId}`);
-            copperCounter.setValue(player.resources[2].length);
-            this.copperCounters[playerId] = copperCounter;
-
-            const crystalCounter = new ebg.counter();
-            crystalCounter.create(`crystal-counter-${playerId}`);
-            crystalCounter.setValue(player.resources[3].length);
-            this.crystalCounters[playerId] = crystalCounter;
-
-            if (player.playerNo == 1) {
-                dojo.place(`<div id="player-icon-first-player" class="player-icon first-player"></div>`, `player_board_${player.id}`);
-                (this as any).addTooltipHtml('player-icon-first-player', _("First player"));
-            }
-        });
-
-        (this as any).addTooltipHtmlToClass('charcoalium-counter', _("Charcoalium"));
-        (this as any).addTooltipHtmlToClass('wood-counter', _("Wood"));
-        (this as any).addTooltipHtmlToClass('copper-counter', _("Copper"));
-        (this as any).addTooltipHtmlToClass('crystal-counter', _("Crystal"));
-    }*/
-
     private loadAnimal(id: number) {
         if(!(this as any).checkAction('loadAnimal')) {
             return;
@@ -304,6 +251,14 @@ class Noah implements NoahGame {
         this.takeAction('loadAnimal', {
             id
         });
+    }
+
+    private takeAllAnimals() {
+        if(!(this as any).checkAction('takeAllAnimals')) {
+            return;
+        }
+
+        this.takeAction('takeAllAnimals');
     }
 
     private setGender(gender: number) {
@@ -407,6 +362,7 @@ class Noah implements NoahGame {
 
         const notifs = [
             ['animalLoaded', ANIMATION_MS],
+            ['ferryAnimalsTaken', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
             ['departure', ANIMATION_MS],
             ['points', 1],
@@ -429,6 +385,13 @@ class Noah implements NoahGame {
     notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
         this.playerHand.removeFromStockById(''+notif.args.animal.id);
         this.table.addAnimal(notif.args.animal);
+    }
+
+    notif_ferryAnimalsTaken(notif: Notif<NotifFerryAnimalsTakenArgs>) {
+        if (this.getPlayerId() == notif.args.playerId) {
+            notif.args.animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+        }
+        this.table.removeAnimals();
     }
 
     notif_noahMoved(notif: Notif<NotifNoahMovedArgs>) {

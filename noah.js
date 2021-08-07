@@ -98,7 +98,7 @@ var FerrySpot = /** @class */ (function () {
         this.position = position;
         this.animals = ferry.animals;
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div class=\"stockitem ferry-card\"></div>            \n        ";
-        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
+        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
     }
@@ -113,9 +113,14 @@ var FerrySpot = /** @class */ (function () {
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
     };
     FerrySpot.prototype.addAnimal = function (animal) {
-        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + this.animals.length + "\" class=\"animal-card\" style=\"top : " + (100 + this.animals.length * 30) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
+        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + this.animals.length * 30) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
+    };
+    FerrySpot.prototype.removeAnimals = function () {
+        var _this = this;
+        this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
+        this.animals = [];
     };
     return FerrySpot;
 }());
@@ -237,6 +242,9 @@ var Table = /** @class */ (function () {
     Table.prototype.addAnimal = function (animal) {
         this.spots[this.noahPosition].addAnimal(animal);
     };
+    Table.prototype.removeAnimals = function () {
+        this.spots[this.noahPosition].removeAnimals();
+    };
     return Table;
 }());
 var ANIMATION_MS = 500;
@@ -352,6 +360,12 @@ var Noah = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'loadAnimal':
+                    var loadAnimalArgs = args;
+                    if (!loadAnimalArgs.selectableAnimals.length) {
+                        this.addActionButton('takeAllAnimals-button', _('Take all animals'), function () { return _this.takeAllAnimals(); }, null, null, 'red');
+                    }
+                    break;
                 case 'chooseGender':
                     this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
                     this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
@@ -425,64 +439,6 @@ var Noah = /** @class */ (function () {
         var _a, _b;
         return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
     };
-    /*private createPlayerPanels(gamedatas: NoahGamedatas) {
-
-        Object.values(gamedatas.players).forEach(player => {
-            const playerId = Number(player.id);
-
-            // charcoalium & resources counters
-            dojo.place(`<div class="counters">
-                <div id="charcoalium-counter-wrapper-${player.id}" class="charcoalium-counter">
-                    <div class="icon charcoalium"></div>
-                    <span id="charcoalium-counter-${player.id}"></span>
-                </div>
-            </div>
-            <div class="counters">
-                <div id="wood-counter-wrapper-${player.id}" class="wood-counter">
-                    <div class="icon wood"></div>
-                    <span id="wood-counter-${player.id}"></span>
-                </div>
-                <div id="copper-counter-wrapper-${player.id}" class="copper-counter">
-                    <div class="icon copper"></div>
-                    <span id="copper-counter-${player.id}"></span>
-                </div>
-                <div id="crystal-counter-wrapper-${player.id}" class="crystal-counter">
-                    <div class="icon crystal"></div>
-                    <span id="crystal-counter-${player.id}"></span>
-                </div>
-            </div>`, `player_board_${player.id}`);
-
-            const charcoaliumCounter = new ebg.counter();
-            charcoaliumCounter.create(`charcoalium-counter-${playerId}`);
-            charcoaliumCounter.setValue(player.resources[0].length);
-            this.charcoaliumCounters[playerId] = charcoaliumCounter;
-
-            const woodCounter = new ebg.counter();
-            woodCounter.create(`wood-counter-${playerId}`);
-            woodCounter.setValue(player.resources[1].length);
-            this.woodCounters[playerId] = woodCounter;
-
-            const copperCounter = new ebg.counter();
-            copperCounter.create(`copper-counter-${playerId}`);
-            copperCounter.setValue(player.resources[2].length);
-            this.copperCounters[playerId] = copperCounter;
-
-            const crystalCounter = new ebg.counter();
-            crystalCounter.create(`crystal-counter-${playerId}`);
-            crystalCounter.setValue(player.resources[3].length);
-            this.crystalCounters[playerId] = crystalCounter;
-
-            if (player.playerNo == 1) {
-                dojo.place(`<div id="player-icon-first-player" class="player-icon first-player"></div>`, `player_board_${player.id}`);
-                (this as any).addTooltipHtml('player-icon-first-player', _("First player"));
-            }
-        });
-
-        (this as any).addTooltipHtmlToClass('charcoalium-counter', _("Charcoalium"));
-        (this as any).addTooltipHtmlToClass('wood-counter', _("Wood"));
-        (this as any).addTooltipHtmlToClass('copper-counter', _("Copper"));
-        (this as any).addTooltipHtmlToClass('crystal-counter', _("Crystal"));
-    }*/
     Noah.prototype.loadAnimal = function (id) {
         if (!this.checkAction('loadAnimal')) {
             return;
@@ -490,6 +446,12 @@ var Noah = /** @class */ (function () {
         this.takeAction('loadAnimal', {
             id: id
         });
+    };
+    Noah.prototype.takeAllAnimals = function () {
+        if (!this.checkAction('takeAllAnimals')) {
+            return;
+        }
+        this.takeAction('takeAllAnimals');
     };
     Noah.prototype.setGender = function (gender) {
         if (!this.checkAction('setGender')) {
@@ -568,6 +530,7 @@ var Noah = /** @class */ (function () {
         var _this = this;
         var notifs = [
             ['animalLoaded', ANIMATION_MS],
+            ['ferryAnimalsTaken', ANIMATION_MS],
             ['noahMoved', ANIMATION_MS],
             ['departure', ANIMATION_MS],
             ['points', 1],
@@ -587,6 +550,13 @@ var Noah = /** @class */ (function () {
     Noah.prototype.notif_animalLoaded = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id);
         this.table.addAnimal(notif.args.animal);
+    };
+    Noah.prototype.notif_ferryAnimalsTaken = function (notif) {
+        var _this = this;
+        if (this.getPlayerId() == notif.args.playerId) {
+            notif.args.animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        }
+        this.table.removeAnimals();
     };
     Noah.prototype.notif_noahMoved = function (notif) {
         this.table.noahMoved(notif.args.position);

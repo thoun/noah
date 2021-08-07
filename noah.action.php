@@ -44,6 +44,14 @@
         self::ajaxResponse();
     }
   	
+    public function takeAllAnimals() {
+        self::setAjaxMode();
+
+        $this->game->takeAllAnimals();
+
+        self::ajaxResponse();
+    }
+  	
     public function setGender() {
         self::setAjaxMode();
 

@@ -145,4 +145,8 @@ class Table {
     public addAnimal(animal: Animal) {
         this.spots[this.noahPosition].addAnimal(animal);
     }
+
+    public removeAnimals() {
+        this.spots[this.noahPosition].removeAnimals();
+    }
 }

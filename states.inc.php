@@ -100,6 +100,7 @@ $playerActionsGameStates = [
             "takeAllAnimals",
         ],
         "transitions" => [
+            "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,

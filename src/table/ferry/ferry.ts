@@ -14,7 +14,7 @@ class FerrySpot {
             <div class="stockitem ferry-card"></div>            
         `;
         this.animals.forEach((animal, index) => html += `
-            <div id="ferry-spot-${position}-animal${index}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
+            <div id="ferry-spot-${position}-animal${animal.id}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
         `);
         html += `</div>`;
 
@@ -33,10 +33,15 @@ class FerrySpot {
     }
 
     public addAnimal(animal: Animal) {
-        const html = `<div id="ferry-spot-${this.position}-animal${this.animals.length}" class="animal-card" style="top : ${100 + this.animals.length * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
+        const html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top : ${100 + this.animals.length * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
 
         this.animals.push(animal);
 
         dojo.place(html, `ferry-spot-${this.position}`);
+    }
+
+    public removeAnimals() {
+        this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
+        this.animals = [];
     }
 }

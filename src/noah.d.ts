@@ -74,6 +74,12 @@ interface NotifAnimalLoadedArgs {
     position: number;
 }
 
+interface NotifFerryAnimalsTakenArgs {
+    playerId: number;
+    animals: Animal[];
+    position: number;
+}
+
 interface NotifNoahMovedArgs {
     position: number;
 }

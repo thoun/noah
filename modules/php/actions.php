@@ -77,6 +77,26 @@ trait ActionTrait {
         $this->gamestate->nextState('moveNoah');
     }
 
+    public function takeAllAnimals() {
+        self::checkAction('takeAllAnimals');
+        
+        $playerId = self::getActivePlayerId();
+        
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
+        $this->animals->moveCards(array_map(function($animal) { return $animal->id; }, $animalsInFerry), 'hand', $playerId);
+
+        self::notifyAllPlayers('ferryAnimalsTaken', clienttranslate('${player_name} takes back all animals present on the ferry'), [
+            'playerId' => $playerId,
+            'player_name' => self::getActivePlayerName(),
+            'animals' => $animalsInFerry,
+            'position' => $position,
+        ]);
+        
+        $this->gamestate->nextState('loadAnimal');
+    }
+
     public function moveNoah(int $destination) {
         self::checkAction('moveNoah'); 
 
