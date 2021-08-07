@@ -23,8 +23,6 @@ class Noah implements NoahGame {
     private playerHand: Stock;
     private table: Table;
 
-    private ferriesCounter: Counter;
-
     public zoom: number = 1;
 
     public clickAction: 'load' | 'give' | 'lion' = 'load';
@@ -60,11 +58,7 @@ class Noah implements NoahGame {
 
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition);
-
-        this.ferriesCounter = new ebg.counter();
-        this.ferriesCounter.create('remaining-ferry-counter');
-        this.setRemainingFerries(gamedatas.remainingFerries);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
 
         this.addHelp();
         this.setupNotifications();
@@ -389,13 +383,6 @@ class Noah implements NoahGame {
         this.helpDialog.show();
     }
 
-    private setRemainingFerries(remainingFerries: number) {
-        this.ferriesCounter.setValue(remainingFerries);
-        const visibility = remainingFerries > 0 ? 'visible' : 'hidden';
-        document.getElementById('ferry-deck').style.visibility = visibility;
-        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
-    }
-
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -471,7 +458,6 @@ class Noah implements NoahGame {
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
         this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
-        this.setRemainingFerries(notif.args.remainingFerries);
     }
 
     private getAnimalColor(gender: number) {

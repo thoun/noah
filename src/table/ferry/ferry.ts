@@ -15,13 +15,14 @@ class FerrySpot {
             <div id="ferry-spot-${position}-ferry-card" class="stockitem ferry-card"></div>
             <div id="ferry-spot-${position}-weight-indicator" class="weight-indicator remaining-counter"></div>         
         `;
-        this.animals.forEach((animal, index) => html += `
+        /*this.animals.forEach((animal, index) => html += `
             <div id="ferry-spot-${position}-animal${animal.id}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
-        `);
+        `);*/
         html += `</div>`;
 
         dojo.place(html, 'center-board');
 
+        this.animals.forEach(animal => this.addAnimal(animal));
         this.empty = !ferry;
         this.updateCounter();
     }
@@ -43,7 +44,7 @@ class FerrySpot {
         this.animals.push(animal);
 
         dojo.place(html, `ferry-spot-${this.position}`);
-        
+
         this.updateCounter();
     }
 
@@ -73,5 +74,14 @@ class FerrySpot {
             text = `${this.animals.reduce((sum, animal) => sum + animal.weight, 0)} / ${this.animals.some(animal => animal.power == 5) ? 13 : 21}`;
         }
         document.getElementById(`ferry-spot-${this.position}-weight-indicator`).innerHTML = text;
+    }
+    
+    public newRound(ferry: Ferry) {
+        this.empty = false;
+        dojo.removeClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
+        this.removeAnimals();
+        ferry.animals.forEach(animal => this.addAnimal(animal));
+
+        this.updateCounter();
     }
 }

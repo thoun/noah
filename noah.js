@@ -100,9 +100,12 @@ var FerrySpot = /** @class */ (function () {
         this.empty = false;
         this.animals = (_a = ferry === null || ferry === void 0 ? void 0 : ferry.animals) !== null && _a !== void 0 ? _a : [];
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
-        this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
+        /*this.animals.forEach((animal, index) => html += `
+            <div id="ferry-spot-${position}-animal${animal.id}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
+        `);*/
         html += "</div>";
         dojo.place(html, 'center-board');
+        this.animals.forEach(function (animal) { return _this.addAnimal(animal); });
         this.empty = !ferry;
         this.updateCounter();
     }
@@ -146,12 +149,20 @@ var FerrySpot = /** @class */ (function () {
         }
         document.getElementById("ferry-spot-" + this.position + "-weight-indicator").innerHTML = text;
     };
+    FerrySpot.prototype.newRound = function (ferry) {
+        var _this = this;
+        this.empty = false;
+        dojo.removeClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
+        this.removeAnimals();
+        ferry.animals.forEach(function (animal) { return _this.addAnimal(animal); });
+        this.updateCounter();
+    };
     return FerrySpot;
 }());
 var NOAH_RADIUS = 150;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
-    function Table(game, players, ferries, noahPosition) {
+    function Table(game, players, ferries, noahPosition, remainingFerries) {
         var _this = this;
         this.game = game;
         this.noahPosition = noahPosition;
@@ -174,6 +185,9 @@ var Table = /** @class */ (function () {
         for (var i = 0; i < 5; i++) {
             _loop_1(i);
         }
+        this.ferriesCounter = new ebg.counter();
+        this.ferriesCounter.create('remaining-ferry-counter');
+        this.setRemainingFerries(remainingFerries);
         // noah
         this.noahLastPosition = noahPosition;
         dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
@@ -267,11 +281,20 @@ var Table = /** @class */ (function () {
     Table.prototype.removeAnimals = function () {
         this.spots[this.noahPosition].removeAnimals();
     };
+    Table.prototype.setRemainingFerries = function (remainingFerries) {
+        this.ferriesCounter.setValue(remainingFerries);
+        var visibility = remainingFerries > 0 ? 'visible' : 'hidden';
+        document.getElementById('ferry-deck').style.visibility = visibility;
+        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
+    };
     Table.prototype.departure = function (newFerry, remainingFerries) {
         this.spots[this.noahPosition].departure(newFerry);
     };
     Table.prototype.newRound = function (ferries) {
-        // TODO
+        this.setRemainingFerries(3);
+        for (var i = 0; i < 5; i++) {
+            this.spots[i].newRound(ferries[i]);
+        }
     };
     return Table;
 }());
@@ -309,10 +332,7 @@ var Noah = /** @class */ (function () {
         log('gamedatas', gamedatas);
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition);
-        this.ferriesCounter = new ebg.counter();
-        this.ferriesCounter.create('remaining-ferry-counter');
-        this.setRemainingFerries(gamedatas.remainingFerries);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
         this.addHelp();
         this.setupNotifications();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
@@ -583,12 +603,6 @@ var Noah = /** @class */ (function () {
         }
         this.helpDialog.show();
     };
-    Noah.prototype.setRemainingFerries = function (remainingFerries) {
-        this.ferriesCounter.setValue(remainingFerries);
-        var visibility = remainingFerries > 0 ? 'visible' : 'hidden';
-        document.getElementById('ferry-deck').style.visibility = visibility;
-        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
-    };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     /*
@@ -657,7 +671,6 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_departure = function (notif) {
         this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
-        this.setRemainingFerries(notif.args.remainingFerries);
     };
     Noah.prototype.getAnimalColor = function (gender) {
         switch (gender) {

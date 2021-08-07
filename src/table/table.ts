@@ -5,6 +5,8 @@ class Table {
 
     private spots: FerrySpot[] = [];
 
+    private ferriesCounter: Counter;
+
     private noahLastPosition = 0;
 
     constructor(
@@ -12,6 +14,7 @@ class Table {
         players: NoahPlayer[],
         ferries: Ferry[],
         private noahPosition: number,
+        remainingFerries: number
     ) {
         let html = '';
 
@@ -30,6 +33,10 @@ class Table {
 
             document.getElementById(`noah-spot-${i}`).addEventListener('click', () => this.game.moveNoah(i));
         }
+
+        this.ferriesCounter = new ebg.counter();
+        this.ferriesCounter.create('remaining-ferry-counter');
+        this.setRemainingFerries(remainingFerries);
 
         // noah
         this.noahLastPosition = noahPosition;
@@ -147,11 +154,21 @@ class Table {
         this.spots[this.noahPosition].removeAnimals();
     }
 
+    private setRemainingFerries(remainingFerries: number) {
+        this.ferriesCounter.setValue(remainingFerries);
+        const visibility = remainingFerries > 0 ? 'visible' : 'hidden';
+        document.getElementById('ferry-deck').style.visibility = visibility;
+        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
+    }
+
     public departure(newFerry: boolean, remainingFerries: number) {
         this.spots[this.noahPosition].departure(newFerry);
     }
     
     public newRound(ferries: Ferry[]) {
-        // TODO
+        this.setRemainingFerries(3);
+        for (let i=0;i<5;i++) {
+            this.spots[i].newRound(ferries[i]);
+        }
     }
 }
