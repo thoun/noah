@@ -25,6 +25,12 @@ trait StateTrait {
         $this->gamestate->nextState('');
     }
 
+    function stChoosePlayerToLookCards() {
+        if (count($this->getPlayersIds()) == 2) {
+            $this->applyLookCards($this->getOpponentId(self::getActivePlayerId()));
+        }
+    }
+
     function stMoveNoah() {
         if (intval($this->getGameStateValue(NOAH_NEXT_MOVE)) == 0) {
             $this->gamestate->nextState('checkOptimalLoading');

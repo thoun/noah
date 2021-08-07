@@ -56,12 +56,21 @@ interface EnteringLoadAnimalArgs {
     selectableAnimals: Animal[];
 }
 
+interface EnteringChoosePlayerToLookCardsArgs {
+    opponentsIds: number[];
+}
+
 interface EnteringMoveNoahArgs {
     possiblePositions: number[];
 }
 
 interface EnteringOptimalLoadingArgs {
     number: number;
+}
+
+interface EnteringLookCardsArgs {
+    opponentId: number;
+    animals: Animal[];
 }
 
 interface NotifPointsArgs {

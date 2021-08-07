@@ -74,7 +74,12 @@ trait ActionTrait {
           
         self::setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
         self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
-        $this->gamestate->nextState('moveNoah');
+
+        if ($animal->power == POWER_LOOK_CARDS) {
+            $this->gamestate->nextState('lookCards');
+        } else {
+            $this->gamestate->nextState('moveNoah');
+        }
     }
 
     public function takeAllAnimals() {
@@ -154,5 +159,23 @@ trait ActionTrait {
         }
 
         $this->gamestate->nextState('nextPlayer');
+    }
+
+    public function lookCards(int $playerId) {
+        self::checkAction('lookCards'); 
+
+        $this->applyLookCards($playerId);
+    }
+
+    function applyLookCards(int $playerId) {
+        self::setGameStateValue(LOOK_OPPONENT_HAND, $playerId);
+
+        $this->gamestate->nextState('look');
+    }
+
+    public function seen() {
+        self::checkAction('seen');
+
+        $this->gamestate->nextState('seen');
     }
 }

@@ -9,6 +9,8 @@ define('ST_START_ROUND', 10);
 
 define('ST_PLAYER_LOAD_ANIMAL', 20);
 define('ST_PLAYER_CHOOSE_GENDER', 31);
+define('ST_PLAYER_CHOOSE_PLAYER_TO_LOOK_CARDS', 32);
+define('ST_PLAYER_VIEW_CARDS', 33);
 
 define('ST_PLAYER_MOVE_NOAH', 50);
 
@@ -29,6 +31,7 @@ define('ROUND_NUMBER', 'ROUND_NUMBER');
 define('PAIR_PLAY_AGAIN', 'PAIR_PLAY_AGAIN');
 define('NOAH_NEXT_MOVE', 'NOAH_NEXT_MOVE'); // 0 : don't move, 1 : male, 2 : female
 define('LAST_LOADED_ANIMAL_POSITION', 'LLAD');
+define('LOOK_OPPONENT_HAND', 'LOOK_OPPONENT_HAND');
 
 define('OPTION_VARIANT', 'OPTION_VARIANT');
 define('OPTION_FROG', 'OPTION_FROG');

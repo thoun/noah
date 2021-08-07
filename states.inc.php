@@ -102,6 +102,7 @@ $playerActionsGameStates = [
         "transitions" => [
             "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
+            "lookCards" => ST_PLAYER_CHOOSE_PLAYER_TO_LOOK_CARDS,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -118,6 +119,34 @@ $playerActionsGameStates = [
         "transitions" => [
             "moveNoah" => ST_PLAYER_OPTIMAL_LOADING,
             "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_PLAYER_TO_LOOK_CARDS => [
+        "name" => "choosePlayerToLookCards",
+        "description" => clienttranslate('${actplayer} must choose a player to look cards'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a player to look cards'),
+        "type" => "activeplayer",   
+        "action" => "stChoosePlayerToLookCards",      
+        "args" => "argChoosePlayerToLookCards",
+        "possibleactions" => [ 
+            "lookCards",
+        ],
+        "transitions" => [
+            "look" => ST_PLAYER_VIEW_CARDS,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_VIEW_CARDS =>  [
+        "name" => "viewCards",
+    	"description" => clienttranslate('${actplayer} looks to chosen opponent cards'),
+    	"descriptionmyturn" => clienttranslate('${you} look to chosen opponent cards'),
+    	"type" => "activeplayer",
+        "args" => "argViewCards",
+    	"possibleactions" => [ "seen" ],
+    	"transitions" => [ 
+            "seen" => ST_PLAYER_MOVE_NOAH,
         ]
     ],
 

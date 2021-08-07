@@ -145,7 +145,6 @@ var FerrySpot = /** @class */ (function () {
     FerrySpot.prototype.updateCounter = function () {
         var text = '';
         if (!this.empty) {
-            console.log(this.animals, this.animals.reduce(function (sum, animal) { return sum + animal.weight; }, 0));
             text = this.animals.reduce(function (sum, animal) { return sum + animal.weight; }, 0) + " / " + (this.animals.some(function (animal) { return animal.power == 5; }) ? 13 : 21);
         }
         document.getElementById("ferry-spot-" + this.position + "-weight-indicator").innerHTML = text;
@@ -363,6 +362,9 @@ var Noah = /** @class */ (function () {
                 this.setGamestateDescription(allDisabled ? 'impossible' : '');
                 this.onEnteringStateLoadAnimal(args.args);
                 break;
+            case 'viewCards':
+                this.onEnteringStateLookCards(args.args);
+                break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args);
                 break;
@@ -399,6 +401,30 @@ var Noah = /** @class */ (function () {
             this.giveCardsTo = new Map();
             this.playerHand.setSelectionMode(2);
         }
+    };
+    Noah.prototype.onEnteringStateLookCards = function (args) {
+        var _this = this;
+        var viewCardsDialog = new ebg.popindialog();
+        viewCardsDialog.create('noahViewCardsDialog');
+        viewCardsDialog.setTitle(dojo.string.substitute(_(" ${player_name} cards"), { player_name: this.getPlayer(args.opponentId).name }));
+        var html = "<div id=\"opponent-hand\"></div>";
+        // Show the dialog
+        viewCardsDialog.setContent(html);
+        var opponentHand = new ebg.stock();
+        opponentHand.create(this, $('opponent-hand'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+        opponentHand.setSelectionMode(0);
+        opponentHand.centerItems = true;
+        //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
+        setupAnimalCards(opponentHand);
+        args.animals.forEach(function (animal) { return opponentHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        viewCardsDialog.show();
+        // Replace the function call when it's clicked
+        viewCardsDialog.replaceCloseCallback(function () {
+            if (!_this.checkAction('seen'))
+                return;
+            _this.takeAction("seen");
+            viewCardsDialog.destroy();
+        });
     };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
@@ -447,6 +473,14 @@ var Noah = /** @class */ (function () {
                 case 'chooseGender':
                     this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
                     this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
+                    break;
+                case 'choosePlayerToLookCards':
+                    var choosePlayerArgs = args;
+                    choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
+                        var player = _this.getPlayer(playerId);
+                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.lookCards(playerId); });
+                        document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
+                    });
                     break;
                 case 'optimalLoading':
                     this.addActionButton('giveCards-button', _('Give selected cards'), function () { return _this.giveCards(); });
@@ -539,6 +573,9 @@ var Noah = /** @class */ (function () {
         var _a, _b;
         return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
     };
+    Noah.prototype.getPlayer = function (playerId) {
+        return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
+    };
     Noah.prototype.loadAnimal = function (id) {
         if (!this.checkAction('loadAnimal')) {
             return;
@@ -559,6 +596,14 @@ var Noah = /** @class */ (function () {
         }
         this.takeAction('setGender', {
             gender: gender
+        });
+    };
+    Noah.prototype.lookCards = function (playerId) {
+        if (!this.checkAction('lookCards')) {
+            return;
+        }
+        this.takeAction('lookCards', {
+            playerId: playerId
         });
     };
     Noah.prototype.moveNoah = function (destination) {

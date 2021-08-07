@@ -62,6 +62,24 @@
         self::ajaxResponse();
     }
   	
+    public function lookCards() {
+        self::setAjaxMode();
+
+        $playerId = self::getArg("playerId", AT_posint, true);
+
+        $this->game->lookCards($playerId);
+
+        self::ajaxResponse();
+    }
+  	
+    public function seen() {
+        self::setAjaxMode();
+
+        $this->game->seen();
+
+        self::ajaxResponse();
+    }
+  	
     public function moveNoah() {
         self::setAjaxMode();
 

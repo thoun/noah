@@ -48,6 +48,7 @@ class Noah extends Table {
             PAIR_PLAY_AGAIN => 12,
             NOAH_NEXT_MOVE => 13,
             LAST_LOADED_ANIMAL_POSITION => 14,
+            LOOK_OPPONENT_HAND => 15,
 
             OPTION_VARIANT => 100,
             OPTION_FROG => 101,

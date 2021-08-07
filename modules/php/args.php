@@ -87,6 +87,27 @@ trait ArgsTrait {
         return $possiblePositions;
     }
 
+    function argChoosePlayerToLookCards() {
+        $playerId = intval(self::getActivePlayerId());
+        $players = $this->getOrderedPlayers($playerId);
+        $opponents = array_values(array_filter($players, function($player) use ($playerId) { return $player->id != $playerId; }));
+        $opponentsIds = array_map(function($player) { return $player->id; }, $opponents);
+
+        return [
+            'opponentsIds' => $opponentsIds,
+        ];
+    }
+
+    function argViewCards() {
+        $opponentId = intval(self::getGameStateValue(LOOK_OPPONENT_HAND));
+        $playerHand = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $opponentId));
+
+        return [
+            'opponentId' => $opponentId,
+            'animals' => $playerHand,
+        ];
+    }
+
     function argMoveNoah() {
         $possiblePositions = $this->getPossiblePositions();
 

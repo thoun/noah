@@ -69,7 +69,6 @@ class FerrySpot {
     private updateCounter() {
         let text = '';
         if (!this.empty) {
-            console.log(this.animals, this.animals.reduce((sum, animal) => sum + animal.weight, 0));
             text = `${this.animals.reduce((sum, animal) => sum + animal.weight, 0)} / ${this.animals.some(animal => animal.power == 5) ? 13 : 21}`;
         }
         document.getElementById(`ferry-spot-${this.position}-weight-indicator`).innerHTML = text;

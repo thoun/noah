@@ -2,6 +2,7 @@
 
 require_once(__DIR__.'/objects/animal.php');
 require_once(__DIR__.'/objects/ferry.php');
+require_once(__DIR__.'/objects/player.php');
 
 trait UtilTrait {
 
@@ -83,9 +84,38 @@ trait UtilTrait {
     }
 
     function getPlayersIds() {
-        $sql = "SELECT player_id FROM player WHERE player_eliminated = 0 ORDER BY player_no";
+        $sql = "SELECT player_id FROM player ORDER BY player_no";
         $dbResults = self::getCollectionFromDB($sql);
         return array_map(function($dbResult) { return intval($dbResult['player_id']); }, array_values($dbResults));
+    }
+
+    function getOpponentId(int $playerId) {
+        return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
+    }
+
+    function getPlayers() {
+        $sql = "SELECT * FROM player ORDER BY player_no";
+        $dbResults = self::getCollectionFromDB($sql);
+        return array_map(function($dbResult) { return new NoahPlayer($dbResult); }, array_values($dbResults));
+    }
+
+    function getOrderedPlayers(int $currentTurnPlayerId) {
+        $players = $this->getPlayers();
+
+        $playerIndex = 0; 
+        foreach($players as $player) {
+            if ($player->id == $currentTurnPlayerId) {
+                break;
+            }
+            $playerIndex++;
+        }
+
+        $orderedPlayers = $players;
+        if ($playerIndex > 0) { // we start from $currentTurnPlayerId and then follow order
+            $orderedPlayers = array_merge(array_slice($players, $playerIndex), array_slice($players, 0, $playerIndex));
+        }
+
+        return $orderedPlayers;
     }
 
     function isEndOfRound() {

@@ -96,6 +96,9 @@ class Noah implements NoahGame {
                 this.setGamestateDescription(allDisabled ? 'impossible' : '');
                 this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
+            case 'viewCards':
+                this.onEnteringStateLookCards(args.args as EnteringLookCardsArgs);
+                break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
                 break;
@@ -134,6 +137,37 @@ class Noah implements NoahGame {
             this.giveCardsTo = new Map();
             this.playerHand.setSelectionMode(2);
         }
+    }
+
+    private onEnteringStateLookCards(args: EnteringLookCardsArgs) {
+        const viewCardsDialog = new ebg.popindialog();
+        viewCardsDialog.create( 'noahViewCardsDialog' );
+        viewCardsDialog.setTitle(dojo.string.substitute(_(" ${player_name} cards"), { player_name: this.getPlayer(args.opponentId).name }));
+        
+        var html = `<div id="opponent-hand"></div>`;
+        
+        // Show the dialog
+        viewCardsDialog.setContent(html);
+
+        const opponentHand = new ebg.stock() as Stock;
+        opponentHand.create( this, $('opponent-hand'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+        opponentHand.setSelectionMode(0);
+        opponentHand.centerItems = true;
+        //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
+        setupAnimalCards(opponentHand);
+        args.animals.forEach(animal => opponentHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+
+        viewCardsDialog.show();
+
+        // Replace the function call when it's clicked
+        viewCardsDialog.replaceCloseCallback(() => {
+            if(!(this as any).checkAction('seen'))
+            return;
+        
+            this.takeAction("seen");
+
+            viewCardsDialog.destroy();
+        });
     }
 
     // onLeavingState: this method is called each time we are leaving a game state.
@@ -188,6 +222,15 @@ class Noah implements NoahGame {
                 case 'chooseGender':
                     (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
                     (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
+                    break;
+
+                case 'choosePlayerToLookCards':
+                    const choosePlayerArgs = args as EnteringChoosePlayerToLookCardsArgs;
+                    choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
+                        const player = this.getPlayer(playerId);
+                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.lookCards(playerId));
+                        document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
+                    });
                     break;
 
                 case 'optimalLoading':
@@ -293,6 +336,10 @@ class Noah implements NoahGame {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
 
+    private getPlayer(playerId: number): NoahPlayer {
+        return Object.values(this.gamedatas.players).find(player => Number(player.id) == playerId);
+    }
+
     private loadAnimal(id: number) {
         if(!(this as any).checkAction('loadAnimal')) {
             return;
@@ -318,6 +365,16 @@ class Noah implements NoahGame {
 
         this.takeAction('setGender', {
             gender
+        });
+    }
+
+    private lookCards(playerId: number) {
+        if(!(this as any).checkAction('lookCards')) {
+            return;
+        }
+
+        this.takeAction('lookCards', {
+            playerId
         });
     }
 
