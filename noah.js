@@ -94,13 +94,17 @@ function formatTextIcons(rawText) {
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
         var _this = this;
+        var _a;
         this.game = game;
         this.position = position;
-        this.animals = ferry.animals;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>            \n        ";
+        this.empty = false;
+        this.animals = (_a = ferry === null || ferry === void 0 ? void 0 : ferry.animals) !== null && _a !== void 0 ? _a : [];
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
         this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
+        this.empty = !ferry;
+        this.updateCounter();
     }
     FerrySpot.prototype.getBackgroundPosition = function (animal) {
         var imagePosition = animal.type >= 20 ?
@@ -116,11 +120,13 @@ var FerrySpot = /** @class */ (function () {
         var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + this.animals.length * 30) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
+        this.updateCounter();
     };
     FerrySpot.prototype.removeAnimals = function () {
         var _this = this;
         this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
         this.animals = [];
+        this.updateCounter();
     };
     FerrySpot.prototype.departure = function (newFerry) {
         var _this = this;
@@ -128,8 +134,17 @@ var FerrySpot = /** @class */ (function () {
         this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
         this.animals = [];
         if (!newFerry) {
+            this.empty = true;
             dojo.addClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
         }
+        this.updateCounter();
+    };
+    FerrySpot.prototype.updateCounter = function () {
+        var text = '';
+        if (!this.empty) {
+            text = this.animals.reduce(function (sum, animal) { return sum + animal.weight; }, 0) + " / " + (this.animals.some(function (animal) { return animal.power == 5; }) ? 13 : 21);
+        }
+        document.getElementById("ferry-spot-" + this.position + "-weight-indicator").innerHTML = text;
     };
     return FerrySpot;
 }());
@@ -163,8 +178,6 @@ var Table = /** @class */ (function () {
         this.noahLastPosition = noahPosition;
         dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
         this.updateMargins();
-        // TODO TEMP
-        document.getElementById('noah').addEventListener('click', function (e) { return _this.noahMoved((5 + _this.noahPosition + (e.offsetX > 60 ? -1 : 1)) % 5); });
     }
     Table.prototype.getNoahStyle = function (noahPosition) {
         var noahLastPositionMod = this.noahLastPosition % 5;

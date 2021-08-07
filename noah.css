@@ -11,6 +11,10 @@
   width: 185px;
   transform-origin: top center;
 }
+#table .ferry-spot .weight-indicator {
+  right: 5px;
+  top: 5px;
+}
 #table .ferry-spot.position0 {
   transform: rotate(0deg) translateY(180px);
 }
@@ -62,6 +66,7 @@
   left: 116px;
   width: 120px;
   height: 120px;
+  pointer-events: none;
   z-index: 4;
   transform-origin: top center;
   transition: transform 0.5s;

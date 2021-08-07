@@ -7,6 +7,7 @@ interface Animal {
     location_arg: number;
     weight: number;
     points: number;
+    power: number;
 }
 
 interface Ferry {

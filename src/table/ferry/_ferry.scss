@@ -7,6 +7,11 @@
     //height: 400px;
     //background: #0000ff88;
 
+    .weight-indicator {
+      right: 5px;
+      top: 5px;
+    }
+
     @for $i from 0 through 4 {
       &.position#{$i} {
           transform: rotate(72deg * $i) translateY(180px);

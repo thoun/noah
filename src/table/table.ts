@@ -36,9 +36,6 @@ class Table {
         dojo.place(`<div id="noah" class="noah-spot" style="transform: ${this.getNoahStyle(noahPosition)}"></div>`, 'center-board');
 
         this.updateMargins();
-
-        // TODO TEMP
-        document.getElementById('noah').addEventListener('click', e => this.noahMoved((5 + this.noahPosition + (e.offsetX > 60 ? -1 : 1)) % 5));
     }
 
     private getNoahStyle(noahPosition: number) {
