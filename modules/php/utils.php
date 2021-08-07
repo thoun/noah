@@ -118,6 +118,10 @@ trait UtilTrait {
         return $orderedPlayers;
     }
 
+    function getPlayerName(int $playerId) {
+        return self::getUniqueValueFromDb("SELECT player_name FROM player WHERE player_id = $playerId");
+    }
+
     function isEndOfRound() {
         // if last ferry left table
         if (intval($this->ferries->countCardInLocation('deck')) == 0 && intval($this->ferries->countCardInLocation('table')) < 5) {

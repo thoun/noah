@@ -76,7 +76,11 @@ trait ActionTrait {
         self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
 
         if ($animal->power == POWER_LOOK_CARDS) {
+            self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
             $this->gamestate->nextState('lookCards');
+        } else if ($animal->power == POWER_EXCHANGE_CARD) {
+            $this->gamestate->nextState('exchangeCard');
+            self::setGameStateValue(EXCHANGE_CARD, 1);
         } else {
             $this->gamestate->nextState('moveNoah');
         }
@@ -171,6 +175,43 @@ trait ActionTrait {
         self::setGameStateValue(LOOK_OPPONENT_HAND, $playerId);
 
         $this->gamestate->nextState('look');
+    }
+
+    public function exchangeCard(int $playerId) {
+        self::checkAction('exchangeCard'); 
+
+        $this->applyExchangeCard($playerId);
+    }
+
+    function applyExchangeCard(int $playerId) {
+        self::setGameStateValue(EXCHANGE_CARD, $playerId);
+
+        $this->gamestate->nextState('exchange');
+    }
+
+    function giveCard(int $cardId) {
+        $playerId = self::getActivePlayerId();
+        $opponentId = intval(self::getGameStateValue(EXCHANGE_CARD));
+
+        $animal = $this->getAnimalFromDb($this->animals->getCard($cardId));
+
+        self::notifyPlayer($playerId, 'removedCard', clienttranslate('Card ${animalName} was given to chosen opponent'), [
+            'playerId' => $playerId,
+            'animal' => $animal,
+            'fromPlayerId' => $opponentId,
+            'animalName' => $this->getAnimalName($animal->type),
+        ]);
+
+        $this->animals->moveCard($cardId, 'hand', $opponentId);
+
+        self::notifyPlayer($opponentId, 'newCard', clienttranslate('${player_name} gives you ${animalName}'), [
+            'animal' => $animal,
+            'player_name' => self::getActivePlayerName(),
+            'fromPlayerId' => $playerId,
+            'animalName' => $this->getAnimalName($animal->type),
+        ]);
+
+        $this->gamestate->nextState('giveCard');
     }
 
     public function seen() {

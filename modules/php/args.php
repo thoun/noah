@@ -87,14 +87,16 @@ trait ArgsTrait {
         return $possiblePositions;
     }
 
-    function argChoosePlayerToLookCards() {
+    function argChooseOpponent() {
         $playerId = intval(self::getActivePlayerId());
         $players = $this->getOrderedPlayers($playerId);
         $opponents = array_values(array_filter($players, function($player) use ($playerId) { return $player->id != $playerId; }));
         $opponentsIds = array_map(function($player) { return $player->id; }, $opponents);
 
         return [
-            'opponentsIds' => $opponentsIds,
+            'opponentsIds' => $opponentsIds,            
+            'viewCards' => intval(self::getGameStateValue(LOOK_OPPONENT_HAND)) == 1,
+            'exchangeCard' => intval(self::getGameStateValue(EXCHANGE_CARD)) == 1,
         ];
     }
 

@@ -49,6 +49,7 @@ class Noah extends Table {
             NOAH_NEXT_MOVE => 13,
             LAST_LOADED_ANIMAL_POSITION => 14,
             LOOK_OPPONENT_HAND => 15,
+            EXCHANGE_CARD => 16,
 
             OPTION_VARIANT => 100,
             OPTION_FROG => 101,

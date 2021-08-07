@@ -56,8 +56,10 @@ interface EnteringLoadAnimalArgs {
     selectableAnimals: Animal[];
 }
 
-interface EnteringChoosePlayerToLookCardsArgs {
+interface EnteringChooseOpponentArgs {
     opponentsIds: number[];
+    viewCards: number;
+    exchangeCard: number;
 }
 
 interface EnteringMoveNoahArgs {
@@ -117,4 +119,15 @@ interface NotifDepartureArgs {
     position: number;
     newFerry: boolean;
     remainingFerries: number;
+}
+
+interface NotifRemovedCardArgs {
+    playerId: number;
+    animal: Animal;
+    fromPlayerId?: number;
+}
+
+interface NotifNewCardArgs {
+    animal: Animal;
+    fromPlayerId?: number;
 }

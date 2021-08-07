@@ -25,7 +25,7 @@ $this->ANIMALS = [ // (int $cardsByGender, int $weight, int $points, int $power 
     1 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 1, 2, POWER_HERMAPHRODITE), // The Snail
     2 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 8, 0, POWER_LOOK_CARDS), // The Giraffe
     3 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 6, 1, POWER_DONT_MOVE_NOAH), // The Mule / donkey?
-    4 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 5, 1, POWER_EXCHANGE_CARD), // The Lion // TODO power
+    4 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 5, 1, POWER_EXCHANGE_CARD), // The Lion 
     5 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 0, 2, POWER_REDUCE_MAX_WEIGHT), // The Woodpecker
     6 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 2, 1), // Cat
     7 => new AnimalCard([2 => 8, 3 => 8, 4 => 8, 5 => 8] /* TOCHECK*/, 10, 0), // Elephant

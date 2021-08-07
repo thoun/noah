@@ -72,10 +72,30 @@
         self::ajaxResponse();
     }
   	
+    public function exchangeCard() {
+        self::setAjaxMode();
+
+        $playerId = self::getArg("playerId", AT_posint, true);
+
+        $this->game->exchangeCard($playerId);
+
+        self::ajaxResponse();
+    }
+  	
     public function seen() {
         self::setAjaxMode();
 
         $this->game->seen();
+
+        self::ajaxResponse();
+    }
+  	
+    public function giveCard() {
+        self::setAjaxMode();
+
+        $id = self::getArg("id", AT_posint, true);
+
+        $this->game->giveCard($id);
 
         self::ajaxResponse();
     }

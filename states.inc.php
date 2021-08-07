@@ -102,7 +102,8 @@ $playerActionsGameStates = [
         "transitions" => [
             "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
-            "lookCards" => ST_PLAYER_CHOOSE_PLAYER_TO_LOOK_CARDS,
+            "lookCards" => ST_PLAYER_CHOOSE_OPPONENT,
+            "exchangeCard" => ST_PLAYER_CHOOSE_OPPONENT,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -122,18 +123,22 @@ $playerActionsGameStates = [
         ]
     ],
 
-    ST_PLAYER_CHOOSE_PLAYER_TO_LOOK_CARDS => [
-        "name" => "choosePlayerToLookCards",
+    ST_PLAYER_CHOOSE_OPPONENT => [
+        "name" => "chooseOpponent",
         "description" => clienttranslate('${actplayer} must choose a player to look cards'),
         "descriptionmyturn" => clienttranslate('${you} must choose a player to look cards'),
+        "descriptionexchange" => clienttranslate('${actplayer} must choose a player to exchange card'),
+        "descriptionmyturnexchange" => clienttranslate('${you} must choose a player to exchange card'),
         "type" => "activeplayer",   
-        "action" => "stChoosePlayerToLookCards",      
-        "args" => "argChoosePlayerToLookCards",
+        "action" => "stChooseOpponent",      
+        "args" => "argChooseOpponent",
         "possibleactions" => [ 
             "lookCards",
+            "exchangeCard",
         ],
         "transitions" => [
             "look" => ST_PLAYER_VIEW_CARDS,
+            "exchange" => ST_PLAYER_GIVE_CARD,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
     ],
@@ -147,6 +152,18 @@ $playerActionsGameStates = [
     	"possibleactions" => [ "seen" ],
     	"transitions" => [ 
             "seen" => ST_PLAYER_MOVE_NOAH,
+        ]
+    ],
+
+    ST_PLAYER_GIVE_CARD =>  [
+        "name" => "giveCard",
+    	"description" => clienttranslate('${actplayer} must give back a card to chosen opponent'),
+    	"descriptionmyturn" => clienttranslate('${you} must give back a card to chosen opponent'),
+    	"type" => "activeplayer",
+        "action" => "stGiveCard",
+    	"possibleactions" => [ "giveCard" ],
+    	"transitions" => [ 
+            "giveCard" => ST_PLAYER_MOVE_NOAH,
         ]
     ],
 

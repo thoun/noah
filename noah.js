@@ -372,6 +372,14 @@ var Noah = /** @class */ (function () {
                 this.clickAction = 'give';
                 this.onEnteringStateOptimalLoading(args.args);
                 break;
+            case 'chooseOpponent':
+                var exchange = args.args.exchangeCard;
+                this.setGamestateDescription(exchange ? 'exchange' : '');
+                break;
+            case 'giveCard':
+                this.clickAction = 'lion';
+                this.onEnteringStateGiveCard();
+                break;
         }
     };
     Noah.prototype.setGamestateDescription = function (property) {
@@ -400,6 +408,11 @@ var Noah = /** @class */ (function () {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
             this.playerHand.setSelectionMode(2);
+        }
+    };
+    Noah.prototype.onEnteringStateGiveCard = function () {
+        if (this.isCurrentPlayerActive()) {
+            this.playerHand.setSelectionMode(1);
         }
     };
     Noah.prototype.onEnteringStateLookCards = function (args) {
@@ -441,6 +454,9 @@ var Noah = /** @class */ (function () {
             case 'optimalLoading':
                 this.onLeavingStateOptimalLoading();
                 break;
+            case 'giveCard':
+                this.onLeavingStateGiveCard();
+                break;
         }
     };
     Noah.prototype.onLeavingStateLoadAnimal = function () {
@@ -456,6 +472,10 @@ var Noah = /** @class */ (function () {
         this.playerHand.unselectAll();
         this.cardsToGive = null;
         this.giveCardsTo = null;
+    };
+    Noah.prototype.onLeavingStateGiveCard = function () {
+        this.playerHand.setSelectionMode(0);
+        this.playerHand.unselectAll();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -474,11 +494,12 @@ var Noah = /** @class */ (function () {
                     this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
                     this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
                     break;
-                case 'choosePlayerToLookCards':
+                case 'chooseOpponent':
                     var choosePlayerArgs = args;
+                    var exchange_1 = choosePlayerArgs.exchangeCard;
                     choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
                         var player = _this.getPlayer(playerId);
-                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.lookCards(playerId); });
+                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return (exchange_1 ? _this.exchangeCard(playerId) : _this.lookCards(playerId)); });
                         document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
                     });
                     break;
@@ -543,6 +564,9 @@ var Noah = /** @class */ (function () {
         if (this.clickAction === 'load') {
             this.loadAnimal(id);
         }
+        else if (this.clickAction === 'lion') {
+            this.giveCard(id);
+        }
         else if (this.clickAction === 'give') {
             var added = (this.playerHand.getSelectedItems().some(function (item) { return Number(item.id) == id; }));
             if (Object.keys(this.gamedatas.players).length == 2) {
@@ -604,6 +628,22 @@ var Noah = /** @class */ (function () {
         }
         this.takeAction('lookCards', {
             playerId: playerId
+        });
+    };
+    Noah.prototype.exchangeCard = function (playerId) {
+        if (!this.checkAction('exchangeCard')) {
+            return;
+        }
+        this.takeAction('exchangeCard', {
+            playerId: playerId
+        });
+    };
+    Noah.prototype.giveCard = function (id) {
+        if (!this.checkAction('giveCard')) {
+            return;
+        }
+        this.takeAction('giveCard', {
+            id: id
         });
     };
     Noah.prototype.moveNoah = function (destination) {
@@ -678,6 +718,8 @@ var Noah = /** @class */ (function () {
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
             ['animalGiven', ANIMATION_MS],
+            ['removedCard', ANIMATION_MS],
+            ['newCard', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_" + notif[0]);
@@ -724,6 +766,13 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_departure = function (notif) {
         this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
+    };
+    Noah.prototype.notif_removedCard = function (notif) {
+        this.playerHand.removeFromStockById('' + notif.args.animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);
+    };
+    Noah.prototype.notif_newCard = function (notif) {
+        var animal = notif.args.animal;
+        this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id, notif.args.fromPlayerId ? 'overall_player_board_-' + notif.args.fromPlayerId : undefined);
     };
     Noah.prototype.getAnimalColor = function (gender) {
         switch (gender) {

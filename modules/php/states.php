@@ -25,9 +25,38 @@ trait StateTrait {
         $this->gamestate->nextState('');
     }
 
-    function stChoosePlayerToLookCards() {
+    function stChooseOpponent() {
         if (count($this->getPlayersIds()) == 2) {
             $this->applyLookCards($this->getOpponentId(self::getActivePlayerId()));
+        }
+    }
+
+    function stGiveCard() {
+        $playerId = self::getActivePlayerId();
+        $opponentId = intval(self::getGameStateValue(EXCHANGE_CARD));
+
+        $cardsInHand = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $opponentId));
+        $removedCard = null;
+        $cardsNumber = count($cardsInHand);
+        if ($cardsNumber > 0) {
+            $removedCard = $cardsInHand[bga_rand(1, $cardsNumber) - 1];
+            $this->animals->moveCard($removedCard->id, 'hand', $playerId);
+            $removedCards[$opponentId] = $removedCard;
+
+            self::notifyPlayer($opponentId, 'removedCard', 'Card ${animalName} was removed from your hand', [
+                'playerId' => $opponentId,
+                'animal' => $removedCard,
+                'fromPlayerId' => $playerId,
+                'animalName' => $this->getAnimalName($removedCard->type),
+            ]);
+
+            self::notifyPlayer($playerId, 'newCard', 'Card ${animalName} was picked from ${player_name2} hand', [
+                'playerId' => $playerId,
+                'player_name2' => $this->getPlayerName($opponentId),
+                'animal' => $removedCard,
+                'fromPlayerId' => $opponentId,
+                'animalName' => $this->getAnimalName($removedCard->type),
+            ]);
         }
     }
 
@@ -105,7 +134,7 @@ trait StateTrait {
         }
         
         // player with highest score starts        
-        $sql = "SELECT player_id FROM player where player_score=(select min(player_score) from player) limit 1";
+        $sql = "SELECT playerId FROM player where player_score=(select min(player_score) from player) limit 1";
         $minScorePlayerId = self::getUniqueValueFromDB($sql);
         $this->gamestate->changeActivePlayer($minScorePlayerId);
         self::giveExtraTime($minScorePlayerId);

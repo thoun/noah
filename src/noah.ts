@@ -106,6 +106,14 @@ class Noah implements NoahGame {
                 this.clickAction = 'give';
                 this.onEnteringStateOptimalLoading(args.args as EnteringOptimalLoadingArgs);
                 break;
+            case 'chooseOpponent':
+                const exchange = (args.args as EnteringChooseOpponentArgs).exchangeCard;
+                this.setGamestateDescription(exchange ? 'exchange' : '');
+                break;
+            case 'giveCard':
+                this.clickAction = 'lion';
+                this.onEnteringStateGiveCard();
+                break;
         }
     }
     
@@ -136,6 +144,12 @@ class Noah implements NoahGame {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
             this.playerHand.setSelectionMode(2);
+        }
+    }
+
+    private onEnteringStateGiveCard() {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.playerHand.setSelectionMode(1);
         }
     }
 
@@ -186,6 +200,9 @@ class Noah implements NoahGame {
             case 'optimalLoading':
                 this.onLeavingStateOptimalLoading();
                 break;
+            case 'giveCard':
+                this.onLeavingStateGiveCard();
+                break;
         }
     }
 
@@ -206,6 +223,11 @@ class Noah implements NoahGame {
         this.giveCardsTo = null;
     }
 
+    onLeavingStateGiveCard() {
+        this.playerHand.setSelectionMode(0);
+        this.playerHand.unselectAll();
+    }
+
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -224,11 +246,12 @@ class Noah implements NoahGame {
                     (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
                     break;
 
-                case 'choosePlayerToLookCards':
-                    const choosePlayerArgs = args as EnteringChoosePlayerToLookCardsArgs;
+                case 'chooseOpponent':
+                    const choosePlayerArgs = args as EnteringChooseOpponentArgs;
+                    const exchange = choosePlayerArgs.exchangeCard;
                     choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
                         const player = this.getPlayer(playerId);
-                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.lookCards(playerId));
+                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => (exchange ? this.exchangeCard(playerId) : this.lookCards(playerId)));
                         document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
                     });
                     break;
@@ -304,6 +327,8 @@ class Noah implements NoahGame {
     public onPlayerHandSelectionChanged(id: number) {
         if (this.clickAction === 'load') {
             this.loadAnimal(id);
+        } else if (this.clickAction === 'lion') {
+            this.giveCard(id);
         } else if (this.clickAction === 'give') {
             const added = (this.playerHand.getSelectedItems().some(item => Number(item.id) == id));
             if (Object.keys(this.gamedatas.players).length == 2) {
@@ -375,6 +400,26 @@ class Noah implements NoahGame {
 
         this.takeAction('lookCards', {
             playerId
+        });
+    }
+
+    private exchangeCard(playerId: number) {
+        if(!(this as any).checkAction('exchangeCard')) {
+            return;
+        }
+
+        this.takeAction('exchangeCard', {
+            playerId
+        });
+    }
+
+    private giveCard(id: number) {
+        if(!(this as any).checkAction('giveCard')) {
+            return;
+        }
+
+        this.takeAction('giveCard', {
+            id
         });
     }
 
@@ -472,6 +517,8 @@ class Noah implements NoahGame {
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
             ['animalGiven', ANIMATION_MS],
+            ['removedCard', ANIMATION_MS],
+            ['newCard', ANIMATION_MS],
         ];
 
         notifs.forEach((notif) => {
@@ -524,6 +571,15 @@ class Noah implements NoahGame {
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
         this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
+    }
+    
+    notif_removedCard(notif: Notif<NotifRemovedCardArgs>) {
+        this.playerHand.removeFromStockById(''+notif.args.animal.id, notif.args.fromPlayerId  ? 'overall_player_board_'+notif.args.fromPlayerId : undefined);
+    }
+    
+    notif_newCard(notif: Notif<NotifNewCardArgs>) {
+        const animal = notif.args.animal;
+        this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, notif.args.fromPlayerId ? 'overall_player_board_-'+notif.args.fromPlayerId : undefined);
     }
 
     private getAnimalColor(gender: number) {
