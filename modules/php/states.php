@@ -11,7 +11,7 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
-    function stStartRound() {        
+    function stStartRound() {   
         self::setGameStateValue(ROUND_NUMBER, intval($this->getGameStateValue(ROUND_NUMBER)) + 1);
 
         // reset cards
@@ -43,14 +43,14 @@ trait StateTrait {
             $this->animals->moveCard($removedCard->id, 'hand', $playerId);
             $removedCards[$opponentId] = $removedCard;
 
-            self::notifyPlayer($opponentId, 'removedCard', 'Card ${animalName} was removed from your hand', [
+            self::notifyPlayer($opponentId, 'removedCard', clienttranslate('Card ${animalName} was removed from your hand'), [
                 'playerId' => $opponentId,
                 'animal' => $removedCard,
                 'fromPlayerId' => $playerId,
                 'animalName' => $this->getAnimalName($removedCard->type),
             ]);
 
-            self::notifyPlayer($playerId, 'newCard', 'Card ${animalName} was picked from ${player_name2} hand', [
+            self::notifyPlayer($playerId, 'newCard', clienttranslate('Card ${animalName} was picked from ${player_name2} hand'), [
                 'playerId' => $playerId,
                 'player_name2' => $this->getPlayerName($opponentId),
                 'animal' => $removedCard,
@@ -95,7 +95,10 @@ trait StateTrait {
             $remainingFerries--;
         }
         
-        self::notifyAllPlayers('departure', '', [
+        $playerId = self::getActivePlayerId();
+        self::notifyAllPlayers('departure', clienttranslate('${player_name} completes ferry'), [
+            'playerId' => $playerId,
+            'player_name' => self::getActivePlayerName(),
             'position' => $position,
             'newFerry' => $newFerry,
             'remainingFerries' => $remainingFerries,

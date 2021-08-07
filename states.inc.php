@@ -102,6 +102,7 @@ $playerActionsGameStates = [
         "transitions" => [
             "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
+            "chooseWeight" => ST_PLAYER_CHOOSE_WEIGHT,
             "lookCards" => ST_PLAYER_CHOOSE_OPPONENT,
             "exchangeCard" => ST_PLAYER_CHOOSE_OPPONENT,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
@@ -118,7 +119,22 @@ $playerActionsGameStates = [
             "setGender",
         ],
         "transitions" => [
-            "moveNoah" => ST_PLAYER_OPTIMAL_LOADING,
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_WEIGHT => [
+        "name" => "chooseWeight",
+        "description" => clienttranslate('${actplayer} must choose weight'),
+        "descriptionmyturn" => clienttranslate('${you} must choose weight'),
+        "type" => "activeplayer",    
+        "args" => "argChooseWeight",  
+        "possibleactions" => [ 
+            "setWeight",
+        ],
+        "transitions" => [
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
     ],

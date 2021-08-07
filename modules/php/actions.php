@@ -26,7 +26,11 @@ trait ActionTrait {
         $nbr = count($animalsInFerry);
 
         if ($nbr < 2 && $animal->power == POWER_HERMAPHRODITE) { // need to set gender
+            self::setGameStateValue(SELECTED_ANIMAL, $id);
             $this->gamestate->nextState('chooseGender');
+        } else if ($animal->power == POWER_ADJUSTABLE_WEIGHT && $this->getWeightForDeparture() != null) {
+            self::setGameStateValue(SELECTED_ANIMAL, $id);
+            $this->gamestate->nextState('chooseWeight');
         } else {
             $this->applyLoadAnimal($id);
         }
@@ -39,12 +43,30 @@ trait ActionTrait {
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
         $nbr = count($animalsInFerry);
-        if ($nbr < 1 || $nbr > 2 || $animals[$nbr - 1]->power != POWER_HERMAPHRODITE) {
+
+        $animal = $this->getAnimalFromDb($this->animals->getCard(intval(self::getGameStateValue(SELECTED_ANIMAL))));
+
+        if ($nbr > 2 || $animal->power != POWER_HERMAPHRODITE) {
             throw new Error("No animal need to set gender");
         }
 
-        $this->applySetGender($animals[$nbr - 1]->id, $gender);
-        $this->applyLoadAnimal($animals[$nbr - 1]->id);
+        $this->applySetGender($animal->id, $gender);
+        $this->applyLoadAnimal($animal->id);
+    }
+
+    function setWeight(int $weight) {
+        self::checkAction('setWeight'); 
+        
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+
+        $animal = $this->getAnimalFromDb($this->animals->getCard(intval(self::getGameStateValue(SELECTED_ANIMAL))));
+        if ($animal->power != POWER_ADJUSTABLE_WEIGHT) {
+            throw new Error("No animal need to set weight");
+        }
+
+        $this->applySetWeight($animal->id, $weight);
+        $this->applyLoadAnimal($animal->id);
     }
 
     function applyLoadAnimal(int $id) {        

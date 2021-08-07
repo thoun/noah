@@ -246,6 +246,12 @@ class Noah implements NoahGame {
                     (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
                     break;
 
+                case 'chooseWeight':
+                    const chooseWeightArgs = args as EnteringChooseWeightArgs;
+                    (this as any).addActionButton('min-weight-button', '1', () => this.setWeight(1));
+                    (this as any).addActionButton('adjust-weight-button', ''+chooseWeightArgs.weightForDeparture, () => this.setWeight(chooseWeightArgs.weightForDeparture));
+                    break;
+
                 case 'chooseOpponent':
                     const choosePlayerArgs = args as EnteringChooseOpponentArgs;
                     const exchange = choosePlayerArgs.exchangeCard;
@@ -390,6 +396,16 @@ class Noah implements NoahGame {
 
         this.takeAction('setGender', {
             gender
+        });
+    }
+
+    private setWeight(weight: number) {
+        if(!(this as any).checkAction('setWeight')) {
+            return;
+        }
+
+        this.takeAction('setWeight', {
+            weight
         });
     }
 

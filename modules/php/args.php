@@ -87,6 +87,26 @@ trait ArgsTrait {
         return $possiblePositions;
     }
 
+    function getWeightForDeparture() {
+        $ferry = $this->getFerry($this->getNoahPosition());
+
+        $currentWeight = $ferry->getCurrentWeight();
+        $maxWeight = $ferry->getMaxWeight();
+        $remainingWeight = $maxWeight - $currentWeight;
+
+        if ($remainingWeight > 1 && $remainingWeight <= 5) {
+            return $remainingWeight;
+        } else {
+            return null;
+        }
+    }
+
+    function argChooseWeight() {
+        return [
+            'weightForDeparture' => $this->getWeightForDeparture(),            
+        ];
+    }
+
     function argChooseOpponent() {
         $playerId = intval(self::getActivePlayerId());
         $players = $this->getOrderedPlayers($playerId);

@@ -199,7 +199,14 @@ trait UtilTrait {
         self::DbQuery("UPDATE animal SET `card_type_arg` = $gender where `card_id` = $animalId");
     }
 
+    function applySetWeight(int $animalId, int $weight) {
+        self::DbQuery("UPDATE animal SET `card_weight` = $weight where `card_id` = $animalId");
+    }
+
     function setInitialCardsAndResources(array $playersIds) {
+        // reset frog weights
+        self::DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20");  
+
         // set table ferries and first animal on it
         for ($position=0; $position<5; $position++) {
             $this->ferries->pickCardForLocation('deck', 'table', $position);
@@ -207,7 +214,7 @@ trait UtilTrait {
             if ($card->power == POWER_HERMAPHRODITE) {
                 $this->applySetGender($card->id, bga_rand(1, 2));
             }
-        }
+        }    
         
         $ferries = [];
         for ($position=0; $position<5; $position++) {
@@ -231,7 +238,14 @@ trait UtilTrait {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
             throw new Error("animal doesn't exists ".json_encode($dbObject));
         }
-        return new Animal($dbObject, $this->ANIMALS);
+
+        $animal = new Animal($dbObject, $this->ANIMALS, $this);
+
+        if ($animal->power == POWER_ADJUSTABLE_WEIGHT) {
+            $animal->weight = intval(self::getUniqueValueFromDB("SELECT card_weight FROM animal where `card_id` = ".$animal->id));
+        }
+
+        return $animal;
     }
 
     function getAnimalsFromDb(array $dbObjects) {

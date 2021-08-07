@@ -494,6 +494,11 @@ var Noah = /** @class */ (function () {
                     this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
                     this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
                     break;
+                case 'chooseWeight':
+                    var chooseWeightArgs_1 = args;
+                    this.addActionButton('min-weight-button', '1', function () { return _this.setWeight(1); });
+                    this.addActionButton('adjust-weight-button', '' + chooseWeightArgs_1.weightForDeparture, function () { return _this.setWeight(chooseWeightArgs_1.weightForDeparture); });
+                    break;
                 case 'chooseOpponent':
                     var choosePlayerArgs = args;
                     var exchange_1 = choosePlayerArgs.exchangeCard;
@@ -620,6 +625,14 @@ var Noah = /** @class */ (function () {
         }
         this.takeAction('setGender', {
             gender: gender
+        });
+    };
+    Noah.prototype.setWeight = function (weight) {
+        if (!this.checkAction('setWeight')) {
+            return;
+        }
+        this.takeAction('setWeight', {
+            weight: weight
         });
     };
     Noah.prototype.lookCards = function (playerId) {

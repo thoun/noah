@@ -62,6 +62,16 @@
         self::ajaxResponse();
     }
   	
+    public function setWeight() {
+        self::setAjaxMode();
+
+        $weight = self::getArg("weight", AT_posint, true);
+
+        $this->game->setWeight($weight);
+
+        self::ajaxResponse();
+    }
+  	
     public function lookCards() {
         self::setAjaxMode();
 

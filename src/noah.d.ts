@@ -56,6 +56,10 @@ interface EnteringLoadAnimalArgs {
     selectableAnimals: Animal[];
 }
 
+interface EnteringChooseWeightArgs {
+    weightForDeparture: number;
+}
+
 interface EnteringChooseOpponentArgs {
     opponentsIds: number[];
     viewCards: number;
