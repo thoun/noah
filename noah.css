@@ -33,6 +33,9 @@
   cursor: default;
   margin: 0;
 }
+#table .ferry-spot .ferry-card.empty {
+  display: none;
+}
 #table .ferry-spot .animal-card {
   position: absolute;
   left: 40px;

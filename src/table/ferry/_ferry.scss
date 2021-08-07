@@ -19,6 +19,10 @@
       height: 132px;
       cursor: default;
       margin: 0;
+
+      &.empty {
+        display: none;
+      }
     }
 
     .animal-card {

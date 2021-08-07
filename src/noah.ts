@@ -411,7 +411,7 @@ class Noah implements NoahGame {
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
-        // TODO
+        this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
         this.setRemainingFerries(notif.args.remainingFerries);
     }
 

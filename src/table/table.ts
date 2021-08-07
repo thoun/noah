@@ -149,4 +149,8 @@ class Table {
     public removeAnimals() {
         this.spots[this.noahPosition].removeAnimals();
     }
+
+    public departure(newFerry: boolean, remainingFerries: number) {
+        this.spots[this.noahPosition].departure(newFerry);
+    }
 }

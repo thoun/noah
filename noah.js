@@ -97,7 +97,7 @@ var FerrySpot = /** @class */ (function () {
         this.game = game;
         this.position = position;
         this.animals = ferry.animals;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div class=\"stockitem ferry-card\"></div>            \n        ";
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>            \n        ";
         this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
@@ -121,6 +121,15 @@ var FerrySpot = /** @class */ (function () {
         var _this = this;
         this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
         this.animals = [];
+    };
+    FerrySpot.prototype.departure = function (newFerry) {
+        var _this = this;
+        // TODO animate
+        this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
+        this.animals = [];
+        if (!newFerry) {
+            dojo.addClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
+        }
     };
     return FerrySpot;
 }());
@@ -244,6 +253,9 @@ var Table = /** @class */ (function () {
     };
     Table.prototype.removeAnimals = function () {
         this.spots[this.noahPosition].removeAnimals();
+    };
+    Table.prototype.departure = function (newFerry, remainingFerries) {
+        this.spots[this.noahPosition].departure(newFerry);
     };
     return Table;
 }());
@@ -571,7 +583,7 @@ var Noah = /** @class */ (function () {
         // TODO
     };
     Noah.prototype.notif_departure = function (notif) {
-        // TODO
+        this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
         this.setRemainingFerries(notif.args.remainingFerries);
     };
     Noah.prototype.getAnimalColor = function (gender) {
