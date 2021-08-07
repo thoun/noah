@@ -27,6 +27,10 @@ class Noah implements NoahGame {
 
     public zoom: number = 1;
 
+    public clickAction: 'load' | 'give' | 'lion' = 'load';
+    private cardsToGive: number;
+    private giveCardsTo: Map<number, number>; // key = card id, value = toPlayerId
+
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -85,12 +89,17 @@ class Noah implements NoahGame {
 
         switch (stateName) {
             case 'loadAnimal':
+                this.clickAction = 'load';
                 const allDisabled = !(args.args as EnteringLoadAnimalArgs).selectableAnimals.length;
                 this.setGamestateDescription(allDisabled ? 'impossible' : '');
                 this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
+                break;
+            case 'optimalLoading':
+                this.clickAction = 'give';
+                this.onEnteringStateOptimalLoading(args.args as EnteringOptimalLoadingArgs);
                 break;
         }
     }
@@ -110,11 +119,18 @@ class Noah implements NoahGame {
             this.playerHand.setSelectionMode(1);
         }
     }
-
     
     private onEnteringStateMoveNoah(args: EnteringMoveNoahArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             args.possiblePositions.forEach(position => dojo.addClass(`noah-spot-${position}`, 'selectable'));
+        }
+    }
+
+    private onEnteringStateOptimalLoading(args: EnteringOptimalLoadingArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.cardsToGive = args.number;
+            this.giveCardsTo = new Map();
+            this.playerHand.setSelectionMode(2);
         }
     }
 
@@ -131,16 +147,27 @@ class Noah implements NoahGame {
             case 'moveNoah':
                 this.onLeavingStateMoveNoah();
                 break;
+            case 'optimalLoading':
+                this.onLeavingStateOptimalLoading();
+                break;
         }
     }
 
     onLeavingStateLoadAnimal() {
         this.playerHand.setSelectionMode(0);
+        this.playerHand.unselectAll();
         dojo.query('.stockitem').removeClass('disabled');
     }
 
     onLeavingStateMoveNoah() {
         dojo.query('.noah-spot').removeClass('selectable');
+    }
+
+    onLeavingStateOptimalLoading() {
+        this.playerHand.setSelectionMode(0);
+        this.playerHand.unselectAll();
+        this.cardsToGive = null;
+        this.giveCardsTo = null;
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -159,6 +186,11 @@ class Noah implements NoahGame {
                 case 'chooseGender':
                     (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
                     (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
+                    break;
+
+                case 'optimalLoading':
+                    (this as any).addActionButton('giveCards-button', _('Give selected cards'), () => this.giveCards());
+                    dojo.addClass('giveCards-button', 'disabled');
                     break;
             }
         }
@@ -217,18 +249,34 @@ class Noah implements NoahGame {
         this.playerHand.centerItems = true;
         this.playerHand.image_items_per_row = 10;
         this.playerHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
-        dojo.connect(this.playerHand, 'onChangeSelection', this, () => this.onPlayerHandSelectionChanged(this.playerHand.getSelectedItems()));
+        dojo.connect(this.playerHand, 'onChangeSelection', this, (_, id: string) => this.onPlayerHandSelectionChanged(Number(id)));
 
         setupAnimalCards(this.playerHand);
 
         animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
 
-    public onPlayerHandSelectionChanged(items: any) {
-        if (items.length == 1) {
-            const card = items[0];
-            this.loadAnimal(card.id);
+    public onPlayerHandSelectionChanged(id: number) {
+        if (this.clickAction === 'load') {
+            this.loadAnimal(id);
+        } else if (this.clickAction === 'give') {
+            const added = (this.playerHand.getSelectedItems().some(item => Number(item.id) == id));
+            if (Object.keys(this.gamedatas.players).length == 2) {
+                const opponentId = this.getOpponentId(this.getPlayerId());
+                if (added) {
+                    this.giveCardsTo.set(id, opponentId);
+                } else {
+                    this.giveCardsTo.delete(id);
+                }
+                this.updateGiveCardsButton();
+            } else {
+                // TODO
+            }
         }
+    }
+
+    private updateGiveCardsButton() {
+        dojo.toggleClass('giveCards-button', 'disabled', this.giveCardsTo.size != this.cardsToGive);
     }
 
     public getPlayerId(): number {
@@ -281,10 +329,13 @@ class Noah implements NoahGame {
         });
     }
 
-    private giveCards(id: number, giveCardsTo: number[]) { // key = card id, value = toPlayerId
+    private giveCards() {
         if(!(this as any).checkAction('giveCards')) {
             return;
         }
+
+        const giveCardsTo = []; 
+        this.giveCardsTo.forEach((value, key) => giveCardsTo[key] = value);
 
         const base64 = btoa(JSON.stringify(giveCardsTo));
 
@@ -399,15 +450,23 @@ class Noah implements NoahGame {
     }
 
     notif_newRound(notif: Notif<NotifNewRoundArgs>) {
-        // TODO
+        this.table.newRound(notif.args.ferries);
     }
 
     notif_newHand(notif: Notif<NotifNewHandArgs>) {
-        // TODO
+        this.playerHand.removeAll();
+        notif.args.animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
 
     notif_animalGiven(notif: Notif<NotifAnimalGivenArgs>) {
-        // TODO
+        if (this.getPlayerId() == notif.args.playerId) {
+            const animal = notif.args._private[this.getPlayerId()].animal;
+            this.playerHand.removeFromStockById(''+animal.id);
+        } else if (this.getPlayerId() == notif.args.toPlayerId) {
+            const animal = notif.args._private[this.getPlayerId()].animal;
+            this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
+        }
+        // TODO animate
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {

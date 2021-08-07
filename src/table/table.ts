@@ -150,4 +150,8 @@ class Table {
     public departure(newFerry: boolean, remainingFerries: number) {
         this.spots[this.noahPosition].departure(newFerry);
     }
+    
+    public newRound(ferries: Ferry[]) {
+        // TODO
+    }
 }

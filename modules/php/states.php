@@ -43,7 +43,7 @@ trait StateTrait {
 
             $playerId = self::getActivePlayerId();
 
-            if (intval($this->animals->countCardInLocation('hand', $playerId)) == 0) {
+            if ($this->getNumberOfCardsToGive($playerId) == 0) {
                 $this->gamestate->nextState('nextPlayer');
             }
         }
@@ -93,8 +93,8 @@ trait StateTrait {
         // count points remaining in hands
         $playersIds = $this->getPlayersIds();
         foreach($playersIds as $playerId) {
-            $animals = $this->getAnimalsFromDb($this->animals->countCardInLocation('hand', $playerId));
-            $points = array_reduce($animals, function ($carry, $item) { return $carry + $item->points; });
+            $animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
+            $points = array_reduce($animals, function ($carry, $item) { return $carry + $item->points; }, 0);
             $this->incPlayerScore($playerId, $points);
         }
         

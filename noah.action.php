@@ -75,7 +75,10 @@
     public function giveCards() {
         self::setAjaxMode();
 
-        $giveCardsTo = json_decode(base64_decode(self::getArg("giveCardsTo", AT_base64, true)), true);
+        $giveCardsTo = array_filter(
+            json_decode(base64_decode(self::getArg("giveCardsTo", AT_base64, true)), true),
+            function($value) { return $value !== null; }
+        );
 
         $this->game->giveCards($giveCardsTo);
 

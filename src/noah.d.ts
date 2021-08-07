@@ -60,6 +60,9 @@ interface EnteringMoveNoahArgs {
     possiblePositions: number[];
 }
 
+interface EnteringOptimalLoadingArgs {
+    number: number;
+}
 
 interface NotifPointsArgs {
     playerId: number;
@@ -96,9 +99,9 @@ interface NotifNewHandArgs {
 interface NotifAnimalGivenArgs {
     playerId: number;
     toPlayerId: number;
-    _private?: {
-        animal: Animal
-    };
+    _private?: { [playerId: number]: {
+        animal: Animal;
+    }};
 }
 
 interface NotifDepartureArgs {

@@ -119,7 +119,7 @@ trait ActionTrait {
     public function giveCards(array $giveCardsTo) {
         self::checkAction('giveCards'); 
 
-        $playerId = self::getActivePlayerId();
+        $playerId = intval(self::getActivePlayerId());
 
         if (count($giveCardsTo) != $this->getNumberOfCardsToGive($playerId)) {
             throw new Error("Invalid card count");
@@ -143,7 +143,7 @@ trait ActionTrait {
                 'toPlayerId' => $toPlayerId,
                 'player_name2' => self::getPlayerNameById($toPlayerId),
                 '_private' => [          // Using "_private" keyword, all data inside this array will be made private
-                    'active' => [       // Using "active" keyword inside "_private", you select active player(s)
+                    $playerId => [       // Using "active" keyword inside "_private", you select active player(s)
                         'animal' => $animal,
                     ],
                     $toPlayerId => [
