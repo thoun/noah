@@ -13,9 +13,10 @@ class Ferry {
         $this->roomates = boolval($dbCard['type']);
     } 
 
-    public function getCurrentWeight() {
+    public function getCurrentWeight($ignoreFirst = false) {
         $currentWeight = 0;
-        foreach($this->animals as $animal) {
+        $animals = $ignoreFirst ? array_slice($this->animals, 1) : $this->animals;
+        foreach($animals as $animal) {
             $currentWeight += $animal->weight;
         }
         return $currentWeight;

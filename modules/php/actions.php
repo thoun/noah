@@ -31,6 +31,8 @@ trait ActionTrait {
         } else if ($animal->power == POWER_ADJUSTABLE_WEIGHT && $this->getWeightForDeparture() != null) {
             self::setGameStateValue(SELECTED_ANIMAL, $id);
             $this->gamestate->nextState('chooseWeight');
+        } else if ($animal->power == POWER_CROCODILE) {
+            // TODO choose player to give first ferry card
         } else {
             $this->applyLoadAnimal($id);
         }
