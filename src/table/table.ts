@@ -1,4 +1,4 @@
-const NOAH_RADIUS = 150;
+const NOAH_RADIUS = 191;
 const MAX_SCORE = 26;
 
 class Table {
@@ -59,18 +59,15 @@ class Table {
 
         this.noahLastPosition = newPosition;
 
-        return `rotate(${72 * newPosition}deg) translateY(180px)`;
+        return `rotate(${72 * newPosition}deg) translateY(50px)`;
     }
 
     private getPointsCoordinates(points: number) {
-        const angle = (Math.max(1, Math.min(points, MAX_SCORE))/MAX_SCORE)*Math.PI*2; // in radians
-        const left = NOAH_RADIUS*Math.sin(angle);
-        let top = NOAH_RADIUS*Math.cos(angle);
-        if (points === 0) {
-            top += 50;
-        }
+        const angle = (Math.min((points-1), MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
+        const left = -NOAH_RADIUS*Math.cos(angle);
+        let top = -NOAH_RADIUS*Math.sin(angle);
 
-        return [left, top];
+        return [211 + left, 213 + top];
     }
     
     public noahMoved(position: number) {console.log('noahMoved', position);
@@ -85,9 +82,13 @@ class Table {
 
         const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
 
-        const coordinates = this.getPointsCoordinates(points);
-        let left = coordinates[0];
-        let top = coordinates[1];
+        let left = 60;
+        let top = 210;
+        if (points > 0) {
+            const coordinates = this.getPointsCoordinates(points);
+            left = coordinates[0];
+            top = coordinates[1];
+        }
 
         /*if (playerShouldShift) {
             top -= 5;
@@ -95,8 +96,7 @@ class Table {
         }*/
 
         if (firstPosition) {
-            markerDiv.style.top = `${top}px`;
-            markerDiv.style.left = `${left}px`;
+            markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
         } else {
             dojo.fx.slideTo({
                 node: markerDiv,

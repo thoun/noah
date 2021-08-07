@@ -1,6 +1,6 @@
   .ferry-spot {
     top: 233px;
-    left: 116px;
+    left: 136px;
     position: absolute;
     width: 185px;
     transform-origin: top center;
@@ -14,7 +14,7 @@
 
     @for $i from 0 through 4 {
       &.position#{$i} {
-          transform: rotate(72deg * $i) translateY(180px);
+          transform: rotate(72deg * $i) translateY(235px);
       }
     }
   

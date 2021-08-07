@@ -6,7 +6,7 @@
 }
 #table .ferry-spot {
   top: 233px;
-  left: 116px;
+  left: 136px;
   position: absolute;
   width: 185px;
   transform-origin: top center;
@@ -16,19 +16,19 @@
   top: 5px;
 }
 #table .ferry-spot.position0 {
-  transform: rotate(0deg) translateY(180px);
+  transform: rotate(0deg) translateY(235px);
 }
 #table .ferry-spot.position1 {
-  transform: rotate(72deg) translateY(180px);
+  transform: rotate(72deg) translateY(235px);
 }
 #table .ferry-spot.position2 {
-  transform: rotate(144deg) translateY(180px);
+  transform: rotate(144deg) translateY(235px);
 }
 #table .ferry-spot.position3 {
-  transform: rotate(216deg) translateY(180px);
+  transform: rotate(216deg) translateY(235px);
 }
 #table .ferry-spot.position4 {
-  transform: rotate(288deg) translateY(180px);
+  transform: rotate(288deg) translateY(235px);
 }
 #table .ferry-spot .ferry-card {
   background: url("img/ferry-back.jpg");
@@ -63,7 +63,7 @@
 #table #center-board .noah-spot {
   position: absolute;
   top: 233px;
-  left: 116px;
+  left: 163px;
   width: 120px;
   height: 120px;
   pointer-events: none;
@@ -78,26 +78,29 @@
   border: 5px dashed red;
 }
 #table #center-board .noah-spot.position0 {
-  transform: rotate(0deg) translateY(180px);
+  transform: rotate(0deg) translateY(50px);
 }
 #table #center-board .noah-spot.position1 {
-  transform: rotate(72deg) translateY(180px);
+  transform: rotate(72deg) translateY(50px);
 }
 #table #center-board .noah-spot.position2 {
-  transform: rotate(144deg) translateY(180px);
+  transform: rotate(144deg) translateY(50px);
 }
 #table #center-board .noah-spot.position3 {
-  transform: rotate(216deg) translateY(180px);
+  transform: rotate(216deg) translateY(50px);
 }
 #table #center-board .noah-spot.position4 {
-  transform: rotate(288deg) translateY(180px);
+  transform: rotate(288deg) translateY(50px);
 }
 #table #center-board .point-marker {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 44px;
   height: 44px;
   box-shadow: 1px 1px 2px 2px black;
   border-radius: 50%;
+  transition: transform 0.5s;
 }
 #table #center-board #ferry-deck {
   position: absolute;
@@ -112,7 +115,7 @@
 #table #center-board .remaining-counter {
   position: absolute;
   text-align: center;
-  text-shadow: 1px 1px 1px white;
+  text-shadow: 0 0 2px white;
 }
 #table #center-board #remaining-ferry-counter {
   top: 280px;

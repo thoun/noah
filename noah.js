@@ -94,19 +94,19 @@ function formatTextIcons(rawText) {
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
         var _this = this;
-        var _a;
         this.game = game;
         this.position = position;
+        this.animals = [];
         this.empty = false;
-        this.animals = (_a = ferry === null || ferry === void 0 ? void 0 : ferry.animals) !== null && _a !== void 0 ? _a : [];
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
-        /*this.animals.forEach((animal, index) => html += `
-            <div id="ferry-spot-${position}-animal${animal.id}" class="animal-card" style="top : ${100 + index * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>
-        `);*/
         html += "</div>";
         dojo.place(html, 'center-board');
-        this.animals.forEach(function (animal) { return _this.addAnimal(animal); });
-        this.empty = !ferry;
+        if (ferry) {
+            ferry.animals.forEach(function (animal) { return _this.addAnimal(animal); });
+        }
+        else {
+            this.empty = true;
+        }
         this.updateCounter();
     }
     FerrySpot.prototype.getBackgroundPosition = function (animal) {
@@ -145,6 +145,7 @@ var FerrySpot = /** @class */ (function () {
     FerrySpot.prototype.updateCounter = function () {
         var text = '';
         if (!this.empty) {
+            console.log(this.animals, this.animals.reduce(function (sum, animal) { return sum + animal.weight; }, 0));
             text = this.animals.reduce(function (sum, animal) { return sum + animal.weight; }, 0) + " / " + (this.animals.some(function (animal) { return animal.power == 5; }) ? 13 : 21);
         }
         document.getElementById("ferry-spot-" + this.position + "-weight-indicator").innerHTML = text;
@@ -159,7 +160,7 @@ var FerrySpot = /** @class */ (function () {
     };
     return FerrySpot;
 }());
-var NOAH_RADIUS = 150;
+var NOAH_RADIUS = 191;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
     function Table(game, players, ferries, noahPosition, remainingFerries) {
@@ -203,16 +204,13 @@ var Table = /** @class */ (function () {
             this.noahLastPosition + spotsToGoUp - 5 :
             this.noahLastPosition + spotsToGoUp;
         this.noahLastPosition = newPosition;
-        return "rotate(" + 72 * newPosition + "deg) translateY(180px)";
+        return "rotate(" + 72 * newPosition + "deg) translateY(50px)";
     };
     Table.prototype.getPointsCoordinates = function (points) {
-        var angle = (Math.max(1, Math.min(points, MAX_SCORE)) / MAX_SCORE) * Math.PI * 2; // in radians
-        var left = NOAH_RADIUS * Math.sin(angle);
-        var top = NOAH_RADIUS * Math.cos(angle);
-        if (points === 0) {
-            top += 50;
-        }
-        return [left, top];
+        var angle = (Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
+        var left = -NOAH_RADIUS * Math.cos(angle);
+        var top = -NOAH_RADIUS * Math.sin(angle);
+        return [211 + left, 213 + top];
     };
     Table.prototype.noahMoved = function (position) {
         console.log('noahMoved', position);
@@ -224,16 +222,19 @@ var Table = /** @class */ (function () {
         const playerShouldShift = equality && playerId > opponentId;*/
         if (firstPosition === void 0) { firstPosition = false; }
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
-        var coordinates = this.getPointsCoordinates(points);
-        var left = coordinates[0];
-        var top = coordinates[1];
+        var left = 60;
+        var top = 210;
+        if (points > 0) {
+            var coordinates = this.getPointsCoordinates(points);
+            left = coordinates[0];
+            top = coordinates[1];
+        }
         /*if (playerShouldShift) {
             top -= 5;
             left -= 5;
         }*/
         if (firstPosition) {
-            markerDiv.style.top = top + "px";
-            markerDiv.style.left = left + "px";
+            markerDiv.style.transform = "translateX(" + left + "px) translateY(" + top + "px)";
         }
         else {
             dojo.fx.slideTo({
