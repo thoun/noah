@@ -97,11 +97,10 @@ var FerrySpot = /** @class */ (function () {
         this.game = game;
         this.position = position;
         this.animals = ferry.animals;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"noah-spot-" + position + "\" class=\"noah-spot\"></div>\n            <div class=\"stockitem ferry-card\"></div>\n            \n        ";
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div class=\"stockitem ferry-card\"></div>            \n        ";
         this.animals.forEach(function (animal, index) { return html += "\n            <div id=\"ferry-spot-" + position + "-animal" + index + "\" class=\"animal-card\" style=\"top : " + (100 + index * 30) + "px; background-position: " + _this.getBackgroundPosition(animal) + "\"></div>\n        "; });
         html += "</div>";
         dojo.place(html, 'center-board');
-        document.getElementById("noah-spot-" + position).addEventListener('click', function () { return _this.game.moveNoah(position); });
     }
     FerrySpot.prototype.getBackgroundPosition = function (animal) {
         var imagePosition = animal.type >= 20 ?
@@ -128,6 +127,7 @@ var Table = /** @class */ (function () {
         this.game = game;
         this.noahPosition = noahPosition;
         this.spots = [];
+        this.noahLastPosition = 0;
         var html = '';
         // points
         players.forEach(function (player) {
@@ -135,16 +135,35 @@ var Table = /** @class */ (function () {
         });
         dojo.place(html, 'center-board');
         players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
+        var _loop_1 = function (i) {
+            this_1.spots.push(new FerrySpot(game, i, ferries[i]));
+            dojo.place("<div id=\"noah-spot-" + i + "\" class=\"noah-spot position" + i + "\"></div>", 'center-board');
+            document.getElementById("noah-spot-" + i).addEventListener('click', function () { return _this.game.moveNoah(i); });
+        };
+        var this_1 = this;
         // ferries
         for (var i = 0; i < 5; i++) {
-            this.spots.push(new FerrySpot(game, i, ferries[i]));
+            _loop_1(i);
         }
         // noah
-        dojo.place("<div id=\"noah\"></div>", "noah-spot-" + noahPosition);
+        this.noahLastPosition = noahPosition;
+        dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
         this.updateMargins();
         // TODO TEMP
-        document.getElementById('noah').addEventListener('click', function () { return _this.noahMoved(_this.noahPosition + 1); });
+        document.getElementById('noah').addEventListener('click', function (e) { return _this.noahMoved((5 + _this.noahPosition + (e.offsetX > 60 ? -1 : 1)) % 5); });
     }
+    Table.prototype.getNoahStyle = function (noahPosition) {
+        var noahLastPositionMod = this.noahLastPosition % 5;
+        if (Math.abs(noahLastPositionMod - noahPosition) > 2) {
+            noahLastPositionMod -= 5;
+        }
+        var spotsToGoUp = (noahPosition - noahLastPositionMod) % 5;
+        var newPosition = spotsToGoUp > 2 ?
+            this.noahLastPosition + spotsToGoUp - 5 :
+            this.noahLastPosition + spotsToGoUp;
+        this.noahLastPosition = newPosition;
+        return "rotate(" + 72 * newPosition + "deg) translateY(180px)";
+    };
     Table.prototype.getPointsCoordinates = function (points) {
         var angle = (Math.max(1, Math.min(points, MAX_SCORE)) / MAX_SCORE) * Math.PI * 2; // in radians
         var left = NOAH_RADIUS * Math.sin(angle);
@@ -155,8 +174,9 @@ var Table = /** @class */ (function () {
         return [left, top];
     };
     Table.prototype.noahMoved = function (position) {
+        console.log('noahMoved', position);
         this.noahPosition = position;
-        slideToObjectAndAttach(document.getElementById("noah"), "noah-spot-" + position);
+        document.getElementById('noah').style.transform = this.getNoahStyle(position);
     };
     Table.prototype.setPoints = function (playerId, points, firstPosition) {
         /*const equality = opponentScore === points;
@@ -602,6 +622,9 @@ var Noah = /** @class */ (function () {
                 if (typeof args.animalName == 'string' && args.animalName[0] != '<' /* && typeof args.animal == 'object'*/) {
                     args.animalName = "<strong style=\"color: " + this.getAnimalColor((_b = (_a = args.animal) === null || _a === void 0 ? void 0 : _a.gender) !== null && _b !== void 0 ? _b : 'black') + "\">" + args.animalName + "</strong>";
                 }
+            }
+            if (log == '${player_name} loads animal ${animalName}') {
+                console.log(log, args);
             }
         }
         catch (e) {

@@ -26,21 +26,6 @@
 #table .ferry-spot.position4 {
   transform: rotate(288deg) translateY(180px);
 }
-#table .ferry-spot .noah-spot {
-  position: absolute;
-  left: 20px;
-  top: -100px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 4;
-}
-#table .ferry-spot .noah-spot.selectable {
-  cursor: pointer;
-  pointer-events: all;
-  border: 5px dashed red;
-}
 #table .ferry-spot .ferry-card {
   background: url("img/ferry-back.jpg");
   width: 185px;
@@ -63,14 +48,41 @@
   background: url("img/board.png");
 }
 #table #center-board #noah {
-  position: absolute;
   background: url("img/noah.png");
   background-position: 50% 50%;
-  width: 120px;
-  height: 120px;
   z-index: 5;
   box-shadow: 0 0 5px 5px white;
+}
+#table #center-board .noah-spot {
+  position: absolute;
+  top: 233px;
+  left: 116px;
+  width: 120px;
+  height: 120px;
+  z-index: 4;
+  transform-origin: top center;
+  transition: transform 0.5s;
   border-radius: 50%;
+}
+#table #center-board .noah-spot.selectable {
+  cursor: pointer;
+  pointer-events: all;
+  border: 5px dashed red;
+}
+#table #center-board .noah-spot.position0 {
+  transform: rotate(0deg) translateY(180px);
+}
+#table #center-board .noah-spot.position1 {
+  transform: rotate(72deg) translateY(180px);
+}
+#table #center-board .noah-spot.position2 {
+  transform: rotate(144deg) translateY(180px);
+}
+#table #center-board .noah-spot.position3 {
+  transform: rotate(216deg) translateY(180px);
+}
+#table #center-board .noah-spot.position4 {
+  transform: rotate(288deg) translateY(180px);
 }
 #table #center-board .point-marker {
   position: absolute;

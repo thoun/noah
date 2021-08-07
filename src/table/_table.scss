@@ -12,14 +12,35 @@
     background: url('img/board.png');
 
     #noah {
-      position: absolute;
       background: url('img/noah.png');
       background-position: 50% 50%;
-      width: 120px;
-      height: 120px;
       z-index: 5;
       box-shadow: 0 0 5px 5px white;
+    }
+
+    .noah-spot {
+      position: absolute;
+      top: 233px;
+      left: 116px;
+      width: 120px;
+      height: 120px;
+      // pointer-events: none;
+      z-index: 4;
+      transform-origin: top center;
+      transition: transform 0.5s;
       border-radius: 50%;
+
+      &.selectable {
+        cursor: pointer;
+        pointer-events: all;
+        border: 5px dashed red;
+      }
+
+      @for $i from 0 through 4 {
+        &.position#{$i} {
+            transform: rotate(72deg * $i) translateY(180px);
+        }
+      }
     }
 
     .point-marker {

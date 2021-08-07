@@ -5,6 +5,8 @@ class Table {
 
     private spots: FerrySpot[] = [];
 
+    private noahLastPosition = 0;
+
     constructor(
         private game: NoahGame, 
         players: NoahPlayer[],
@@ -23,15 +25,37 @@ class Table {
         // ferries
         for (let i=0;i<5;i++) {
             this.spots.push(new FerrySpot(game, i, ferries[i]));
+            
+            dojo.place(`<div id="noah-spot-${i}" class="noah-spot position${i}"></div>`, 'center-board');
+
+            document.getElementById(`noah-spot-${i}`).addEventListener('click', () => this.game.moveNoah(i));
         }
 
         // noah
-        dojo.place(`<div id="noah"></div>`, `noah-spot-${noahPosition}`);
+        this.noahLastPosition = noahPosition;
+        dojo.place(`<div id="noah" class="noah-spot" style="transform: ${this.getNoahStyle(noahPosition)}"></div>`, 'center-board');
 
         this.updateMargins();
 
         // TODO TEMP
-        document.getElementById('noah').addEventListener('click', () => this.noahMoved(this.noahPosition + 1));
+        document.getElementById('noah').addEventListener('click', e => this.noahMoved((5 + this.noahPosition + (e.offsetX > 60 ? -1 : 1)) % 5));
+    }
+
+    private getNoahStyle(noahPosition: number) {
+
+        let noahLastPositionMod = this.noahLastPosition % 5;
+        if (Math.abs(noahLastPositionMod - noahPosition) > 2) {
+            noahLastPositionMod -= 5;
+        }
+        const spotsToGoUp = (noahPosition - noahLastPositionMod) % 5;
+
+        const newPosition = spotsToGoUp > 2 ? 
+            this.noahLastPosition + spotsToGoUp - 5 :
+            this.noahLastPosition + spotsToGoUp;
+
+        this.noahLastPosition = newPosition;
+
+        return `rotate(${72 * newPosition}deg) translateY(180px)`;
     }
 
     private getPointsCoordinates(points: number) {
@@ -45,10 +69,10 @@ class Table {
         return [left, top];
     }
     
-    public noahMoved(position: number) {
+    public noahMoved(position: number) {console.log('noahMoved', position);
         this.noahPosition = position;
 
-        slideToObjectAndAttach(document.getElementById(`noah`), `noah-spot-${position}`);
+        document.getElementById('noah').style.transform = this.getNoahStyle(position);
     }
 
     public setPoints(playerId: number, points: number, firstPosition = false) {

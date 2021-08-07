@@ -12,23 +12,6 @@
           transform: rotate(72deg * $i) translateY(180px);
       }
     }
-
-    .noah-spot {
-      position: absolute;
-      left: 20px;
-      top: -100px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 4;
-
-      &.selectable {
-        cursor: pointer;
-        pointer-events: all;
-        border: 5px dashed red;
-      }
-    }
   
     .ferry-card {
       background: url('img/ferry-back.jpg');

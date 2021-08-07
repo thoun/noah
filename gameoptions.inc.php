@@ -68,7 +68,7 @@ $game_options = [
         'default' => 1,
     ],
 
-    101 => [
+    103 => [
         'name' => totranslate('Use bonus card : Roomates'),
         'values' => [
             1 => [

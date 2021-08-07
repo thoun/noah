@@ -471,6 +471,10 @@ class Noah implements NoahGame {
                     args.animalName = `<strong style="color: ${this.getAnimalColor(args.animal?.gender ?? 'black')}">${args.animalName}</strong>`;
                 }
             }
+
+            if (log == '${player_name} loads animal ${animalName}') {
+                console.log(log, args);
+            }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);
         }
