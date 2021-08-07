@@ -40,6 +40,7 @@
         /*********** Place your code below:  ************/
 
         $this->tpl['MY_HAND'] = self::_("My hand");
+        $this->tpl['ROUND'] = self::_("Round");
 
         /*********** Do not change anything below this line  ************/
   	}

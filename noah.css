@@ -251,98 +251,17 @@ html {
   transform-origin: left top;
 }
 
-/*.icon {
-  display: inline-block;
-  position: relative;
-  width: 32px;
-  height: 32px;
-  background-image: url('img/icons.png');
-  background-size: auto 100%;
-
-  &.charcoalium {
-    background-position: 0% 0%;
-  }
-
-  &.wood {
-    background-position: 25% 0%;
-  }
-
-  &.copper {
-    background-position: 50% 0%;
-  }
-
-  &.crystal {
-    background-position: 75% 0%;
-  }
-
-  &.joker {
-    background-position: 100% 0%;
-  }
+#round-counter-wrapper {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  text-align: center;
+}
+#round-counter-wrapper .counter {
+  margin-top: 5px;
+  font-size: 130%;
 }
 
-#page-title {
-  .icon {
-    width: 20px;
-    height: 20px;
-    margin: -5px 0;
-  }
-
-  .effect-in-text {
-    margin-bottom: -10px;
-  }
-
-  #applyEffect-button {
-    .effect {
-      margin-top: -5px;
-      margin-bottom: -5px;
-    }
-  }
-}
-
-.log {  
-  .icon {
-    width: 16px;
-    height: 16px;
-    margin-bottom: -2px;
-  }
-}
-
-.gamelogreview {
-  .icon {
-    width: 20px;
-    height: 20px;
-    margin-bottom: -2px;
-  }
-}
-
-.dijitTooltipContents { 
-  .icon {
-    width: 16px;
-    height: 16px;
-    margin-bottom: -2px;
-  }
-}
-
-.player-icon {
-  display: inline-block;
-  position: relative;
-  width: 150px;
-  height: 150px;
-  background-image: url('img/players.png');
-  background-size: auto 100%;
-
-  &.blue {
-    background-position: 0% 0%;
-  }
-
-  &.red {
-    background-position: 50% 0%;
-  }
-
-  &.first-player {
-    background-position: 100% 0%;
-  }
-}*/
 .stockitem {
   border-radius: 10px;
   margin: 5px;

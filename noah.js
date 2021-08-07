@@ -333,6 +333,12 @@ var Noah = /** @class */ (function () {
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
         this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
+        this.roundCounter = new ebg.counter();
+        this.roundCounter.create('round-counter');
+        this.roundCounter.setValue(gamedatas.roundNumber);
+        if (gamedatas.variant) {
+            dojo.destroy('counter-no-variant');
+        }
         this.addHelp();
         this.setupNotifications();
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
@@ -652,6 +658,7 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_newRound = function (notif) {
         this.table.newRound(notif.args.ferries);
+        this.roundCounter.incValue(1);
     };
     Noah.prototype.notif_newHand = function (notif) {
         var _this = this;

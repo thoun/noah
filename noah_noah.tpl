@@ -13,6 +13,10 @@
             <div id="my-animals"></div>
         </div>
     </div>
+    <div id="round-counter-wrapper" class="whiteblock">
+        <div>{ROUND}</div>
+        <div class="counter"><span id="round-counter"></span><span id="counter-no-variant">&nbsp;/&nbsp;3</span></div>
+    </div>
     <div id="zoom-controls">
         <button id="zoom-out"></button>
         <button id="zoom-in" class="disabled"></button>

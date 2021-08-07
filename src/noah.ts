@@ -22,6 +22,7 @@ class Noah implements NoahGame {
 
     private playerHand: Stock;
     private table: Table;
+    private roundCounter: Counter;
 
     public zoom: number = 1;
 
@@ -59,6 +60,13 @@ class Noah implements NoahGame {
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
         this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
+
+        this.roundCounter = new ebg.counter();
+        this.roundCounter.create('round-counter');
+        this.roundCounter.setValue(gamedatas.roundNumber);
+        if (gamedatas.variant) {
+            dojo.destroy('counter-no-variant');
+        }
 
         this.addHelp();
         this.setupNotifications();
@@ -438,6 +446,7 @@ class Noah implements NoahGame {
 
     notif_newRound(notif: Notif<NotifNewRoundArgs>) {
         this.table.newRound(notif.args.ferries);
+        this.roundCounter.incValue(1);
     }
 
     notif_newHand(notif: Notif<NotifNewHandArgs>) {
