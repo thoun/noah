@@ -105,6 +105,7 @@ $playerActionsGameStates = [
             "chooseWeight" => ST_PLAYER_CHOOSE_WEIGHT,
             "lookCards" => ST_PLAYER_CHOOSE_OPPONENT,
             "exchangeCard" => ST_PLAYER_CHOOSE_OPPONENT,
+            "giveCardFromFerry" => ST_PLAYER_CHOOSE_OPPONENT,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -145,16 +146,20 @@ $playerActionsGameStates = [
         "descriptionmyturn" => clienttranslate('${you} must choose a player to look cards'),
         "descriptionexchange" => clienttranslate('${actplayer} must choose a player to exchange card'),
         "descriptionmyturnexchange" => clienttranslate('${you} must choose a player to exchange card'),
+        "descriptiongive" => clienttranslate('${actplayer} must choose a player to give card'),
+        "descriptionmyturngive" => clienttranslate('${you} must choose a player to give card'),
         "type" => "activeplayer",   
         "action" => "stChooseOpponent",      
         "args" => "argChooseOpponent",
         "possibleactions" => [ 
             "lookCards",
             "exchangeCard",
+            "giveCardFromFerry",
         ],
         "transitions" => [
             "look" => ST_PLAYER_VIEW_CARDS,
             "exchange" => ST_PLAYER_GIVE_CARD,
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
     ],

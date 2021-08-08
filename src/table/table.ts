@@ -41,6 +41,7 @@ class Table {
         // noah
         this.noahLastPosition = noahPosition;
         dojo.place(`<div id="noah" class="noah-spot" style="transform: ${this.getNoahStyle(noahPosition)}"></div>`, 'center-board');
+        this.spots[noahPosition].setActive(true);
 
         this.updateMargins();
     }
@@ -70,10 +71,12 @@ class Table {
         return [211 + left, 213 + top];
     }
     
-    public noahMoved(position: number) {console.log('noahMoved', position);
+    public noahMoved(position: number) {
         this.noahPosition = position;
 
         document.getElementById('noah').style.transform = this.getNoahStyle(position);
+
+        this.spots.forEach((spot, index) => spot.setActive(index == position));
     }
 
     public setPoints(playerId: number, points: number, firstPosition = false) {
@@ -95,19 +98,7 @@ class Table {
             left -= 5;
         }*/
 
-        if (firstPosition) {
-            markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
-        } else {
-            dojo.fx.slideTo({
-                node: markerDiv,
-                top: top,
-                left: left,
-                delay: 0,
-                duration: ANIMATION_MS,
-                easing: dojo.fx.easing.cubicInOut,
-                unit: "px"
-            }).play();
-        }
+        markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
     }
 
     public updateMargins() {
@@ -152,6 +143,9 @@ class Table {
 
     public removeAnimals() {
         this.spots[this.noahPosition].removeAnimals();
+    }
+    removeFirstAnimalFromFerry() {
+        this.spots[this.noahPosition].removeFirstAnimalFromFerry();
     }
 
     private setRemainingFerries(remainingFerries: number) {

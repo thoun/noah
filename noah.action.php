@@ -92,6 +92,16 @@
         self::ajaxResponse();
     }
   	
+    public function giveCardFromFerry() {
+        self::setAjaxMode();
+
+        $playerId = self::getArg("playerId", AT_posint, true);
+
+        $this->game->giveCardFromFerry($playerId);
+
+        self::ajaxResponse();
+    }
+  	
     public function seen() {
         self::setAjaxMode();
 

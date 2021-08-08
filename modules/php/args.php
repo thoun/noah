@@ -117,6 +117,7 @@ trait ArgsTrait {
             'opponentsIds' => $opponentsIds,            
             'viewCards' => intval(self::getGameStateValue(LOOK_OPPONENT_HAND)) == 1,
             'exchangeCard' => intval(self::getGameStateValue(EXCHANGE_CARD)) == 1,
+            'giveCardFromFerry' => intval(self::getGameStateValue(GIVE_CARD_FROM_FERRY)) == 1,
         ];
     }
 

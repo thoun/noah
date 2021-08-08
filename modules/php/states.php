@@ -27,7 +27,13 @@ trait StateTrait {
 
     function stChooseOpponent() {
         if (count($this->getPlayersIds()) == 2) {
-            $this->applyLookCards($this->getOpponentId(self::getActivePlayerId()));
+            if (intval(self::getGameStateValue(LOOK_OPPONENT_HAND)) == 1) {
+                $this->applyLookCards($this->getOpponentId(self::getActivePlayerId()));
+            } else if (intval(self::getGameStateValue(EXCHANGE_CARD)) == 1) {
+                $this->applyExchangeCard($this->getOpponentId(self::getActivePlayerId()));
+            } else if (intval(self::getGameStateValue(GIVE_CARD_FROM_FERRY)) == 1) {
+                $this->applyGiveCardFromFerry($this->getOpponentId(self::getActivePlayerId()));
+            } 
         }
     }
 

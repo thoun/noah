@@ -22,7 +22,7 @@ trait ActionTrait {
 
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
-        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
+        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, null, 'location_arg'));
         $nbr = count($animalsInFerry);
 
         if ($nbr < 2 && $animal->power == POWER_HERMAPHRODITE) { // need to set gender
@@ -31,8 +31,10 @@ trait ActionTrait {
         } else if ($animal->power == POWER_ADJUSTABLE_WEIGHT && $this->getWeightForDeparture() != null) {
             self::setGameStateValue(SELECTED_ANIMAL, $id);
             $this->gamestate->nextState('chooseWeight');
-        } else if ($animal->power == POWER_CROCODILE) {
-            // TODO choose player to give first ferry card
+        } else if ($animal->power == POWER_CROCODILE && $this->getFirstAnimalFromFerry() != null) {
+            self::setGameStateValue(SELECTED_ANIMAL, $id);            
+            self::setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
+            $this->gamestate->nextState('giveCardFromFerry');
         } else {
             $this->applyLoadAnimal($id);
         }
@@ -93,7 +95,7 @@ trait ActionTrait {
         ]);
 
         if ($animal->power == POWER_CROCODILE) {
-            $this->decPlayerScore(2);
+            $this->decPlayerScore($playerId, 2);
         }
           
         self::setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
@@ -211,6 +213,43 @@ trait ActionTrait {
         self::setGameStateValue(EXCHANGE_CARD, $playerId);
 
         $this->gamestate->nextState('exchange');
+    }
+
+    public function giveCardFromFerry(int $playerId) {
+        self::checkAction('giveCardFromFerry'); 
+
+        $this->applyGiveCardFromFerry($playerId);
+    }
+
+    function getFirstAnimalFromFerry() {
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, null, 'location_arg'));
+
+        if (count($animalsInFerry) > 0) {
+            return $animalsInFerry[0];
+        } else {
+            return null;
+        }
+    }
+
+    function applyGiveCardFromFerry(int $toPlayerId) {
+        $animal = $this->getFirstAnimalFromFerry();
+        if ($animal != null) {
+            $playerId = intval(self::getActivePlayerId());
+
+            $this->animals->moveCard($animal->id, 'hand', $toPlayerId);
+
+            self::notifyAllPlayers('animalGivenFromFerry', clienttranslate('${player_name} makes first animal of ferry flee to ${player_name2}\'s hand'), [
+                'playerId' => $playerId,
+                'player_name' => self::getActivePlayerName(),
+                'toPlayerId' => $toPlayerId,
+                'player_name2' => self::getPlayerNameById($toPlayerId),
+                'animal' => $animal,
+            ]);
+        }
+
+        $this->applyLoadAnimal(intval(self::getGameStateValue(SELECTED_ANIMAL)));
     }
 
     function giveCard(int $cardId) {

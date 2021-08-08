@@ -284,6 +284,13 @@ trait UtilTrait {
             case 6: return _('cat');
             case 7: return _('elephant');
             case 8: return _('panda');
+            case 9: return _('perrot');
+            case 10: return _('kangaroo');
+            case 11: return _('rhinoceros');
+            case 12: return _('bear');
+            
+            case 20: return _('frog');
+            case 21: return _('crocodile');
         }
         return null;
     }

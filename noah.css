@@ -10,6 +10,12 @@
   position: absolute;
   width: 185px;
   transform-origin: top center;
+  border-radius: 10px;
+  transition: box-shadow 0.5s, background-color 0.5s;
+}
+#table .ferry-spot.active {
+  background-color: #FFFFFFBB;
+  box-shadow: 0 0 5px 5px #FFFFFFBB;
 }
 #table .ferry-spot .weight-indicator {
   right: 5px;

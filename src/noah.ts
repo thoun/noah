@@ -107,8 +107,12 @@ class Noah implements NoahGame {
                 this.onEnteringStateOptimalLoading(args.args as EnteringOptimalLoadingArgs);
                 break;
             case 'chooseOpponent':
-                const exchange = (args.args as EnteringChooseOpponentArgs).exchangeCard;
-                this.setGamestateDescription(exchange ? 'exchange' : '');
+                const enteringChooseOpponentArgs = args.args as EnteringChooseOpponentArgs;
+                if (enteringChooseOpponentArgs.exchangeCard) {
+                    this.setGamestateDescription('exchange');
+                } else if (enteringChooseOpponentArgs.giveCardFromFerry) {
+                    this.setGamestateDescription('give');
+                }                
                 break;
             case 'giveCard':
                 this.clickAction = 'lion';
@@ -255,9 +259,10 @@ class Noah implements NoahGame {
                 case 'chooseOpponent':
                     const choosePlayerArgs = args as EnteringChooseOpponentArgs;
                     const exchange = choosePlayerArgs.exchangeCard;
+                    const give = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
                         const player = this.getPlayer(playerId);
-                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => (exchange ? this.exchangeCard(playerId) : this.lookCards(playerId)));
+                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => (give ? this.giveCardFromFerry(playerId) : (exchange ? this.exchangeCard(playerId) : this.lookCards(playerId))));
                         document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
                     });
                     break;
@@ -429,6 +434,16 @@ class Noah implements NoahGame {
         });
     }
 
+    private giveCardFromFerry(playerId: number) {
+        if(!(this as any).checkAction('giveCardFromFerry')) {
+            return;
+        }
+
+        this.takeAction('giveCardFromFerry', {
+            playerId
+        });
+    }
+
     private giveCard(id: number) {
         if(!(this as any).checkAction('giveCard')) {
             return;
@@ -533,6 +548,7 @@ class Noah implements NoahGame {
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
             ['animalGiven', ANIMATION_MS],
+            ['animalGivenFromFerry', ANIMATION_MS],
             ['removedCard', ANIMATION_MS],
             ['newCard', ANIMATION_MS],
         ];
@@ -582,6 +598,16 @@ class Noah implements NoahGame {
             const animal = notif.args._private[this.getPlayerId()].animal;
             this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
         }
+        // TODO animate
+    }
+
+    notif_animalGivenFromFerry(notif: Notif<NotifAnimalGivenArgs>) {
+        if (this.getPlayerId() == notif.args.toPlayerId) {
+            const animal = notif.args._private[this.getPlayerId()].animal;
+            this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
+        }
+        this.table.removeFirstAnimalFromFerry();
+
         // TODO animate
     }
 

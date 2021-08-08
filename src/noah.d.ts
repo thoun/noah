@@ -62,8 +62,9 @@ interface EnteringChooseWeightArgs {
 
 interface EnteringChooseOpponentArgs {
     opponentsIds: number[];
-    viewCards: number;
-    exchangeCard: number;
+    viewCards: boolean;
+    exchangeCard: boolean;
+    giveCardFromFerry: boolean;
 }
 
 interface EnteringMoveNoahArgs {
@@ -117,6 +118,12 @@ interface NotifAnimalGivenArgs {
     _private?: { [playerId: number]: {
         animal: Animal;
     }};
+}
+
+interface NotifAnimalGivenFromFerryArgs {
+    playerId: number;
+    toPlayerId: number;
+    animal: Animal;
 }
 
 interface NotifDepartureArgs {

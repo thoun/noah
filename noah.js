@@ -91,6 +91,8 @@ function formatTextIcons(rawText) {
     return rawText
         .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
 }
+var CARD_OVERLAP = 30;
+var FIRST_ANIMAL_SHIFT = 100;
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
         var _this = this;
@@ -109,6 +111,9 @@ var FerrySpot = /** @class */ (function () {
         }
         this.updateCounter();
     }
+    FerrySpot.prototype.setActive = function (active) {
+        dojo.toggleClass("ferry-spot-" + this.position, 'active', active);
+    };
     FerrySpot.prototype.getBackgroundPosition = function (animal) {
         var imagePosition = animal.type >= 20 ?
             24 + (animal.type - 20) * 2 + animal.gender :
@@ -120,7 +125,7 @@ var FerrySpot = /** @class */ (function () {
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
     };
     FerrySpot.prototype.addAnimal = function (animal) {
-        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top : " + (100 + this.animals.length * 30) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
+        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top: " + (FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
         this.updateCounter();
@@ -130,6 +135,13 @@ var FerrySpot = /** @class */ (function () {
         this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
         this.animals = [];
         this.updateCounter();
+    };
+    FerrySpot.prototype.removeFirstAnimalFromFerry = function () {
+        var _this = this;
+        if (this.animals.length) {
+            dojo.destroy("ferry-spot-" + this.position + "-animal" + this.animals.shift().id);
+            this.animals.forEach(function (animal, index) { return document.getElementById("ferry-spot-" + _this.position + "-animal" + animal.id).style.top = FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP + "px"; });
+        }
     };
     FerrySpot.prototype.departure = function (newFerry) {
         var _this = this;
@@ -191,6 +203,7 @@ var Table = /** @class */ (function () {
         // noah
         this.noahLastPosition = noahPosition;
         dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
+        this.spots[noahPosition].setActive(true);
         this.updateMargins();
     }
     Table.prototype.getNoahStyle = function (noahPosition) {
@@ -212,9 +225,9 @@ var Table = /** @class */ (function () {
         return [211 + left, 213 + top];
     };
     Table.prototype.noahMoved = function (position) {
-        console.log('noahMoved', position);
         this.noahPosition = position;
         document.getElementById('noah').style.transform = this.getNoahStyle(position);
+        this.spots.forEach(function (spot, index) { return spot.setActive(index == position); });
     };
     Table.prototype.setPoints = function (playerId, points, firstPosition) {
         /*const equality = opponentScore === points;
@@ -232,20 +245,7 @@ var Table = /** @class */ (function () {
             top -= 5;
             left -= 5;
         }*/
-        if (firstPosition) {
-            markerDiv.style.transform = "translateX(" + left + "px) translateY(" + top + "px)";
-        }
-        else {
-            dojo.fx.slideTo({
-                node: markerDiv,
-                top: top,
-                left: left,
-                delay: 0,
-                duration: ANIMATION_MS,
-                easing: dojo.fx.easing.cubicInOut,
-                unit: "px"
-            }).play();
-        }
+        markerDiv.style.transform = "translateX(" + left + "px) translateY(" + top + "px)";
     };
     Table.prototype.updateMargins = function () {
         var board = document.getElementById('center-board');
@@ -280,6 +280,9 @@ var Table = /** @class */ (function () {
     };
     Table.prototype.removeAnimals = function () {
         this.spots[this.noahPosition].removeAnimals();
+    };
+    Table.prototype.removeFirstAnimalFromFerry = function () {
+        this.spots[this.noahPosition].removeFirstAnimalFromFerry();
     };
     Table.prototype.setRemainingFerries = function (remainingFerries) {
         this.ferriesCounter.setValue(remainingFerries);
@@ -373,8 +376,13 @@ var Noah = /** @class */ (function () {
                 this.onEnteringStateOptimalLoading(args.args);
                 break;
             case 'chooseOpponent':
-                var exchange = args.args.exchangeCard;
-                this.setGamestateDescription(exchange ? 'exchange' : '');
+                var enteringChooseOpponentArgs = args.args;
+                if (enteringChooseOpponentArgs.exchangeCard) {
+                    this.setGamestateDescription('exchange');
+                }
+                else if (enteringChooseOpponentArgs.giveCardFromFerry) {
+                    this.setGamestateDescription('give');
+                }
                 break;
             case 'giveCard':
                 this.clickAction = 'lion';
@@ -502,9 +510,10 @@ var Noah = /** @class */ (function () {
                 case 'chooseOpponent':
                     var choosePlayerArgs = args;
                     var exchange_1 = choosePlayerArgs.exchangeCard;
+                    var give_1 = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
                         var player = _this.getPlayer(playerId);
-                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return (exchange_1 ? _this.exchangeCard(playerId) : _this.lookCards(playerId)); });
+                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return (give_1 ? _this.giveCardFromFerry(playerId) : (exchange_1 ? _this.exchangeCard(playerId) : _this.lookCards(playerId))); });
                         document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
                     });
                     break;
@@ -651,6 +660,14 @@ var Noah = /** @class */ (function () {
             playerId: playerId
         });
     };
+    Noah.prototype.giveCardFromFerry = function (playerId) {
+        if (!this.checkAction('giveCardFromFerry')) {
+            return;
+        }
+        this.takeAction('giveCardFromFerry', {
+            playerId: playerId
+        });
+    };
     Noah.prototype.giveCard = function (id) {
         if (!this.checkAction('giveCard')) {
             return;
@@ -731,6 +748,7 @@ var Noah = /** @class */ (function () {
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
             ['animalGiven', ANIMATION_MS],
+            ['animalGivenFromFerry', ANIMATION_MS],
             ['removedCard', ANIMATION_MS],
             ['newCard', ANIMATION_MS],
         ];
@@ -775,6 +793,14 @@ var Noah = /** @class */ (function () {
             var animal = notif.args._private[this.getPlayerId()].animal;
             this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
         }
+        // TODO animate
+    };
+    Noah.prototype.notif_animalGivenFromFerry = function (notif) {
+        if (this.getPlayerId() == notif.args.toPlayerId) {
+            var animal = notif.args._private[this.getPlayerId()].animal;
+            this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
+        }
+        this.table.removeFirstAnimalFromFerry();
         // TODO animate
     };
     Noah.prototype.notif_departure = function (notif) {

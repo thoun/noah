@@ -1,3 +1,6 @@
+const CARD_OVERLAP = 30;
+const FIRST_ANIMAL_SHIFT = 100;
+
 class FerrySpot {
 
     public animals: Animal[] = [];
@@ -25,6 +28,10 @@ class FerrySpot {
         this.updateCounter();
     }
 
+    public setActive(active: boolean): void {
+        dojo.toggleClass(`ferry-spot-${this.position}`, 'active', active);
+    }
+
     private getBackgroundPosition(animal: Animal) {
         const imagePosition = animal.type >= 20 ?
             24 + (animal.type - 20) * 2 + animal.gender :
@@ -37,7 +44,7 @@ class FerrySpot {
     }
 
     public addAnimal(animal: Animal) {
-        const html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top : ${100 + this.animals.length * 30}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
+        const html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top: ${FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
 
         this.animals.push(animal);
 
@@ -51,6 +58,13 @@ class FerrySpot {
         this.animals = [];
 
         this.updateCounter();
+    }
+    
+    public removeFirstAnimalFromFerry() {
+        if (this.animals.length) {
+            dojo.destroy(`ferry-spot-${this.position}-animal${this.animals.shift().id}`);
+            this.animals.forEach((animal, index) => document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`).style.top = `${FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP}px`);
+        }
     }
 
     public departure(newFerry: boolean) {
