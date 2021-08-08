@@ -51,6 +51,7 @@ interface NoahGamedatas {
 }
 
 interface NoahGame extends Game {
+    gamedatas: NoahGamedatas;
     moveNoah(destination: number): void;
 }
 

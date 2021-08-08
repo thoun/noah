@@ -19,11 +19,13 @@ class Table {
         let html = '';
 
         // points
-        players.forEach(player =>
-            html += `<div id="player-${player.id}-point-marker" class="point-marker" style="background-color: #${player.color};"></div>`
-        );
-        dojo.place(html, 'center-board');
-        players.forEach(player => this.setPoints(Number(player.id), Number(player.score), true));
+        if (!game.gamedatas.solo) {
+            players.forEach(player =>
+                html += `<div id="player-${player.id}-point-marker" class="point-marker" style="background-color: #${player.color};"></div>`
+            );
+            dojo.place(html, 'center-board');
+            players.forEach(player => this.setPoints(Number(player.id), Number(player.score), true));
+        }
 
         // ferries
         for (let i=0;i<5;i++) {
@@ -80,6 +82,10 @@ class Table {
     }
 
     public setPoints(playerId: number, points: number, firstPosition = false) {
+        if (this.game.gamedatas.solo) {
+            return;
+        }
+        
         /*const equality = opponentScore === points;
         const playerShouldShift = equality && playerId > opponentId;*/
 

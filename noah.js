@@ -182,11 +182,13 @@ var Table = /** @class */ (function () {
         this.noahLastPosition = 0;
         var html = '';
         // points
-        players.forEach(function (player) {
-            return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
-        });
-        dojo.place(html, 'center-board');
-        players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
+        if (!game.gamedatas.solo) {
+            players.forEach(function (player) {
+                return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
+            });
+            dojo.place(html, 'center-board');
+            players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
+        }
         var _loop_1 = function (i) {
             this_1.spots.push(new FerrySpot(game, i, ferries[i]));
             dojo.place("<div id=\"noah-spot-" + i + "\" class=\"noah-spot position" + i + "\"></div>", 'center-board');
@@ -230,9 +232,12 @@ var Table = /** @class */ (function () {
         this.spots.forEach(function (spot, index) { return spot.setActive(index == position); });
     };
     Table.prototype.setPoints = function (playerId, points, firstPosition) {
+        if (firstPosition === void 0) { firstPosition = false; }
+        if (this.game.gamedatas.solo) {
+            return;
+        }
         /*const equality = opponentScore === points;
         const playerShouldShift = equality && playerId > opponentId;*/
-        if (firstPosition === void 0) { firstPosition = false; }
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
         var left = 60;
         var top = 210;
