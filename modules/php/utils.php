@@ -91,6 +91,13 @@ trait UtilTrait {
 
     function getOpponentId(int $playerId) {
         return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
+    }    
+
+    function getOrderedOpponentsIds(int $playerId) {
+        $players = $this->getOrderedPlayers($playerId);
+        $opponents = array_values(array_filter($players, function($player) use ($playerId) { return $player->id != $playerId; }));
+        $opponentsIds = array_map(function($player) { return $player->id; }, $opponents);
+        return $opponentsIds;
     }
 
     function getPlayers() {
@@ -288,7 +295,7 @@ trait UtilTrait {
             case 10: return _('kangaroo');
             case 11: return _('rhinoceros');
             case 12: return _('bear');
-            
+
             case 20: return _('frog');
             case 21: return _('crocodile');
         }

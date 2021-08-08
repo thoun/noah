@@ -109,9 +109,7 @@ trait ArgsTrait {
 
     function argChooseOpponent() {
         $playerId = intval(self::getActivePlayerId());
-        $players = $this->getOrderedPlayers($playerId);
-        $opponents = array_values(array_filter($players, function($player) use ($playerId) { return $player->id != $playerId; }));
-        $opponentsIds = array_map(function($player) { return $player->id; }, $opponents);
+        $opponentsIds = $this->getOrderedOpponentsIds($playerId);
 
         return [
             'opponentsIds' => $opponentsIds,            
@@ -147,12 +145,14 @@ trait ArgsTrait {
     }
 
     function argOptimalLoading() {
-        $playerId = self::getActivePlayerId();
+        $playerId = intval(self::getActivePlayerId());
 
+        $opponentsIds = $this->getOrderedOpponentsIds($playerId);
         $number = $this->getNumberOfCardsToGive($playerId);
 
         return [
             'number' => $number,
+            'opponentsIds' => $opponentsIds,
         ];
     }
 }

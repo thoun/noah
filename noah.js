@@ -371,10 +371,6 @@ var Noah = /** @class */ (function () {
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args);
                 break;
-            case 'optimalLoading':
-                this.clickAction = 'give';
-                this.onEnteringStateOptimalLoading(args.args);
-                break;
             case 'chooseOpponent':
                 var enteringChooseOpponentArgs = args.args;
                 if (enteringChooseOpponentArgs.exchangeCard) {
@@ -415,6 +411,7 @@ var Noah = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
+            this.opponentsIds = args.opponentsIds;
             this.playerHand.setSelectionMode(2);
         }
     };
@@ -480,6 +477,8 @@ var Noah = /** @class */ (function () {
         this.playerHand.unselectAll();
         this.cardsToGive = null;
         this.giveCardsTo = null;
+        this.opponentsIds = null;
+        this.removeAllBubbles();
     };
     Noah.prototype.onLeavingStateGiveCard = function () {
         this.playerHand.setSelectionMode(0);
@@ -518,7 +517,9 @@ var Noah = /** @class */ (function () {
                     });
                     break;
                 case 'optimalLoading':
-                    this.addActionButton('giveCards-button', _('Give selected cards'), function () { return _this.giveCards(); });
+                    this.clickAction = 'give';
+                    this.onEnteringStateOptimalLoading(args);
+                    this.addActionButton('giveCards-button', this.getGiveCardsButtonText(), function () { return _this.giveCards(); });
                     dojo.addClass('giveCards-button', 'disabled');
                     break;
             }
@@ -527,6 +528,9 @@ var Noah = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
+    Noah.prototype.getGiveCardsButtonText = function () {
+        return dojo.string.substitute(_('Give ${selecardCardsCount} selected cards'), { selecardCardsCount: this.giveCardsTo.size != this.cardsToGive ? "<span style=\"color: orange;\">" + this.giveCardsTo.size + "</span>" : this.giveCardsTo.size });
+    };
     Noah.prototype.setZoom = function (zoom) {
         if (zoom === void 0) { zoom = 1; }
         this.zoom = zoom;
@@ -594,12 +598,18 @@ var Noah = /** @class */ (function () {
                 this.updateGiveCardsButton();
             }
             else {
-                // TODO
+                if (added) {
+                    this.toggleBubbleChangeDie(id);
+                }
+                else {
+                    this.cancelGiveToOpponent(id);
+                }
             }
         }
     };
     Noah.prototype.updateGiveCardsButton = function () {
         dojo.toggleClass('giveCards-button', 'disabled', this.giveCardsTo.size != this.cardsToGive);
+        document.getElementById('giveCards-button').innerHTML = this.getGiveCardsButtonText();
     };
     Noah.prototype.getPlayerId = function () {
         return Number(this.player_id);
@@ -724,6 +734,64 @@ var Noah = /** @class */ (function () {
             this.helpDialog.setContent(html);
         }
         this.helpDialog.show();
+    };
+    Noah.prototype.removeAllBubbles = function () {
+        Array.from(document.getElementsByClassName('choose-opponent-discussion_bubble')).forEach(function (elem) { return elem.parentElement.removeChild(elem); });
+    };
+    Noah.prototype.hideBubble = function (cardId) {
+        var bubble = document.getElementById("discussion_bubble_card" + cardId);
+        if (bubble) {
+            bubble.style.display = 'none';
+            bubble.dataset.visible = 'false';
+        }
+    };
+    Noah.prototype.toggleBubbleChangeDie = function (cardId) {
+        var _this = this;
+        var divId = "card" + cardId;
+        if (!document.getElementById("discussion_bubble_" + divId)) {
+            dojo.place("<div id=\"discussion_bubble_" + divId + "\" class=\"discussion_bubble choose-opponent-discussion_bubble\"></div>", "my-animals_item_" + cardId);
+        }
+        var bubble = document.getElementById("discussion_bubble_" + divId);
+        var visible = bubble.dataset.visible == 'true';
+        if (visible) {
+            this.hideBubble(cardId);
+        }
+        else {
+            var creation = bubble.innerHTML == '';
+            if (creation) {
+                var html_1 = "<div>";
+                this.opponentsIds.forEach(function (opponentId) {
+                    var player = _this.getPlayer(opponentId);
+                    var buttonId = divId + "-give-to-opponent-" + player.id;
+                    html_1 += "<div>\n                        <button id=\"" + buttonId + "\" class=\"bgabutton bgabutton_gray " + divId + "-give-to-opponent\" style=\"border: 3px solid #" + player.color + "\">" + player.name + "</button>\n                    </div>";
+                });
+                html_1 += "<div>\n                    <button id=\"" + divId + "-give-to-opponent-cancel\" class=\"bgabutton bgabutton_gray\">" + _('Keep this card') + "</button>\n                </div>";
+                html_1 += "</div>";
+                dojo.place(html_1, bubble.id);
+                this.opponentsIds.forEach(function (opponentId) {
+                    var buttonId = divId + "-give-to-opponent-" + opponentId;
+                    document.getElementById(buttonId).addEventListener('click', function (event) {
+                        dojo.query("." + divId + "-give-to-opponent").removeClass('bgabutton_blue');
+                        dojo.query("." + divId + "-give-to-opponent").addClass('bgabutton_gray');
+                        dojo.addClass(buttonId, 'bgabutton_blue');
+                        dojo.removeClass(buttonId, 'bgabutton_gray');
+                        _this.giveCardsTo.set(cardId, opponentId);
+                        _this.updateGiveCardsButton();
+                        event.stopPropagation();
+                    });
+                });
+                document.getElementById(divId + "-give-to-opponent-cancel").addEventListener('click', function () { return _this.cancelGiveToOpponent(cardId); });
+            }
+            bubble.style.display = 'block';
+            bubble.dataset.visible = 'true';
+        }
+    };
+    Noah.prototype.cancelGiveToOpponent = function (cardId) {
+        dojo.query(".card" + cardId + "-give-to-opponent").removeClass('bgabutton_blue');
+        dojo.query(".card" + cardId + "-give-to-opponent").addClass('bgabutton_gray');
+        this.giveCardsTo.delete(cardId);
+        this.updateGiveCardsButton();
+        this.hideBubble(cardId);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

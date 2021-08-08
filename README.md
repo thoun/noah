@@ -34,5 +34,6 @@ Make sure ftp-sync.json and node_modules are in .gitignore
 
 ## TODO
 Optimal loading cards distribution
+test roomates
 TOCHECK roomates : text says only 1 of each animal on the ark, but it's in the ferry ? all ferries become roomates ferries ?
 solo mode?

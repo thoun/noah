@@ -206,8 +206,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_OPTIMAL_LOADING => [
         "name" => "optimalLoading",
-        "description" => clienttranslate('${actplayer} must give ${number} card(s) to opponents'),
-        "descriptionmyturn" => clienttranslate('${you} must give ${number} card(s) to opponents'),
+        "description" => clienttranslate('${actplayer} must give ${number} card(s) from your hand to opponents'),
+        "descriptionmyturn" => clienttranslate('${you} must give ${number} card(s) from your hand to opponents'),
         "type" => "activeplayer",  
         "action" => "stOptimalLoading",      
         "args" => "argOptimalLoading",

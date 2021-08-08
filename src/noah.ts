@@ -29,6 +29,7 @@ class Noah implements NoahGame {
     public clickAction: 'load' | 'give' | 'lion' = 'load';
     private cardsToGive: number;
     private giveCardsTo: Map<number, number>; // key = card id, value = toPlayerId
+    private opponentsIds: number[];
 
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -102,10 +103,6 @@ class Noah implements NoahGame {
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
                 break;
-            case 'optimalLoading':
-                this.clickAction = 'give';
-                this.onEnteringStateOptimalLoading(args.args as EnteringOptimalLoadingArgs);
-                break;
             case 'chooseOpponent':
                 const enteringChooseOpponentArgs = args.args as EnteringChooseOpponentArgs;
                 if (enteringChooseOpponentArgs.exchangeCard) {
@@ -147,6 +144,7 @@ class Noah implements NoahGame {
         if ((this as any).isCurrentPlayerActive()) {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
+            this.opponentsIds = args.opponentsIds;
             this.playerHand.setSelectionMode(2);
         }
     }
@@ -225,6 +223,8 @@ class Noah implements NoahGame {
         this.playerHand.unselectAll();
         this.cardsToGive = null;
         this.giveCardsTo = null;
+        this.opponentsIds = null;
+        this.removeAllBubbles();
     }
 
     onLeavingStateGiveCard() {
@@ -267,8 +267,10 @@ class Noah implements NoahGame {
                     });
                     break;
 
-                case 'optimalLoading':
-                    (this as any).addActionButton('giveCards-button', _('Give selected cards'), () => this.giveCards());
+                case 'optimalLoading':                    
+                    this.clickAction = 'give';
+                    this.onEnteringStateOptimalLoading(args as EnteringOptimalLoadingArgs);
+                    (this as any).addActionButton('giveCards-button', this.getGiveCardsButtonText(), () => this.giveCards());
                     dojo.addClass('giveCards-button', 'disabled');
                     break;
             }
@@ -280,6 +282,10 @@ class Noah implements NoahGame {
 
 
     ///////////////////////////////////////////////////
+
+    private getGiveCardsButtonText() {
+        return dojo.string.substitute(_('Give ${selecardCardsCount} selected cards'), { selecardCardsCount: this.giveCardsTo.size != this.cardsToGive ? `<span style="color: orange;">${this.giveCardsTo.size}</span>` : this.giveCardsTo.size });
+    }
     
 
     private setZoom(zoom: number = 1) {
@@ -351,13 +357,18 @@ class Noah implements NoahGame {
                 }
                 this.updateGiveCardsButton();
             } else {
-                // TODO
+                if (added) {
+                    this.toggleBubbleChangeDie(id);
+                } else {
+                    this.cancelGiveToOpponent(id);
+                }
             }
         }
     }
 
     private updateGiveCardsButton() {
         dojo.toggleClass('giveCards-button', 'disabled', this.giveCardsTo.size != this.cardsToGive);
+        document.getElementById('giveCards-button').innerHTML = this.getGiveCardsButtonText();
     }
 
     public getPlayerId(): number {
@@ -522,6 +533,77 @@ class Noah implements NoahGame {
         }
 
         this.helpDialog.show();
+    }
+
+    public removeAllBubbles() {
+        Array.from(document.getElementsByClassName('choose-opponent-discussion_bubble')).forEach(elem => elem.parentElement.removeChild(elem));
+    }
+
+    private hideBubble(cardId: number) {
+        const bubble = document.getElementById(`discussion_bubble_card${cardId}`);
+        if (bubble) {
+            bubble.style.display = 'none';
+            bubble.dataset.visible = 'false';
+        }
+    }
+
+    private toggleBubbleChangeDie(cardId: number) {
+        const divId = `card${cardId}`;    
+        if (!document.getElementById(`discussion_bubble_${divId}`)) { 
+            dojo.place(`<div id="discussion_bubble_${divId}" class="discussion_bubble choose-opponent-discussion_bubble"></div>`, `my-animals_item_${cardId}`);
+        }
+        const bubble = document.getElementById(`discussion_bubble_${divId}`);
+        const visible = bubble.dataset.visible == 'true';
+
+        if (visible) {
+            this.hideBubble(cardId);
+        } else {
+            const creation = bubble.innerHTML == '';
+            if (creation) {
+                let html = `<div>`;
+                this.opponentsIds.forEach(opponentId => {
+                    const player = this.getPlayer(opponentId);
+                    const buttonId = `${divId}-give-to-opponent-${player.id}`;
+                    html += `<div>
+                        <button id="${buttonId}" class="bgabutton bgabutton_gray ${divId}-give-to-opponent" style="border: 3px solid #${player.color}">${player.name}</button>
+                    </div>`;
+                });
+
+                html += `<div>
+                    <button id="${divId}-give-to-opponent-cancel" class="bgabutton bgabutton_gray">${_('Keep this card')}</button>
+                </div>`;
+
+                html += `</div>`;
+                dojo.place(html, bubble.id);
+
+                this.opponentsIds.forEach(opponentId => {
+                    const buttonId = `${divId}-give-to-opponent-${opponentId}`;
+                    document.getElementById(buttonId).addEventListener('click', event => {
+                        dojo.query(`.${divId}-give-to-opponent`).removeClass('bgabutton_blue');
+                        dojo.query(`.${divId}-give-to-opponent`).addClass('bgabutton_gray');
+                        dojo.addClass(buttonId, 'bgabutton_blue');
+                        dojo.removeClass(buttonId, 'bgabutton_gray');
+                        this.giveCardsTo.set(cardId, opponentId);
+                        this.updateGiveCardsButton();
+                        event.stopPropagation();
+                    });
+                });
+
+                document.getElementById(`${divId}-give-to-opponent-cancel`).addEventListener('click', () => this.cancelGiveToOpponent(cardId));
+            }
+
+            bubble.style.display = 'block';
+            bubble.dataset.visible = 'true';
+        }
+        
+    }
+
+    private cancelGiveToOpponent(cardId: number) {
+        dojo.query(`.card${cardId}-give-to-opponent`).removeClass('bgabutton_blue');
+        dojo.query(`.card${cardId}-give-to-opponent`).addClass('bgabutton_gray');
+        this.giveCardsTo.delete(cardId);
+        this.updateGiveCardsButton();
+        this.hideBubble(cardId);
     }
 
     ///////////////////////////////////////////////////

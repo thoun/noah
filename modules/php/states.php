@@ -23,7 +23,7 @@ trait StateTrait {
         $this->setInitialCardsAndResources($this->getPlayersIds());
 
         // TODO TEMP
-        $this->debugSetup();
+        //$this->debugSetup();
 
         $this->gamestate->nextState('');
     }

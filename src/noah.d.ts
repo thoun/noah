@@ -73,6 +73,7 @@ interface EnteringMoveNoahArgs {
 
 interface EnteringOptimalLoadingArgs {
     number: number;
+    opponentsIds: number[];
 }
 
 interface EnteringLookCardsArgs {
