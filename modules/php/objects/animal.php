@@ -21,7 +21,7 @@ class Animal extends AnimalCard {
     public /*int*/ $type; // race
     public /*int*/ $gender; // 0 : hermaphrodite (gender not yet set), 1 : male, 2 : female
 
-    public function __construct($dbCard, $ANIMALS, $animalWeight) {
+    public function __construct($dbCard, $ANIMALS) {
         $this->id = intval($dbCard['id']);
         $this->location = $dbCard['location'];
         $this->location_arg = intval($dbCard['location_arg']);
@@ -29,7 +29,7 @@ class Animal extends AnimalCard {
         $this->gender = intval($dbCard['type_arg']);
 
         $animalCard = $ANIMALS[$this->type];
-        $this->weight = $animalWeight || $animalCard->weight;
+        $this->weight = $animalCard->weight;
         $this->points = $animalCard->points;
         $this->power = $animalCard->power;
     } 
