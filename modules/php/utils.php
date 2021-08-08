@@ -125,6 +125,10 @@ trait UtilTrait {
         return $orderedPlayers;
     }
 
+    function isSoloMode() {
+        return intval(self::getUniqueValueFromDb("SELECT count(*) FROM player")) == 1;
+    }
+
     function getPlayerName(int $playerId) {
         return self::getUniqueValueFromDb("SELECT player_name FROM player WHERE player_id = $playerId");
     }
@@ -177,6 +181,10 @@ trait UtilTrait {
         ]);
     }
 
+    function setPlayerScore(int $playerId, int $score) {
+        self::DbQuery("UPDATE player SET player_score = $score WHERE player_id = $playerId");
+    }
+
     function setupCards(int $playerCount) {
         // animal cards    
         $animals = [];
@@ -212,14 +220,17 @@ trait UtilTrait {
 
     function setInitialCardsAndResources(array $playersIds) {
         // reset frog weights
-        self::DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20");  
+        self::DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20"); 
+        $soloMode = $this->isSoloMode(); 
 
         // set table ferries and first animal on it
         for ($position=0; $position<5; $position++) {
             $this->ferries->pickCardForLocation('deck', 'table', $position);
-            $card = $this->getAnimalFromDb($this->animals->pickCardForLocation('deck', 'table'.$position, 0)); 
-            if ($card->power == POWER_HERMAPHRODITE) {
-                $this->applySetGender($card->id, bga_rand(1, 2));
+            if (!$soloMode) {
+                $card = $this->getAnimalFromDb($this->animals->pickCardForLocation('deck', 'table'.$position, 0)); 
+                if ($card->power == POWER_HERMAPHRODITE) {
+                    $this->applySetGender($card->id, bga_rand(1, 2));
+                }
             }
         }    
         
@@ -233,7 +244,7 @@ trait UtilTrait {
 
         // set players animals
         foreach ($playersIds as $playerId) {
-            $this->animals->pickCardsForLocation(8, 'deck', 'hand', $playerId);
+            $this->animals->pickCardsForLocation($soloMode ? 2 : 8, 'deck', 'hand', $playerId);
             self::notifyPlayer($playerId, 'newHand', '', [
                 'playerId' => $playerId,
                 'animals' => $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId)),

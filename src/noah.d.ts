@@ -41,11 +41,13 @@ interface NoahGamedatas {
     ferries: Ferry[];
     noahPosition: number;
     remainingFerries: number;
+    remainingAnimals: number;
 
     handAnimals: Animal[];
 
     roundNumber: number;
     variant: boolean;
+    solo: boolean;
 }
 
 interface NoahGame extends Game {
@@ -111,6 +113,8 @@ interface NotifNewRoundArgs {
 
 interface NotifNewHandArgs {
     animals: Animal[];
+    keepCurrentHand: boolean;
+    remainingAnimals: number;
 }
 
 interface NotifAnimalGivenArgs {

@@ -81,14 +81,22 @@ trait StateTrait {
         $ferryComplete = $ferry->getCurrentWeight() == $ferry->getMaxWeight();
 
         if (!$ferryComplete) {
-            $this->gamestate->nextState('nextPlayer');
+            if ($this->isSoloMode()) {
+                $this->gamestate->nextState('drawCards');
+            } else {
+                $this->gamestate->nextState('nextPlayer');
+            }
         } else {
             $this->applyOptimalLoading();
 
             $playerId = self::getActivePlayerId();
 
-            if ($this->getNumberOfCardsToGive($playerId) == 0) {
-                $this->gamestate->nextState('nextPlayer');
+            if ($this->isSoloMode()) {
+                $this->gamestate->nextState('drawCards');
+            } else {
+                if ($this->getNumberOfCardsToGive($playerId) == 0) {
+                    $this->gamestate->nextState('nextPlayer');
+                }
             }
         }
     }
@@ -112,14 +120,55 @@ trait StateTrait {
             'newFerry' => $newFerry,
             'remainingFerries' => $remainingFerries,
         ]);
+
+        if ($this->isSoloMode()) {
+            $cardsToDiscard = intval($this->ferries->countCardInLocation('discard'));
+            $this->animals->pickCardsForLocation($cardsToDiscard, 'deck', 'discard');
+        
+            // no new animal, just to update remainingAnimals
+            self::notifyPlayer($playerId, 'newHand', '', [
+                'playerId' => $playerId,
+                'animals' => [],
+                'keepCurrentHand' => true,
+                'remainingAnimals' => intval($this->animals->countCardInLocation('deck')),
+            ]);
+        }
     }
 
-    function stNextPlayer() {     
+    function stDrawCards() {
         $playerId = self::getActivePlayerId();
+        $number = intval(self::getGameStateValue(SOLO_DRAW_CARDS));
+        
+        $animals = $this->getAnimalsFromDb($this->animals->pickCardsForLocation($number, 'deck', 'hand', $playerId));
+        self::notifyPlayer($playerId, 'newHand', '', [
+            'playerId' => $playerId,
+            'animals' => $animals,
+            'keepCurrentHand' => true,
+            'remainingAnimals' => intval($this->animals->countCardInLocation('deck')),
+        ]);
 
-        //self::incStat(1, 'turnsNumber');
-        //self::incStat(1, 'turnsNumber', $playerId);
+        self::setGameStateValue(SOLO_DRAW_CARDS, 1);
 
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    function stNextPlayerForSoloMode(int $playerId) {
+        if (intval($this->animals->countCardInLocation('deck')) == 0 && intval($this->animals->countCardInLocation('hand')) == 0) {
+            // win !
+            $this->setPlayerScore($playerId, 1);
+            $this->gamestate->nextState('endGame');
+        } else if (count($this->getSelectableAnimals($playerId)) == 0) {
+            // loose...
+            $this->setPlayerScore($playerId, 0);
+            $this->gamestate->nextState('endGame');
+        } else {
+            // keep going
+            self::giveExtraTime($playerId);
+            $this->gamestate->nextState('nextPlayer');
+        }
+    }
+
+    function stNextPlayerForMultiplayer(int $playerId) {
         if ($this->isEndOfRound()) {
             $this->gamestate->nextState('endRound');
         } else {
@@ -133,6 +182,19 @@ trait StateTrait {
             self::giveExtraTime($playerId);
 
             $this->gamestate->nextState('nextPlayer');
+        }
+    }
+
+    function stNextPlayer() {     
+        $playerId = self::getActivePlayerId();
+
+        //self::incStat(1, 'turnsNumber');
+        //self::incStat(1, 'turnsNumber', $playerId);
+
+        if ($this->isSoloMode()) {
+            $this->stNextPlayerForSoloMode($playerId);
+        } else {
+            $this->stNextPlayerForMultiplayer($playerId);
         }
     }
 

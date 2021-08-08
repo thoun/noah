@@ -17,6 +17,10 @@
         <div>{ROUND}</div>
         <div class="counter"><span id="round-counter"></span><span id="counter-no-variant">&nbsp;/&nbsp;3</span></div>
     </div>
+    <div id="solo-counter-wrapper" class="whiteblock">
+        <div>{REMAINING_ANIMALS_IN_DECK}</div>
+        <div class="counter"><span id="solo-counter"></span></div>
+    </div>
     <div id="zoom-controls">
         <button id="zoom-out"></button>
         <button id="zoom-in" class="disabled"></button>

@@ -52,11 +52,14 @@ class Noah extends Table {
             EXCHANGE_CARD => 16,
             SELECTED_ANIMAL => 17,
             GIVE_CARD_FROM_FERRY => 18,
+            SOLO_DRAW_CARDS => 19,
 
             OPTION_VARIANT => 100,
             OPTION_FROG => 101,
             OPTION_CROCODILE => 102,
             OPTION_ROOMATES => 103,
+
+            OPTION_SOLO_MODE_DIFFICULTY => 120,
         ]); 
 
         $this->animals = self::getNew("module.common.deck");
@@ -104,13 +107,14 @@ class Noah extends Table {
         self::setGameStateInitialValue(NOAH_POSITION, 0);
         self::setGameStateInitialValue(ROUND_NUMBER, 0);
         self::setGameStateInitialValue(PAIR_PLAY_AGAIN, 0);
+        self::setGameStateInitialValue(SOLO_DRAW_CARDS, 1);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         
-        $this->setupCards(count($players));
+        $this->setupCards($this->isSoloMode() ? intval(self::getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -144,11 +148,13 @@ class Noah extends Table {
         $result['ferries'] = $ferries;
         $result['noahPosition'] = $this->getNoahPosition();
         $result['remainingFerries'] = intval($this->ferries->countCardInLocation('deck'));
+        $result['remainingAnimals'] = intval($this->animals->countCardInLocation('deck'));
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
 
         $result['roundNumber'] = intval(self::getGameStateValue(ROUND_NUMBER));
         $result['variant'] = $this->isVariant();
+        $result['solo'] = count($result['players']) == 1;
   
         return $result;
     }

@@ -23,6 +23,7 @@ class Noah implements NoahGame {
     private playerHand: Stock;
     private table: Table;
     private roundCounter: Counter;
+    private soloCounter: Counter;
 
     public zoom: number = 1;
 
@@ -65,8 +66,15 @@ class Noah implements NoahGame {
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
         this.roundCounter.setValue(gamedatas.roundNumber);
-        if (gamedatas.variant) {
-            dojo.destroy('counter-no-variant');
+        if (gamedatas.variant || gamedatas.solo) {
+        }
+        if (gamedatas.solo) {
+            this.soloCounter = new ebg.counter();
+            this.soloCounter.create('solo-counter');
+            this.soloCounter.setValue(gamedatas.remainingAnimals);
+            dojo.destroy('round-counter-wrapper');
+        } else {
+            dojo.destroy('solo-counter-wrapper');
         }
 
         this.addHelp();
@@ -668,8 +676,14 @@ class Noah implements NoahGame {
     }
 
     notif_newHand(notif: Notif<NotifNewHandArgs>) {
-        this.playerHand.removeAll();
+        if (!notif.args.keepCurrentHand) {
+            this.playerHand.removeAll();
+        }
         notif.args.animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+
+        if (this.gamedatas.solo) {
+            this.soloCounter.toValue(notif.args.remainingAnimals);
+        }
     }
 
     notif_animalGiven(notif: Notif<NotifAnimalGivenArgs>) {

@@ -339,8 +339,16 @@ var Noah = /** @class */ (function () {
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
         this.roundCounter.setValue(gamedatas.roundNumber);
-        if (gamedatas.variant) {
-            dojo.destroy('counter-no-variant');
+        if (gamedatas.variant || gamedatas.solo) {
+        }
+        if (gamedatas.solo) {
+            this.soloCounter = new ebg.counter();
+            this.soloCounter.create('solo-counter');
+            this.soloCounter.setValue(gamedatas.remainingAnimals);
+            dojo.destroy('round-counter-wrapper');
+        }
+        else {
+            dojo.destroy('solo-counter-wrapper');
         }
         this.addHelp();
         this.setupNotifications();
@@ -849,8 +857,13 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_newHand = function (notif) {
         var _this = this;
-        this.playerHand.removeAll();
+        if (!notif.args.keepCurrentHand) {
+            this.playerHand.removeAll();
+        }
         notif.args.animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        if (this.gamedatas.solo) {
+            this.soloCounter.toValue(notif.args.remainingAnimals);
+        }
     };
     Noah.prototype.notif_animalGiven = function (notif) {
         if (this.getPlayerId() == notif.args.playerId) {

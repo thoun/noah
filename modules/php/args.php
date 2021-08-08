@@ -39,10 +39,8 @@ trait ArgsTrait {
 
         return true;
     }
-    
-    function argLoadAnimal() {
-        $playerId = self::getActivePlayerId();
 
+    function getSelectableAnimals(int $playerId) {
         $animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
 
         $selectableAnimals = [];
@@ -51,6 +49,14 @@ trait ArgsTrait {
                 $selectableAnimals[] = $animal;
             }
         }
+
+        return $selectableAnimals;
+    }
+    
+    function argLoadAnimal() {
+        $playerId = self::getActivePlayerId();
+
+        $selectableAnimals = $this->getSelectableAnimals($playerId);
     
         return [
             'selectableAnimals' => $selectableAnimals,

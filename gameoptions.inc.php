@@ -81,4 +81,27 @@ $game_options = [
         ],
         'default' => 1,
     ],
+
+    120 => [
+        'name' => totranslate('Solo mode'),
+        'values' => [
+            3 => [
+                'name' => totranslate('Beginner'),
+                'description' => totranslate("Remove all animals marked 4+ and 5+."),
+            ],
+            4 => [
+                'name' => totranslate('Advanced'),
+                'description' => totranslate("Remove all animals marked 5+."),
+            ],
+            5 => [
+                'name' => totranslate('Advanced'),
+                'description' => totranslate("Play with all animals."),
+            ],
+        ],
+        'default' => 3,
+        'displaycondition' => [[
+            'type' => 'maxplayers',
+            'value' => 1,
+        ]]
+    ],
 ];

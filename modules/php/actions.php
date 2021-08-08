@@ -80,8 +80,17 @@ trait ActionTrait {
         $animalCount = intval($this->animals->countCardInLocation($location));
         $this->animals->moveCard($id, $location, $animalCount);
 
-        if ($animalCount > 0 && $animal->type == $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-1))[0]->type) {
-            self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
+        if ($animalCount > 0) {
+            $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-1))[0];
+            if ($this->isSoloMode()) {
+                if ($animalCount > 0 && $animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
+                    self::setGameStateValue(SOLO_DRAW_TWO_CARDS, 1);
+                }
+            } else {
+                if ($animalCount > 0 && $animal->type == $previousAnimal->type) {
+                    self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
+                }
+            }
         }
         
         $playerId = self::getActivePlayerId();

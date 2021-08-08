@@ -70,6 +70,7 @@ $basicGameStates = [
         "transitions" => [
             "nextPlayer" => ST_PLAYER_LOAD_ANIMAL, 
             "endRound" => ST_END_ROUND,
+            "endGame" => ST_END_GAME, // for solo mode
         ],
     ],
    
@@ -215,6 +216,7 @@ $playerActionsGameStates = [
             "giveCards",
         ],
         "transitions" => [
+            "drawCards" => ST_DRAW_CARDS,
             "nextPlayer" => ST_NEXT_PLAYER,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -230,6 +232,17 @@ $gameGameStates = [
         "action" => "stStartRound",
         "transitions" => [ 
             "" => ST_PLAYER_LOAD_ANIMAL,
+        ],
+    ],
+
+    ST_DRAW_CARDS => [
+        "name" => "drawCards",
+        "description" => "",
+        "type" => "game",
+        "action" => "stDrawCards",
+        "transitions" => [ 
+            "nextPlayer" => ST_NEXT_PLAYER,
+            "zombiePass" => ST_NEXT_PLAYER,
         ],
     ],
 

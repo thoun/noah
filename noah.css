@@ -260,13 +260,13 @@ html {
   transform-origin: left top;
 }
 
-#round-counter-wrapper {
+#round-counter-wrapper, #solo-counter-wrapper {
   position: absolute;
   top: 0;
   left: 10px;
   text-align: center;
 }
-#round-counter-wrapper .counter {
+#round-counter-wrapper .counter, #solo-counter-wrapper .counter {
   margin-top: 5px;
   font-size: 130%;
 }

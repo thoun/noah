@@ -33,7 +33,6 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 Make sure ftp-sync.json and node_modules are in .gitignore
 
 ## TODO
-Optimal loading cards distribution
-test roomates
 TOCHECK roomates : text says only 1 of each animal on the ark, but it's in the ferry ? all ferries become roomates ferries ?
-solo mode?
+solo mode : lion & giraffe powers, what to do with fleeing animal for crocodile ?
+stats
