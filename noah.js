@@ -751,13 +751,17 @@ var Noah = /** @class */ (function () {
         if (bubble) {
             bubble.style.display = 'none';
             bubble.dataset.visible = 'false';
+            // reset tooltip, hidden on opening
+            var cardDivId = "my-animals_item_" + cardId;
+            setupAnimalCard(this, document.getElementById(cardDivId), this.playerHand.items.find(function (item) { return Number(item.id) == cardId; }).type);
         }
     };
     Noah.prototype.toggleBubbleChangeDie = function (cardId) {
         var _this = this;
         var divId = "card" + cardId;
+        var cardDivId = "my-animals_item_" + cardId;
         if (!document.getElementById("discussion_bubble_" + divId)) {
-            dojo.place("<div id=\"discussion_bubble_" + divId + "\" class=\"discussion_bubble choose-opponent-discussion_bubble\"></div>", "my-animals_item_" + cardId);
+            dojo.place("<div id=\"discussion_bubble_" + divId + "\" class=\"discussion_bubble choose-opponent-discussion_bubble\"></div>", cardDivId);
         }
         var bubble = document.getElementById("discussion_bubble_" + divId);
         var visible = bubble.dataset.visible == 'true';
@@ -765,6 +769,8 @@ var Noah = /** @class */ (function () {
             this.hideBubble(cardId);
         }
         else {
+            // remove tooltip so it doesn't go over bubble
+            this.addTooltipHtml(cardDivId, '');
             var creation = bubble.innerHTML == '';
             if (creation) {
                 var html_1 = "<div>";

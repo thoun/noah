@@ -552,13 +552,18 @@ class Noah implements NoahGame {
         if (bubble) {
             bubble.style.display = 'none';
             bubble.dataset.visible = 'false';
+
+            // reset tooltip, hidden on opening
+            const cardDivId = `my-animals_item_${cardId}`;
+            setupAnimalCard(this, document.getElementById(cardDivId) as HTMLDivElement, this.playerHand.items.find(item => Number(item.id) == cardId).type);
         }
     }
 
     private toggleBubbleChangeDie(cardId: number) {
-        const divId = `card${cardId}`;    
+        const divId = `card${cardId}`;
+        const cardDivId = `my-animals_item_${cardId}`;
         if (!document.getElementById(`discussion_bubble_${divId}`)) { 
-            dojo.place(`<div id="discussion_bubble_${divId}" class="discussion_bubble choose-opponent-discussion_bubble"></div>`, `my-animals_item_${cardId}`);
+            dojo.place(`<div id="discussion_bubble_${divId}" class="discussion_bubble choose-opponent-discussion_bubble"></div>`, cardDivId);
         }
         const bubble = document.getElementById(`discussion_bubble_${divId}`);
         const visible = bubble.dataset.visible == 'true';
@@ -566,6 +571,9 @@ class Noah implements NoahGame {
         if (visible) {
             this.hideBubble(cardId);
         } else {
+            // remove tooltip so it doesn't go over bubble
+            (this as any).addTooltipHtml(cardDivId, '');
+
             const creation = bubble.innerHTML == '';
             if (creation) {
                 let html = `<div>`;
