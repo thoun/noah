@@ -111,8 +111,14 @@ class Noah extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        self::initStat('table', 'turnsNumber', 0);
+        self::initStat('player', 'turnsNumber', 0);
+        self::initStat('table', 'playedCards', 0);
+        self::initStat('player', 'playedCards', 0);
+        self::initStat('table', 'takeAllAnimals', 0);
+        self::initStat('player', 'takeAllAnimals', 0);
+        self::initStat('table', 'optimalLoading', 0);
+        self::initStat('player', 'optimalLoading', 0);
         
         $this->setupCards($this->isSoloMode() ? intval(self::getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
 

@@ -34,5 +34,5 @@ Make sure ftp-sync.json and node_modules are in .gitignore
 
 ## TODO
 TOCHECK roomates : text says only 1 of each animal on the ark, but it's in the ferry ? all ferries become roomates ferries ?
-solo mode : lion & giraffe powers, what to do with fleeing animal for crocodile ?
-stats
+solo mode : lion & giraffe powers, what to do with fleeing animal for crocodile ? is lion weight checked before or after is power is done ?
+hide point marker in solo mode

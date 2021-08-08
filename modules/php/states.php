@@ -121,6 +121,9 @@ trait StateTrait {
             'remainingFerries' => $remainingFerries,
         ]);
 
+        self::incStat(1, 'optimalLoading');
+        self::incStat(1, 'optimalLoading', $playerId);
+
         if ($this->isSoloMode()) {
             $cardsToDiscard = intval($this->ferries->countCardInLocation('discard'));
             $this->animals->pickCardsForLocation($cardsToDiscard, 'deck', 'discard');
@@ -188,8 +191,8 @@ trait StateTrait {
     function stNextPlayer() {     
         $playerId = self::getActivePlayerId();
 
-        //self::incStat(1, 'turnsNumber');
-        //self::incStat(1, 'turnsNumber', $playerId);
+        self::incStat(1, 'turnsNumber');
+        self::incStat(1, 'turnsNumber', $playerId);
 
         if ($this->isSoloMode()) {
             $this->stNextPlayerForSoloMode($playerId);

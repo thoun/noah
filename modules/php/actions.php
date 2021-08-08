@@ -95,6 +95,9 @@ trait ActionTrait {
         
         $playerId = self::getActivePlayerId();
 
+        self::incStat(1, 'playedCards');
+        self::incStat(1, 'playedCards', $playerId);
+
         self::notifyAllPlayers('animalLoaded', clienttranslate('${player_name} loads animal ${animalName}'), [
             'playerId' => $playerId,
             'player_name' => self::getActivePlayerName(),
@@ -137,6 +140,9 @@ trait ActionTrait {
             'animals' => $animalsInFerry,
             'position' => $position,
         ]);
+
+        self::incStat(1, 'takeAllAnimals');
+        self::incStat(1, 'takeAllAnimals', $playerId);
         
         $this->gamestate->nextState('loadAnimal');
     }
