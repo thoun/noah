@@ -10,7 +10,6 @@ function slideToObjectAndAttach(object, destinationId, posX, posY) {
         var destinationCR = destination.getBoundingClientRect();
         var deltaX = destinationCR.left - objectCR.left + (posX !== null && posX !== void 0 ? posX : 0);
         var deltaY = destinationCR.top - objectCR.top + (posY !== null && posY !== void 0 ? posY : 0);
-        //object.id == 'tile98' && console.log(object, destination, objectCR, destinationCR, destinationCR.left - objectCR.left, );
         object.style.transition = "transform 0.5s ease-in";
         object.style.transform = "translate(" + deltaX + "px, " + deltaY + "px)";
         var transitionend = function () {
@@ -257,7 +256,8 @@ var Table = /** @class */ (function () {
         var boardBR = board.getBoundingClientRect();
         var topMargin = 0;
         var bottomMargin = 0;
-        var sideMargin = 0;
+        var leftMargin = 0;
+        var rightMargin = 0;
         this.spots.forEach(function (spot) {
             var spotDiv = document.getElementById("ferry-spot-" + spot.position);
             spotDiv.style.height = (spot.animals.length ? 100 + 185 + ((spot.animals.length - 1) * 30) : 132) + "px";
@@ -268,26 +268,29 @@ var Table = /** @class */ (function () {
             if (spotBR.y + spotBR.height > boardBR.y + boardBR.height + bottomMargin) {
                 bottomMargin = (spotBR.y + spotBR.height) - (boardBR.y + boardBR.height);
             }
-            if (spotBR.x < boardBR.x - sideMargin) {
-                sideMargin = boardBR.x - spotBR.x;
+            if (spotBR.x < boardBR.x - leftMargin) {
+                leftMargin = boardBR.x - spotBR.x;
             }
-            if (spotBR.x + spotBR.width > boardBR.x + boardBR.width + sideMargin) {
-                sideMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
+            if (spotBR.x + spotBR.width > boardBR.x + boardBR.width + rightMargin) {
+                rightMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
             }
         });
         board.style.marginTop = topMargin + "px";
         board.style.marginBottom = bottomMargin + "px";
-        board.style.marginLeft = sideMargin + "px";
-        board.style.marginRight = sideMargin + "px";
+        board.style.marginLeft = leftMargin + "px";
+        board.style.marginRight = rightMargin + "px";
     };
     Table.prototype.addAnimal = function (animal) {
         this.spots[this.noahPosition].addAnimal(animal);
+        this.updateMargins();
     };
     Table.prototype.removeAnimals = function () {
         this.spots[this.noahPosition].removeAnimals();
+        this.updateMargins();
     };
     Table.prototype.removeFirstAnimalFromFerry = function () {
         this.spots[this.noahPosition].removeFirstAnimalFromFerry();
+        this.updateMargins();
     };
     Table.prototype.setRemainingFerries = function (remainingFerries) {
         this.ferriesCounter.setValue(remainingFerries);
@@ -296,7 +299,9 @@ var Table = /** @class */ (function () {
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     };
     Table.prototype.departure = function (newFerry, remainingFerries) {
+        this.setRemainingFerries(remainingFerries);
         this.spots[this.noahPosition].departure(newFerry);
+        this.updateMargins();
     };
     Table.prototype.newRound = function (ferries) {
         this.setRemainingFerries(3);
@@ -449,6 +454,7 @@ var Noah = /** @class */ (function () {
         setupAnimalCards(opponentHand);
         args.animals.forEach(function (animal) { return opponentHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
         viewCardsDialog.show();
+        setTimeout(function () { return opponentHand.updateDisplay(); }, 100);
         // Replace the function call when it's clicked
         viewCardsDialog.replaceCloseCallback(function () {
             if (!_this.checkAction('seen'))
@@ -592,14 +598,14 @@ var Noah = /** @class */ (function () {
         animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
     };
     Noah.prototype.onPlayerHandSelectionChanged = function (id) {
-        if (this.clickAction === 'load') {
+        var added = (this.playerHand.getSelectedItems().some(function (item) { return Number(item.id) == id; }));
+        if (this.clickAction === 'load' && added) {
             this.loadAnimal(id);
         }
-        else if (this.clickAction === 'lion') {
+        else if (this.clickAction === 'lion' && added) {
             this.giveCard(id);
         }
         else if (this.clickAction === 'give') {
-            var added = (this.playerHand.getSelectedItems().some(function (item) { return Number(item.id) == id; }));
             if (Object.keys(this.gamedatas.players).length == 2) {
                 var opponentId = this.getOpponentId(this.getPlayerId());
                 if (added) {
@@ -834,6 +840,7 @@ var Noah = /** @class */ (function () {
             ['points', 1],
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
+            ['remainingAnimals', 1],
             ['animalGiven', ANIMATION_MS],
             ['animalGivenFromFerry', ANIMATION_MS],
             ['removedCard', ANIMATION_MS],
@@ -872,6 +879,9 @@ var Noah = /** @class */ (function () {
             this.playerHand.removeAll();
         }
         notif.args.animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        this.notif_remainingAnimals(notif);
+    };
+    Noah.prototype.notif_remainingAnimals = function (notif) {
         if (this.gamedatas.solo) {
             this.soloCounter.toValue(notif.args.remainingAnimals);
         }
@@ -903,7 +913,7 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_newCard = function (notif) {
         var animal = notif.args.animal;
-        this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id, notif.args.fromPlayerId ? 'overall_player_board_-' + notif.args.fromPlayerId : undefined);
+        this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);
     };
     Noah.prototype.getAnimalColor = function (gender) {
         switch (gender) {
@@ -920,12 +930,9 @@ var Noah = /** @class */ (function () {
         try {
             if (log && args && !args.processed) {
                 // Representation of the color of a card
-                if (typeof args.animalName == 'string' && args.animalName[0] != '<' /* && typeof args.animal == 'object'*/) {
+                if (typeof args.animalName == 'string' && args.animalName[0] != '<' && typeof args.animal == 'object') {
                     args.animalName = "<strong style=\"color: " + this.getAnimalColor((_b = (_a = args.animal) === null || _a === void 0 ? void 0 : _a.gender) !== null && _b !== void 0 ? _b : 'black') + "\">" + args.animalName + "</strong>";
                 }
-            }
-            if (log == '${player_name} loads animal ${animalName}') {
-                console.log(log, args);
             }
         }
         catch (e) {

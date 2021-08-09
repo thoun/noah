@@ -182,6 +182,7 @@ class Noah implements NoahGame {
         args.animals.forEach(animal => opponentHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
 
         viewCardsDialog.show();
+        setTimeout(() => opponentHand.updateDisplay(), 100);
 
         // Replace the function call when it's clicked
         viewCardsDialog.replaceCloseCallback(() => {
@@ -350,12 +351,12 @@ class Noah implements NoahGame {
     }
 
     public onPlayerHandSelectionChanged(id: number) {
-        if (this.clickAction === 'load') {
+        const added = (this.playerHand.getSelectedItems().some(item => Number(item.id) == id));
+        if (this.clickAction === 'load' && added) {
             this.loadAnimal(id);
-        } else if (this.clickAction === 'lion') {
+        } else if (this.clickAction === 'lion' && added) {
             this.giveCard(id);
         } else if (this.clickAction === 'give') {
-            const added = (this.playerHand.getSelectedItems().some(item => Number(item.id) == id));
             if (Object.keys(this.gamedatas.players).length == 2) {
                 const opponentId = this.getOpponentId(this.getPlayerId());
                 if (added) {
@@ -645,6 +646,7 @@ class Noah implements NoahGame {
             ['points', 1],
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
+            ['remainingAnimals', 1],
             ['animalGiven', ANIMATION_MS],
             ['animalGivenFromFerry', ANIMATION_MS],
             ['removedCard', ANIMATION_MS],
@@ -689,6 +691,10 @@ class Noah implements NoahGame {
         }
         notif.args.animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
 
+        this.notif_remainingAnimals(notif);
+    }
+
+    notif_remainingAnimals(notif: Notif<NotifNewHandArgs>) {
         if (this.gamedatas.solo) {
             this.soloCounter.toValue(notif.args.remainingAnimals);
         }
@@ -725,7 +731,7 @@ class Noah implements NoahGame {
     
     notif_newCard(notif: Notif<NotifNewCardArgs>) {
         const animal = notif.args.animal;
-        this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, notif.args.fromPlayerId ? 'overall_player_board_-'+notif.args.fromPlayerId : undefined);
+        this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, notif.args.fromPlayerId ? 'overall_player_board_'+notif.args.fromPlayerId : undefined);
     }
 
     private getAnimalColor(gender: number) {
@@ -743,13 +749,9 @@ class Noah implements NoahGame {
         try {
             if (log && args && !args.processed) {
                 // Representation of the color of a card
-                if (typeof args.animalName == 'string' && args.animalName[0] != '<'/* && typeof args.animal == 'object'*/) {
+                if (typeof args.animalName == 'string' && args.animalName[0] != '<' && typeof args.animal == 'object') {
                     args.animalName = `<strong style="color: ${this.getAnimalColor(args.animal?.gender ?? 'black')}">${args.animalName}</strong>`;
                 }
-            }
-
-            if (log == '${player_name} loads animal ${animalName}') {
-                console.log(log, args);
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);

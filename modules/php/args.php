@@ -145,7 +145,7 @@ trait ArgsTrait {
 
     function getNumberOfCardsToGive(int $playerId) {
         return min(
-            intval($this->ferries->countCardInLocation('discard')) + 1,
+            intval($this->ferries->countCardInLocation('discard')),
             intval($this->animals->countCardInLocation('hand', $playerId))
         );
     }

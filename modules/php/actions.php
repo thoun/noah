@@ -34,7 +34,7 @@ trait ActionTrait {
         } else if ($animal->power == POWER_CROCODILE && $this->getFirstAnimalFromFerry() != null) {
             self::setGameStateValue(SELECTED_ANIMAL, $id);            
             self::setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
-            $this->gamestate->nextState('giveCardFromFerry');
+            $this->gamestate->nextState('chooseOpponent');
         } else {
             $this->applyLoadAnimal($id);
         }
@@ -80,14 +80,16 @@ trait ActionTrait {
         $animalCount = intval($this->animals->countCardInLocation($location));
         $this->animals->moveCard($id, $location, $animalCount++);
 
+        $playerId = self::getActivePlayerId();
+
         if ($animalCount > 1) {
-            $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-2))[0];
+            $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, null, 'location_arg'))[$animalCount-2];
             if ($this->isSoloMode()) {
-                if ($animalCount > 1 && $animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
+                if ($animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
                     self::setGameStateValue(SOLO_DRAW_TWO_CARDS, 1);
                 }
             } else {
-                if ($animalCount > 1 && $animal->type == $previousAnimal->type) {
+                if ($animal->type == $previousAnimal->type) {
                     self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
                 }
             }
@@ -99,7 +101,6 @@ trait ActionTrait {
             }
         }
         
-        $playerId = self::getActivePlayerId();
 
         self::incStat(1, 'playedCards');
         self::incStat(1, 'playedCards', $playerId);
@@ -121,10 +122,12 @@ trait ActionTrait {
 
         if ($animal->power == POWER_LOOK_CARDS) {
             self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
-            $this->gamestate->nextState('lookCards');
+
+            $this->gamestate->nextState('chooseOpponent');
         } else if ($animal->power == POWER_EXCHANGE_CARD) {
-            $this->gamestate->nextState('exchangeCard');
             self::setGameStateValue(EXCHANGE_CARD, 1);
+
+            $this->gamestate->nextState('chooseOpponent');
         } else {
             $this->gamestate->nextState('moveNoah');
         }
@@ -177,8 +180,10 @@ trait ActionTrait {
 
         $playerId = intval(self::getActivePlayerId());
 
-        if (count($giveCardsTo) != $this->getNumberOfCardsToGive($playerId)) {
-            throw new Error("Invalid card count");
+        $numberSelected = count($giveCardsTo);
+        $numberExpected = $this->getNumberOfCardsToGive($playerId);
+        if ($numberSelected != $numberExpected) {
+            throw new Error("Invalid card count : expected $numberExpected, selected $numberSelected");
         }
 
         $handAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
@@ -254,13 +259,20 @@ trait ActionTrait {
         }
     }
 
+    function updateIndexesForFerry($overIndex = 0) {
+        $position = $this->getNoahPosition();
+        $location = 'table'.$position;
+        self::DbQuery("UPDATE animal SET `card_location_arg` = `card_location_arg` - 1 where `card_location` = '$location' and `card_location_arg` > $overIndex");
+    }
+
     function applyGiveCardFromFerry(int $toPlayerId) {
         $animal = $this->getFirstAnimalFromFerry();
         if ($animal != null) {
             $playerId = intval(self::getActivePlayerId());
 
             $this->animals->moveCard($animal->id, 'hand', $toPlayerId);
-
+            $this->updateIndexesForFerry();
+            
             self::notifyAllPlayers('animalGivenFromFerry', clienttranslate('${player_name} makes first animal of ferry flee to ${player_name2}\'s hand'), [
                 'playerId' => $playerId,
                 'player_name' => self::getActivePlayerName(),

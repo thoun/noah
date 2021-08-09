@@ -107,13 +107,14 @@ class Table {
         markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
     }
 
-    public updateMargins() {
+    private updateMargins() {
         const board = document.getElementById('center-board');
         const boardBR = board.getBoundingClientRect();
 
         let topMargin = 0;
         let bottomMargin = 0;
-        let sideMargin = 0;
+        let leftMargin = 0;
+        let rightMargin = 0;
 
         this.spots.forEach(spot => {
             const spotDiv = document.getElementById(`ferry-spot-${spot.position}`);
@@ -129,29 +130,35 @@ class Table {
                 bottomMargin = (spotBR.y + spotBR.height) - (boardBR.y + boardBR.height);
             }
 
-            if (spotBR.x < boardBR.x - sideMargin) {
-                sideMargin = boardBR.x - spotBR.x;
+            if (spotBR.x < boardBR.x - leftMargin) {
+                leftMargin = boardBR.x - spotBR.x;
             }
-            if (spotBR.x + spotBR.width > boardBR.x + boardBR.width + sideMargin) {
-                sideMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
+            if (spotBR.x + spotBR.width > boardBR.x + boardBR.width + rightMargin) {
+                rightMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
             }
         });
 
         board.style.marginTop = `${topMargin}px`;
         board.style.marginBottom = `${bottomMargin}px`;
-        board.style.marginLeft = `${sideMargin}px`;
-        board.style.marginRight = `${sideMargin}px`;        
+        board.style.marginLeft = `${leftMargin}px`;
+        board.style.marginRight = `${rightMargin}px`;        
     }
 
     public addAnimal(animal: Animal) {
         this.spots[this.noahPosition].addAnimal(animal);
+
+        this.updateMargins();
     }
 
     public removeAnimals() {
         this.spots[this.noahPosition].removeAnimals();
+
+        this.updateMargins();
     }
     removeFirstAnimalFromFerry() {
         this.spots[this.noahPosition].removeFirstAnimalFromFerry();
+
+        this.updateMargins();
     }
 
     private setRemainingFerries(remainingFerries: number) {
@@ -162,7 +169,11 @@ class Table {
     }
 
     public departure(newFerry: boolean, remainingFerries: number) {
+        this.setRemainingFerries(remainingFerries);
+
         this.spots[this.noahPosition].departure(newFerry);
+
+        this.updateMargins();
     }
     
     public newRound(ferries: Ferry[]) {

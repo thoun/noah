@@ -30,12 +30,13 @@ trait StateTrait {
 
     function stChooseOpponent() {
         if (count($this->getPlayersIds()) == 2) {
+            $opponentId = $this->getOpponentId(self::getActivePlayerId());
             if (intval(self::getGameStateValue(LOOK_OPPONENT_HAND)) == 1) {
-                $this->applyLookCards($this->getOpponentId(self::getActivePlayerId()));
+                $this->applyLookCards($opponentId);
             } else if (intval(self::getGameStateValue(EXCHANGE_CARD)) == 1) {
-                $this->applyExchangeCard($this->getOpponentId(self::getActivePlayerId()));
+                $this->applyExchangeCard($opponentId);
             } else if (intval(self::getGameStateValue(GIVE_CARD_FROM_FERRY)) == 1) {
-                $this->applyGiveCardFromFerry($this->getOpponentId(self::getActivePlayerId()));
+                $this->applyGiveCardFromFerry($opponentId);
             } 
         }
     }
@@ -128,11 +129,7 @@ trait StateTrait {
             $cardsToDiscard = intval($this->ferries->countCardInLocation('discard'));
             $this->animals->pickCardsForLocation($cardsToDiscard, 'deck', 'discard');
         
-            // no new animal, just to update remainingAnimals
-            self::notifyPlayer($playerId, 'newHand', '', [
-                'playerId' => $playerId,
-                'animals' => [],
-                'keepCurrentHand' => true,
+            self::notifyPlayer($playerId, 'remainingAnimals', '', [
                 'remainingAnimals' => intval($this->animals->countCardInLocation('deck')),
             ]);
         }
@@ -211,7 +208,7 @@ trait StateTrait {
         }
         
         // player with highest score starts        
-        $sql = "SELECT playerId FROM player where player_score=(select min(player_score) from player) limit 1";
+        $sql = "SELECT player_id FROM player where player_score=(select min(player_score) from player) limit 1";
         $minScorePlayerId = self::getUniqueValueFromDB($sql);
         $this->gamestate->changeActivePlayer($minScorePlayerId);
         self::giveExtraTime($minScorePlayerId);

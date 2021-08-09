@@ -104,9 +104,7 @@ $playerActionsGameStates = [
             "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
             "chooseWeight" => ST_PLAYER_CHOOSE_WEIGHT,
-            "lookCards" => ST_PLAYER_CHOOSE_OPPONENT,
-            "exchangeCard" => ST_PLAYER_CHOOSE_OPPONENT,
-            "giveCardFromFerry" => ST_PLAYER_CHOOSE_OPPONENT,
+            "chooseOpponent" => ST_PLAYER_CHOOSE_OPPONENT,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]

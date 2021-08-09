@@ -172,7 +172,7 @@ trait UtilTrait {
     }
 
     function decPlayerScore(int $playerId, int $decScore) {
-        $newScore = max(0, $this->getPlayerScore($playerId) + 2);
+        $newScore = min(0, $this->getPlayerScore($playerId) + 2);
         self::DbQuery("UPDATE player SET player_score = $newScore WHERE player_id = $playerId");
 
         self::notifyAllPlayers('points', '', [
