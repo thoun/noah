@@ -218,12 +218,12 @@ var Table = /** @class */ (function () {
             this.noahLastPosition + spotsToGoUp - 5 :
             this.noahLastPosition + spotsToGoUp;
         this.noahLastPosition = newPosition;
-        return "rotate(" + 72 * newPosition + "deg) translateY(50px)";
+        return "rotate(" + (72 * newPosition + 90) + "deg) translateY(50px)";
     };
     Table.prototype.getPointsCoordinates = function (points) {
         var angle = (Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
-        var left = -NOAH_RADIUS * Math.cos(angle);
-        var top = -NOAH_RADIUS * Math.sin(angle);
+        var left = NOAH_RADIUS * Math.sin(angle);
+        var top = -NOAH_RADIUS * Math.cos(angle);
         return [211 + left, 213 + top];
     };
     Table.prototype.noahMoved = function (position) {
@@ -239,8 +239,8 @@ var Table = /** @class */ (function () {
         /*const equality = opponentScore === points;
         const playerShouldShift = equality && playerId > opponentId;*/
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
-        var left = 60;
-        var top = 210;
+        var left = 210;
+        var top = 60;
         if (points > 0) {
             var coordinates = this.getPointsCoordinates(points);
             left = coordinates[0];

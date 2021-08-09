@@ -17,7 +17,7 @@ const isDebug = window.location.host == 'studio.boardgamearena.com';
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class Noah implements NoahGame {
-    private gamedatas: NoahGamedatas;
+    public gamedatas: NoahGamedatas;
     private helpDialog: any;
 
     private playerHand: Stock;

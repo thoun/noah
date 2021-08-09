@@ -9,7 +9,12 @@
 
     &.active {
       background-color: #FFFFFFBB;
-      box-shadow: 0 0 5px 5px #FFFFFFBB;
+      animation: 2s ease-in-out infinite alternate glow;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 10px 10px #FFFFFFBB; }
+      to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
     }
 
     .weight-indicator {
@@ -19,7 +24,7 @@
 
     @for $i from 0 through 4 {
       &.position#{$i} {
-          transform: rotate(72deg * $i) translateY(235px);
+          transform: rotate(#{72 * $i + 90}deg) translateY(235px);
       }
     }
   

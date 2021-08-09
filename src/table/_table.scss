@@ -4,6 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 
   #center-board {
     position: relative;
@@ -38,7 +39,7 @@
 
       @for $i from 0 through 4 {
         &.position#{$i} {
-            transform: rotate(72deg * $i) translateY(50px);
+            transform: rotate(72deg * $i + 90) translateY(50px);
         }
       }
     }

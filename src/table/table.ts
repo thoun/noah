@@ -62,13 +62,13 @@ class Table {
 
         this.noahLastPosition = newPosition;
 
-        return `rotate(${72 * newPosition}deg) translateY(50px)`;
+        return `rotate(${72 * newPosition + 90}deg) translateY(50px)`;
     }
 
     private getPointsCoordinates(points: number) {
         const angle = (Math.min((points-1), MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
-        const left = -NOAH_RADIUS*Math.cos(angle);
-        let top = -NOAH_RADIUS*Math.sin(angle);
+        const left = NOAH_RADIUS*Math.sin(angle);
+        let top = -NOAH_RADIUS*Math.cos(angle);
 
         return [211 + left, 213 + top];
     }
@@ -91,8 +91,8 @@ class Table {
 
         const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
 
-        let left = 60;
-        let top = 210;
+        let left = 210;
+        let top = 60;
         if (points > 0) {
             const coordinates = this.getPointsCoordinates(points);
             left = coordinates[0];

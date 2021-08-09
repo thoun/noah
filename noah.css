@@ -3,6 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 #table .ferry-spot {
   top: 233px;
@@ -15,26 +16,34 @@
 }
 #table .ferry-spot.active {
   background-color: #FFFFFFBB;
-  box-shadow: 0 0 5px 5px #FFFFFFBB;
+  animation: 2s ease-in-out infinite alternate glow;
+}
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px 10px #FFFFFFBB;
+  }
+  to {
+    box-shadow: 0 0 20px 20px #FFFFFFBB;
+  }
 }
 #table .ferry-spot .weight-indicator {
   right: 5px;
   top: 5px;
 }
 #table .ferry-spot.position0 {
-  transform: rotate(0deg) translateY(235px);
+  transform: rotate(90deg) translateY(235px);
 }
 #table .ferry-spot.position1 {
-  transform: rotate(72deg) translateY(235px);
+  transform: rotate(162deg) translateY(235px);
 }
 #table .ferry-spot.position2 {
-  transform: rotate(144deg) translateY(235px);
+  transform: rotate(234deg) translateY(235px);
 }
 #table .ferry-spot.position3 {
-  transform: rotate(216deg) translateY(235px);
+  transform: rotate(306deg) translateY(235px);
 }
 #table .ferry-spot.position4 {
-  transform: rotate(288deg) translateY(235px);
+  transform: rotate(378deg) translateY(235px);
 }
 #table .ferry-spot .ferry-card {
   background: url("img/ferry-back.jpg");
@@ -84,19 +93,19 @@
   border: 5px dashed red;
 }
 #table #center-board .noah-spot.position0 {
-  transform: rotate(0deg) translateY(50px);
+  transform: rotate(90deg) translateY(50px);
 }
 #table #center-board .noah-spot.position1 {
-  transform: rotate(72deg) translateY(50px);
+  transform: rotate(162deg) translateY(50px);
 }
 #table #center-board .noah-spot.position2 {
-  transform: rotate(144deg) translateY(50px);
+  transform: rotate(234deg) translateY(50px);
 }
 #table #center-board .noah-spot.position3 {
-  transform: rotate(216deg) translateY(50px);
+  transform: rotate(306deg) translateY(50px);
 }
 #table #center-board .noah-spot.position4 {
-  transform: rotate(288deg) translateY(50px);
+  transform: rotate(378deg) translateY(50px);
 }
 #table #center-board .point-marker {
   position: absolute;
