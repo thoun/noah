@@ -78,18 +78,24 @@ trait ActionTrait {
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalCount = intval($this->animals->countCardInLocation($location));
-        $this->animals->moveCard($id, $location, $animalCount);
+        $this->animals->moveCard($id, $location, $animalCount++);
 
-        if ($animalCount > 0) {
-            $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-1))[0];
+        if ($animalCount > 1) {
+            $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, $animalCount-2))[0];
             if ($this->isSoloMode()) {
-                if ($animalCount > 0 && $animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
+                if ($animalCount > 1 && $animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
                     self::setGameStateValue(SOLO_DRAW_TWO_CARDS, 1);
                 }
             } else {
-                if ($animalCount > 0 && $animal->type == $previousAnimal->type) {
+                if ($animalCount > 1 && $animal->type == $previousAnimal->type) {
                     self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
                 }
+            }
+
+            if ($animalCount == 2) {   
+                $stat = $animal->type == $previousAnimal->type ? 'sameGender' : 'alternateGender';
+                self::incStat(1, $stat);
+                self::incStat(1, $stat, $playerId);
             }
         }
         

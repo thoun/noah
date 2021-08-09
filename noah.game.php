@@ -119,6 +119,10 @@ class Noah extends Table {
         self::initStat('player', 'takeAllAnimals', 0);
         self::initStat('table', 'optimalLoading', 0);
         self::initStat('player', 'optimalLoading', 0);
+        self::initStat('table', 'alternateGender', 0);
+        self::initStat('player', 'alternateGender', 0);
+        self::initStat('table', 'sameGender', 0);
+        self::initStat('player', 'sameGender', 0);
         
         $this->setupCards($this->isSoloMode() ? intval(self::getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
 

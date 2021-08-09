@@ -70,6 +70,16 @@ $commonStats = [
         "name" => totranslate("Number of optimal loadings"),
         "type" => "int"
     ], 
+    "alternateGender" => [
+        "id" => 14,
+        "name" => totranslate("Ferries with alternate gender"),
+        "type" => "int"
+    ], 
+    "sameGender" => [
+        "id" => 15,
+        "name" => totranslate("Ferries with same gender"),
+        "type" => "int"
+    ], 
 ];
 
 $stats_type = [
