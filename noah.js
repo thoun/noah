@@ -186,7 +186,7 @@ var Table = /** @class */ (function () {
                 return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
             });
             dojo.place(html, 'center-board');
-            players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score), true); });
+            players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score)); });
         }
         var _loop_1 = function (i) {
             this_1.spots.push(new FerrySpot(game, i, ferries[i]));
@@ -230,8 +230,7 @@ var Table = /** @class */ (function () {
         document.getElementById('noah').style.transform = this.getNoahStyle(position);
         this.spots.forEach(function (spot, index) { return spot.setActive(index == position); });
     };
-    Table.prototype.setPoints = function (playerId, points, firstPosition) {
-        if (firstPosition === void 0) { firstPosition = false; }
+    Table.prototype.setPoints = function (playerId, points) {
         if (this.game.gamedatas.solo) {
             return;
         }

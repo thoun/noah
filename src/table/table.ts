@@ -24,7 +24,7 @@ class Table {
                 html += `<div id="player-${player.id}-point-marker" class="point-marker" style="background-color: #${player.color};"></div>`
             );
             dojo.place(html, 'center-board');
-            players.forEach(player => this.setPoints(Number(player.id), Number(player.score), true));
+            players.forEach(player => this.setPoints(Number(player.id), Number(player.score)));
         }
 
         // ferries
@@ -81,7 +81,7 @@ class Table {
         this.spots.forEach((spot, index) => spot.setActive(index == position));
     }
 
-    public setPoints(playerId: number, points: number, firstPosition = false) {
+    public setPoints(playerId: number, points: number) {
         if (this.game.gamedatas.solo) {
             return;
         }
