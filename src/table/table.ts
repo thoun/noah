@@ -1,4 +1,4 @@
-const NOAH_RADIUS = 191;
+const POINTS_RADIUS = 195;
 const MAX_SCORE = 26;
 
 class Table {
@@ -67,10 +67,10 @@ class Table {
 
     private getPointsCoordinates(points: number) {
         const angle = (Math.min((points-1), MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
-        const left = NOAH_RADIUS*Math.sin(angle);
-        let top = -NOAH_RADIUS*Math.cos(angle);
+        const left = POINTS_RADIUS*Math.sin(angle);
+        let top = -POINTS_RADIUS*Math.cos(angle);
 
-        return [211 + left, 213 + top];
+        return [202 + left, 213 + top];
     }
     
     public noahMoved(position: number) {
@@ -91,8 +91,8 @@ class Table {
 
         const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
 
-        let left = 210;
-        let top = 60;
+        let left = 202;
+        let top = 65;
         if (points > 0) {
             const coordinates = this.getPointsCoordinates(points);
             left = coordinates[0];

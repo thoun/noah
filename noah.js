@@ -170,7 +170,7 @@ var FerrySpot = /** @class */ (function () {
     };
     return FerrySpot;
 }());
-var NOAH_RADIUS = 191;
+var POINTS_RADIUS = 195;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
     function Table(game, players, ferries, noahPosition, remainingFerries) {
@@ -221,9 +221,9 @@ var Table = /** @class */ (function () {
     };
     Table.prototype.getPointsCoordinates = function (points) {
         var angle = (Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
-        var left = NOAH_RADIUS * Math.sin(angle);
-        var top = -NOAH_RADIUS * Math.cos(angle);
-        return [211 + left, 213 + top];
+        var left = POINTS_RADIUS * Math.sin(angle);
+        var top = -POINTS_RADIUS * Math.cos(angle);
+        return [202 + left, 213 + top];
     };
     Table.prototype.noahMoved = function (position) {
         this.noahPosition = position;
@@ -237,8 +237,8 @@ var Table = /** @class */ (function () {
         /*const equality = opponentScore === points;
         const playerShouldShift = equality && playerId > opponentId;*/
         var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
-        var left = 210;
-        var top = 60;
+        var left = 202;
+        var top = 65;
         if (points > 0) {
             var coordinates = this.getPointsCoordinates(points);
             left = coordinates[0];
