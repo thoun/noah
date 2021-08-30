@@ -8,13 +8,12 @@
 
   #center-board {
     position: relative;
-    width: 466px;
+    width: 444px;
     height: 466px;
     background: url('img/board.png');
 
     #noah {
       background: url('img/noah.png');
-      background-position: 50% 50%;
       z-index: 5;
       box-shadow: 0 0 5px 5px white;
     }
@@ -23,8 +22,8 @@
       position: absolute;
       top: 233px;
       left: 163px;
-      width: 120px;
-      height: 120px;
+      width: 71px;
+      height: 71px;
       pointer-events: none;
       z-index: 4;
       transform-origin: top center;
@@ -48,8 +47,8 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       box-shadow: 1px 1px 2px 2px black;
       border-radius: 50%;
       transition: transform 0.5s;
