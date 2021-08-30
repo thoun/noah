@@ -62,7 +62,7 @@ class Table {
 
         this.noahLastPosition = newPosition;
 
-        return `rotate(${72 * newPosition + 90}deg) translateY(50px)`;
+        return `rotate(${72 * newPosition + 90}deg) translateY(90px)`;
     }
 
     private getPointsCoordinates(points: number) {

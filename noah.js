@@ -217,7 +217,7 @@ var Table = /** @class */ (function () {
             this.noahLastPosition + spotsToGoUp - 5 :
             this.noahLastPosition + spotsToGoUp;
         this.noahLastPosition = newPosition;
-        return "rotate(" + (72 * newPosition + 90) + "deg) translateY(50px)";
+        return "rotate(" + (72 * newPosition + 90) + "deg) translateY(90px)";
     };
     Table.prototype.getPointsCoordinates = function (points) {
         var angle = (Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
