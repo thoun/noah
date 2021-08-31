@@ -1,7 +1,8 @@
-const POINTS_RADIUS = 195;
+const POINTS_RADIUS = 194;
 const MAX_SCORE = 26;
 
 class Table {
+    private points = new Map<number, number>();
 
     private spots: FerrySpot[] = [];
 
@@ -24,7 +25,8 @@ class Table {
                 html += `<div id="player-${player.id}-point-marker" class="point-marker" style="background-color: #${player.color};"></div>`
             );
             dojo.place(html, 'center-board');
-            players.forEach(player => this.setPoints(Number(player.id), Number(player.score)));
+            players.forEach(player => this.points.set(Number(player.id), Number(player.score)));
+            this.movePoints();
         }
 
         // ferries
@@ -85,26 +87,29 @@ class Table {
         if (this.game.gamedatas.solo) {
             return;
         }
-        
-        /*const equality = opponentScore === points;
-        const playerShouldShift = equality && playerId > opponentId;*/
+        this.points.set(playerId, points);
+        this.movePoints();
+    }
 
-        const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
+    private movePoints() {
+        this.points.forEach((points, playerId) => {
+            const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
 
-        let left = 202;
-        let top = 65;
-        if (points > 0) {
             const coordinates = this.getPointsCoordinates(points);
-            left = coordinates[0];
-            top = coordinates[1];
-        }
-
-        /*if (playerShouldShift) {
-            top -= 5;
-            left -= 5;
-        }*/
-
-        markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
+            const left = coordinates[0];
+            const top = coordinates[1];
+    
+            let topShift = 0;
+            let leftShift = 0;
+            this.points.forEach((iPoints, iPlayerId) => {
+                if (iPoints === points && iPlayerId < playerId) {
+                    topShift += 5;
+                    leftShift += 5;
+                }
+            });
+    
+            markerDiv.style.transform = `translateX(${left + leftShift}px) translateY(${top + topShift}px)`;
+        });
     }
 
     private updateMargins() {
@@ -119,7 +124,7 @@ class Table {
         this.spots.forEach(spot => {
             const spotDiv = document.getElementById(`ferry-spot-${spot.position}`);
 
-            spotDiv.style.height = `${spot.animals.length ? 100 + 185 + ((spot.animals.length-1) *30) : 132}px`;
+            spotDiv.style.height = `${spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length-1) *30) : FERRY_HEIGHT}px`;
             const spotBR = spotDiv.getBoundingClientRect();
 
             if (spotBR.y < boardBR.y - topMargin) {

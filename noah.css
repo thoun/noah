@@ -31,24 +31,24 @@
   top: 5px;
 }
 #table .ferry-spot.position0 {
-  transform: rotate(90deg) translateY(235px);
+  transform: rotate(90deg) translateY(222px);
 }
 #table .ferry-spot.position1 {
-  transform: rotate(162deg) translateY(235px);
+  transform: rotate(162deg) translateY(222px);
 }
 #table .ferry-spot.position2 {
-  transform: rotate(234deg) translateY(235px);
+  transform: rotate(234deg) translateY(222px);
 }
 #table .ferry-spot.position3 {
-  transform: rotate(306deg) translateY(235px);
+  transform: rotate(306deg) translateY(222px);
 }
 #table .ferry-spot.position4 {
-  transform: rotate(378deg) translateY(235px);
+  transform: rotate(378deg) translateY(222px);
 }
 #table .ferry-spot .ferry-card {
   background: url("img/ferry-back.jpg");
-  width: 185px;
-  height: 132px;
+  width: 179px;
+  height: 128px;
   cursor: default;
   margin: 0;
 }
@@ -57,9 +57,9 @@
 }
 #table .ferry-spot .animal-card {
   position: absolute;
-  left: 40px;
-  width: 132px;
-  height: 185px;
+  left: 25px;
+  width: 128px;
+  height: 179px;
   background-image: url("img/cards.jpg");
   border-radius: 10px;
 }
@@ -84,6 +84,7 @@
   z-index: 4;
   transform-origin: top center;
   transition: transform 0.5s;
+  border-radius: 50%;
 }
 #table #center-board .noah-spot.selectable {
   cursor: pointer;
@@ -119,22 +120,23 @@
 }
 #table #center-board #ferry-deck {
   position: absolute;
-  top: 100px;
-  left: 150px;
+  top: 156px;
+  left: 130px;
   background: url("img/ferry-back.jpg");
-  width: 185px;
-  height: 132px;
+  width: 179px;
+  height: 128px;
   box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
   cursor: default;
 }
 #table #center-board .remaining-counter {
   position: absolute;
   text-align: center;
-  text-shadow: 0 0 2px white;
+  text-shadow: 0 0 2px white, 0 0 4px white, 0 0 6px white;
 }
 #table #center-board #remaining-ferry-counter {
-  top: 280px;
-  left: 244px;
+  top: 300px;
+  left: 136px;
+  width: 179px;
 }
 
 #noah-help-button {
@@ -184,8 +186,8 @@
   border-collapse: separate;
 }
 #help-popin .help-animals .animal {
-  width: 132px;
-  height: 185px;
+  width: 128px;
+  height: 179px;
   background-image: url("img/cards.jpg");
 }
 #help-popin .help-animals #animal1 {

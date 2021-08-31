@@ -24,14 +24,14 @@
 
     @for $i from 0 through 4 {
       &.position#{$i} {
-          transform: rotate(#{72 * $i + 90}deg) translateY(235px);
+          transform: rotate(#{72 * $i + 90}deg) translateY(222px);
       }
     }
   
     .ferry-card {
       background: url('img/ferry-back.jpg');
-      width: 185px;
-      height: 132px;
+      width: 179px;
+      height: 128px;
       cursor: default;
       margin: 0;
 
@@ -42,9 +42,9 @@
 
     .animal-card {
       position: absolute;
-      left: 40px;
-      width: 132px;
-      height: 185px;
+      left: 25px;
+      width: 128px;
+      height: 179px;
       background-image: url('img/cards.jpg');
       border-radius: 10px;
     }

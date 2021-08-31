@@ -46,8 +46,8 @@ var ANIMALS_WITH_TRAITS = [
 var BONUS_ANIMALS_WITH_TRAITS = [
     20, 21
 ];
-var ANIMAL_WIDTH = 132;
-var ANIMAL_HEIGHT = 185;
+var ANIMAL_WIDTH = 128;
+var ANIMAL_HEIGHT = 179;
 var FERRY_WIDTH = ANIMAL_HEIGHT;
 var FERRY_HEIGHT = ANIMAL_WIDTH;
 function getUniqueId(animal) {
@@ -91,7 +91,7 @@ function formatTextIcons(rawText) {
         .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
 }
 var CARD_OVERLAP = 30;
-var FIRST_ANIMAL_SHIFT = 100;
+var FIRST_ANIMAL_SHIFT = 28;
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
         var _this = this;
@@ -170,13 +170,14 @@ var FerrySpot = /** @class */ (function () {
     };
     return FerrySpot;
 }());
-var POINTS_RADIUS = 195;
+var POINTS_RADIUS = 194;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
     function Table(game, players, ferries, noahPosition, remainingFerries) {
         var _this = this;
         this.game = game;
         this.noahPosition = noahPosition;
+        this.points = new Map();
         this.spots = [];
         this.noahLastPosition = 0;
         var html = '';
@@ -186,7 +187,8 @@ var Table = /** @class */ (function () {
                 return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
             });
             dojo.place(html, 'center-board');
-            players.forEach(function (player) { return _this.setPoints(Number(player.id), Number(player.score)); });
+            players.forEach(function (player) { return _this.points.set(Number(player.id), Number(player.score)); });
+            this.movePoints();
         }
         var _loop_1 = function (i) {
             this_1.spots.push(new FerrySpot(game, i, ferries[i]));
@@ -234,21 +236,26 @@ var Table = /** @class */ (function () {
         if (this.game.gamedatas.solo) {
             return;
         }
-        /*const equality = opponentScore === points;
-        const playerShouldShift = equality && playerId > opponentId;*/
-        var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
-        var left = 202;
-        var top = 65;
-        if (points > 0) {
-            var coordinates = this.getPointsCoordinates(points);
-            left = coordinates[0];
-            top = coordinates[1];
-        }
-        /*if (playerShouldShift) {
-            top -= 5;
-            left -= 5;
-        }*/
-        markerDiv.style.transform = "translateX(" + left + "px) translateY(" + top + "px)";
+        this.points.set(playerId, points);
+        this.movePoints();
+    };
+    Table.prototype.movePoints = function () {
+        var _this = this;
+        this.points.forEach(function (points, playerId) {
+            var markerDiv = document.getElementById("player-" + playerId + "-point-marker");
+            var coordinates = _this.getPointsCoordinates(points);
+            var left = coordinates[0];
+            var top = coordinates[1];
+            var topShift = 0;
+            var leftShift = 0;
+            _this.points.forEach(function (iPoints, iPlayerId) {
+                if (iPoints === points && iPlayerId < playerId) {
+                    topShift += 5;
+                    leftShift += 5;
+                }
+            });
+            markerDiv.style.transform = "translateX(" + (left + leftShift) + "px) translateY(" + (top + topShift) + "px)";
+        });
     };
     Table.prototype.updateMargins = function () {
         var board = document.getElementById('center-board');
@@ -259,7 +266,7 @@ var Table = /** @class */ (function () {
         var rightMargin = 0;
         this.spots.forEach(function (spot) {
             var spotDiv = document.getElementById("ferry-spot-" + spot.position);
-            spotDiv.style.height = (spot.animals.length ? 100 + 185 + ((spot.animals.length - 1) * 30) : 132) + "px";
+            spotDiv.style.height = (spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length - 1) * 30) : FERRY_HEIGHT) + "px";
             var spotBR = spotDiv.getBoundingClientRect();
             if (spotBR.y < boardBR.y - topMargin) {
                 topMargin = boardBR.y - spotBR.y;
