@@ -60,11 +60,15 @@
       position: absolute;
       top: 156px;
       left: 130px;
-      background: url('img/ferry-back.jpg');
+      background: url('img/ferry.jpg');
       width: 179px;
       height: 128px;
       box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
       cursor: default;
+
+      &.roomates {
+        background: url('img/ferry-roomates.jpg');
+      }
     }
 
     .remaining-counter {

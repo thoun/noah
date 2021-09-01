@@ -198,18 +198,17 @@ $playerActionsGameStates = [
             "moveNoah",
         ],
         "transitions" => [
-            "checkOptimalLoading" => ST_PLAYER_OPTIMAL_LOADING,
+            "checkOptimalLoading" => ST_OPTIMAL_LOADING,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
     ],
 
-    ST_PLAYER_OPTIMAL_LOADING => [
-        "name" => "optimalLoading",
+    ST_PLAYER_OPTIMAL_LOADING_GIVE_CARDS => [
+        "name" => "optimalLoadingGiveCards",
         "description" => clienttranslate('${actplayer} must give ${number} card(s) from your hand to opponents'),
         "descriptionmyturn" => clienttranslate('${you} must give ${number} card(s) from your hand to opponents'),
-        "type" => "activeplayer",  
-        "action" => "stOptimalLoading",      
-        "args" => "argOptimalLoading",
+        "type" => "activeplayer",      
+        "args" => "argOptimalLoadingGiveCards",
         "possibleactions" => [ 
             "giveCards",
         ],
@@ -242,6 +241,19 @@ $gameGameStates = [
             "nextPlayer" => ST_NEXT_PLAYER,
             "zombiePass" => ST_NEXT_PLAYER,
         ],
+    ],
+
+    ST_OPTIMAL_LOADING => [
+        "name" => "optimalLoading",
+        "description" => "",
+        "type" => "game",  
+        "action" => "stOptimalLoading",
+        "transitions" => [
+            "giveCards" => ST_PLAYER_OPTIMAL_LOADING_GIVE_CARDS,
+            "drawCards" => ST_DRAW_CARDS,
+            "nextPlayer" => ST_NEXT_PLAYER,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
     ],
 
     ST_END_ROUND => [

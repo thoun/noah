@@ -19,6 +19,7 @@ class FerrySpot {
         html += `</div>`;
 
         dojo.place(html, 'center-board');
+        dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);
 
         if (ferry) {
             ferry.animals.forEach(animal => this.addAnimal(animal));
@@ -67,12 +68,14 @@ class FerrySpot {
         }
     }
 
-    public departure(newFerry: boolean) {
+    public departure(newFerry: Ferry) {
         // TODO animate
         this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
         this.animals = [];
 
-        if (!newFerry) {
+        if (newFerry) {
+            dojo.toggleClass(`ferry-spot-${this.position}-ferry-card`, 'roomates', newFerry.roomates);
+        } else {
             this.empty = true;
             dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
         }

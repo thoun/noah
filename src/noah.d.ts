@@ -39,6 +39,7 @@ interface NoahGamedatas {
 
     // Add here variables you set up in getAllDatas
     ferries: Ferry[];
+    topFerry: Ferry;
     noahPosition: number;
     remainingFerries: number;
     remainingAnimals: number;
@@ -74,7 +75,7 @@ interface EnteringMoveNoahArgs {
     possiblePositions: number[];
 }
 
-interface EnteringOptimalLoadingArgs {
+interface EnteringOptimalLoadingGiveCardsArgs {
     number: number;
     opponentsIds: number[];
 }
@@ -134,7 +135,8 @@ interface NotifAnimalGivenFromFerryArgs {
 
 interface NotifDepartureArgs {
     position: number;
-    newFerry: boolean;
+    newFerry: Ferry;
+    topFerry: Ferry;
     remainingFerries: number;
 }
 

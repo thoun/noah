@@ -150,7 +150,7 @@ trait ArgsTrait {
         );
     }
 
-    function argOptimalLoading() {
+    function argOptimalLoadingGiveCards() {
         $playerId = intval(self::getActivePlayerId());
 
         $opponentsIds = $this->getOrderedOpponentsIds($playerId);

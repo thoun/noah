@@ -36,6 +36,6 @@ $this->ANIMALS = [ // (int $cardsByGender, int $weight, int $points, int $power 
     12 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 7, 0), // Bear
 
     // Bonus cards
-    20 => new AnimalCard([2 => 2, 3 => 2, 4 => 2, 5 => 4] /* TOCHECK*/, 1, 5, POWER_ADJUSTABLE_WEIGHT), // Frog
-    21 => new AnimalCard([2 => 2, 3 => 2, 4 => 2, 5 => 2] /* TOCHECK*/, 6, 0, POWER_CROCODILE), // Crocodile
+    20 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 1, 5, POWER_ADJUSTABLE_WEIGHT), // Frog
+    21 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 6, 0, POWER_CROCODILE), // Crocodile
 ];

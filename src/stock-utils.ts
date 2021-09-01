@@ -31,6 +31,8 @@ function getUniqueId(animal: Animal): number {
 }
 
 function setupAnimalCards(animalStock: Stock) {
+    animalStock.image_items_per_row = 10;
+
     const cardsurl = `${g_gamethemeurl}img/cards.jpg`;
 
     ANIMALS_TYPES.forEach((animalType, index) => [1, 2].forEach(gender => {

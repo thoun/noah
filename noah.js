@@ -54,6 +54,7 @@ function getUniqueId(animal) {
     return animal.type * 10 + (animal.gender || 1);
 }
 function setupAnimalCards(animalStock) {
+    animalStock.image_items_per_row = 10;
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
     ANIMALS_TYPES.forEach(function (animalType, index) { return [1, 2].forEach(function (gender) {
         animalStock.addItemType(animalType * 10 + gender, animalType, cardsurl, index * 2 + gender);
@@ -102,6 +103,7 @@ var FerrySpot = /** @class */ (function () {
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
         html += "</div>";
         dojo.place(html, 'center-board');
+        dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
         if (ferry) {
             ferry.animals.forEach(function (animal) { return _this.addAnimal(animal); });
         }
@@ -147,7 +149,10 @@ var FerrySpot = /** @class */ (function () {
         // TODO animate
         this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
         this.animals = [];
-        if (!newFerry) {
+        if (newFerry) {
+            dojo.toggleClass("ferry-spot-" + this.position + "-ferry-card", 'roomates', newFerry.roomates);
+        }
+        else {
             this.empty = true;
             dojo.addClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
         }
@@ -173,7 +178,7 @@ var FerrySpot = /** @class */ (function () {
 var POINTS_RADIUS = 194;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
-    function Table(game, players, ferries, noahPosition, remainingFerries) {
+    function Table(game, players, ferries, noahPosition, remainingFerries, topFerry) {
         var _this = this;
         this.game = game;
         this.noahPosition = noahPosition;
@@ -203,6 +208,9 @@ var Table = /** @class */ (function () {
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(remainingFerries);
+        if (topFerry) {
+            dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
+        }
         // noah
         this.noahLastPosition = noahPosition;
         dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
@@ -304,7 +312,10 @@ var Table = /** @class */ (function () {
         document.getElementById('ferry-deck').style.visibility = visibility;
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     };
-    Table.prototype.departure = function (newFerry, remainingFerries) {
+    Table.prototype.departure = function (topFerry, newFerry, remainingFerries) {
+        if (topFerry) {
+            dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
+        }
         this.setRemainingFerries(remainingFerries);
         this.spots[this.noahPosition].departure(newFerry);
         this.updateMargins();
@@ -351,7 +362,7 @@ var Noah = /** @class */ (function () {
         log('gamedatas', gamedatas);
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
         this.roundCounter.setValue(gamedatas.roundNumber);
@@ -390,7 +401,9 @@ var Noah = /** @class */ (function () {
                 this.onEnteringStateLoadAnimal(args.args);
                 break;
             case 'viewCards':
-                this.onEnteringStateLookCards(args.args);
+                if (this.isCurrentPlayerActive()) {
+                    this.onEnteringStateLookCards(args.args);
+                }
                 break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args);
@@ -431,7 +444,7 @@ var Noah = /** @class */ (function () {
             args.possiblePositions.forEach(function (position) { return dojo.addClass("noah-spot-" + position, 'selectable'); });
         }
     };
-    Noah.prototype.onEnteringStateOptimalLoading = function (args) {
+    Noah.prototype.onEnteringStateOptimalLoadingGiveCards = function (args) {
         if (this.isCurrentPlayerActive()) {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
@@ -458,6 +471,7 @@ var Noah = /** @class */ (function () {
         opponentHand.centerItems = true;
         //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
         setupAnimalCards(opponentHand);
+        console.log(opponentHand.item_type);
         args.animals.forEach(function (animal) { return opponentHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
         viewCardsDialog.show();
         setTimeout(function () { return opponentHand.updateDisplay(); }, 100);
@@ -481,8 +495,8 @@ var Noah = /** @class */ (function () {
             case 'moveNoah':
                 this.onLeavingStateMoveNoah();
                 break;
-            case 'optimalLoading':
-                this.onLeavingStateOptimalLoading();
+            case 'optimalLoadingGiveCards':
+                this.onLeavingStateOptimalLoadingGiveCards();
                 break;
             case 'giveCard':
                 this.onLeavingStateGiveCard();
@@ -497,7 +511,7 @@ var Noah = /** @class */ (function () {
     Noah.prototype.onLeavingStateMoveNoah = function () {
         dojo.query('.noah-spot').removeClass('selectable');
     };
-    Noah.prototype.onLeavingStateOptimalLoading = function () {
+    Noah.prototype.onLeavingStateOptimalLoadingGiveCards = function () {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
         this.cardsToGive = null;
@@ -541,9 +555,9 @@ var Noah = /** @class */ (function () {
                         document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
                     });
                     break;
-                case 'optimalLoading':
+                case 'optimalLoadingGiveCards':
                     this.clickAction = 'give';
-                    this.onEnteringStateOptimalLoading(args);
+                    this.onEnteringStateOptimalLoadingGiveCards(args);
                     this.addActionButton('giveCards-button', this.getGiveCardsButtonText(), function () { return _this.giveCards(); });
                     dojo.addClass('giveCards-button', 'disabled');
                     break;
@@ -597,7 +611,6 @@ var Noah = /** @class */ (function () {
         this.playerHand.setSelectionAppearance('class');
         this.playerHand.selectionClass = 'selected';
         this.playerHand.centerItems = true;
-        this.playerHand.image_items_per_row = 10;
         this.playerHand.onItemCreate = function (cardDiv, type) { return setupAnimalCard(_this, cardDiv, type); };
         dojo.connect(this.playerHand, 'onChangeSelection', this, function (_, id) { return _this.onPlayerHandSelectionChanged(Number(id)); });
         setupAnimalCards(this.playerHand);
@@ -912,7 +925,7 @@ var Noah = /** @class */ (function () {
         // TODO animate
     };
     Noah.prototype.notif_departure = function (notif) {
-        this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
     };
     Noah.prototype.notif_removedCard = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);

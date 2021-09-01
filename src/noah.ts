@@ -61,7 +61,7 @@ class Noah implements NoahGame {
 
         //this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
 
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
@@ -106,7 +106,9 @@ class Noah implements NoahGame {
                 this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
             case 'viewCards':
-                this.onEnteringStateLookCards(args.args as EnteringLookCardsArgs);
+                if ((this as any).isCurrentPlayerActive()) {
+                    this.onEnteringStateLookCards(args.args as EnteringLookCardsArgs);
+                }
                 break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
@@ -148,7 +150,7 @@ class Noah implements NoahGame {
         }
     }
 
-    private onEnteringStateOptimalLoading(args: EnteringOptimalLoadingArgs) {
+    private onEnteringStateOptimalLoadingGiveCards(args: EnteringOptimalLoadingGiveCardsArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.cardsToGive = args.number;
             this.giveCardsTo = new Map();
@@ -179,6 +181,7 @@ class Noah implements NoahGame {
         opponentHand.centerItems = true;
         //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
         setupAnimalCards(opponentHand);
+        console.log(opponentHand.item_type);
         args.animals.forEach(animal => opponentHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
 
         viewCardsDialog.show();
@@ -208,8 +211,8 @@ class Noah implements NoahGame {
             case 'moveNoah':
                 this.onLeavingStateMoveNoah();
                 break;
-            case 'optimalLoading':
-                this.onLeavingStateOptimalLoading();
+            case 'optimalLoadingGiveCards':
+                this.onLeavingStateOptimalLoadingGiveCards();
                 break;
             case 'giveCard':
                 this.onLeavingStateGiveCard();
@@ -227,7 +230,7 @@ class Noah implements NoahGame {
         dojo.query('.noah-spot').removeClass('selectable');
     }
 
-    onLeavingStateOptimalLoading() {
+    onLeavingStateOptimalLoadingGiveCards() {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
         this.cardsToGive = null;
@@ -276,9 +279,9 @@ class Noah implements NoahGame {
                     });
                     break;
 
-                case 'optimalLoading':                    
+                case 'optimalLoadingGiveCards':                    
                     this.clickAction = 'give';
-                    this.onEnteringStateOptimalLoading(args as EnteringOptimalLoadingArgs);
+                    this.onEnteringStateOptimalLoadingGiveCards(args as EnteringOptimalLoadingGiveCardsArgs);
                     (this as any).addActionButton('giveCards-button', this.getGiveCardsButtonText(), () => this.giveCards());
                     dojo.addClass('giveCards-button', 'disabled');
                     break;
@@ -341,7 +344,6 @@ class Noah implements NoahGame {
         this.playerHand.setSelectionAppearance('class');
         this.playerHand.selectionClass = 'selected';
         this.playerHand.centerItems = true;
-        this.playerHand.image_items_per_row = 10;
         this.playerHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
         dojo.connect(this.playerHand, 'onChangeSelection', this, (_, id: string) => this.onPlayerHandSelectionChanged(Number(id)));
 
@@ -722,7 +724,7 @@ class Noah implements NoahGame {
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
-        this.table.departure(notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
     }
     
     notif_removedCard(notif: Notif<NotifRemovedCardArgs>) {

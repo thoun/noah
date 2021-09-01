@@ -207,7 +207,12 @@ trait UtilTrait {
         $this->animals->createCards($animals, 'deck');
         
         // 8 ferries
-        $this->ferries->createCards([[ 'type' => ($this->useRoomates() ? 1 : 0), 'type_arg' => 0, 'nbr' => 8 ]], 'deck');
+        $useRoomates = $this->useRoomates();
+        $ferries = [[ 'type' => 0, 'type_arg' => 0, 'nbr' => $useRoomates ? 7 : 8 ]];
+        if ($useRoomates) {
+            $ferries[] = [ 'type' => 1, 'type_arg' => 0, 'nbr' => 1 ];
+        }
+        $this->ferries->createCards($ferries, 'deck');
     }
 
     function applySetGender(int $animalId, int $gender) {

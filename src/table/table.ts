@@ -15,7 +15,8 @@ class Table {
         players: NoahPlayer[],
         ferries: Ferry[],
         private noahPosition: number,
-        remainingFerries: number
+        remainingFerries: number,
+        topFerry: Ferry,
     ) {
         let html = '';
 
@@ -41,6 +42,10 @@ class Table {
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(remainingFerries);
+        
+        if (topFerry) {
+            dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
+        }
 
         // noah
         this.noahLastPosition = noahPosition;
@@ -173,7 +178,11 @@ class Table {
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     }
 
-    public departure(newFerry: boolean, remainingFerries: number) {
+    public departure(topFerry: Ferry, newFerry: Ferry, remainingFerries: number) {
+        if (topFerry) {
+            dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
+        }
+
         this.setRemainingFerries(remainingFerries);
 
         this.spots[this.noahPosition].departure(newFerry);

@@ -156,6 +156,10 @@ class Noah extends Table {
             $ferries[$position] = $this->getFerry($position);
         }
         $result['ferries'] = $ferries;
+
+        $topFerryDb = $this->ferries->getCardOnTop('deck');
+        $result['topFerry'] = $topFerryDb != null ? $this->getFerryFromDb($topFerryDb) : null;
+
         $result['noahPosition'] = $this->getNoahPosition();
         $result['remainingFerries'] = intval($this->ferries->countCardInLocation('deck'));
         $result['remainingAnimals'] = intval($this->animals->countCardInLocation('deck'));

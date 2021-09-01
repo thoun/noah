@@ -46,7 +46,7 @@
   transform: rotate(378deg) translateY(222px);
 }
 #table .ferry-spot .ferry-card {
-  background: url("img/ferry-back.jpg");
+  background: url("img/ferry.jpg");
   width: 179px;
   height: 128px;
   cursor: default;
@@ -54,6 +54,9 @@
 }
 #table .ferry-spot .ferry-card.empty {
   display: none;
+}
+#table .ferry-spot .ferry-card.roomates {
+  background: url("img/ferry-roomates.jpg");
 }
 #table .ferry-spot .animal-card {
   position: absolute;
@@ -122,11 +125,14 @@
   position: absolute;
   top: 156px;
   left: 130px;
-  background: url("img/ferry-back.jpg");
+  background: url("img/ferry.jpg");
   width: 179px;
   height: 128px;
   box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
   cursor: default;
+}
+#table #center-board #ferry-deck.roomates {
+  background: url("img/ferry-roomates.jpg");
 }
 #table #center-board .remaining-counter {
   position: absolute;

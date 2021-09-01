@@ -29,7 +29,7 @@
     }
   
     .ferry-card {
-      background: url('img/ferry-back.jpg');
+      background: url('img/ferry.jpg');
       width: 179px;
       height: 128px;
       cursor: default;
@@ -37,6 +37,10 @@
 
       &.empty {
         display: none;
+      }
+
+      &.roomates {
+        background: url('img/ferry-roomates.jpg');
       }
     }
 

@@ -97,6 +97,8 @@ trait StateTrait {
             } else {
                 if ($this->getNumberOfCardsToGive($playerId) == 0) {
                     $this->gamestate->nextState('nextPlayer');
+                } else {
+                    $this->gamestate->nextState('giveCards');
                 }
             }
         }
@@ -107,11 +109,14 @@ trait StateTrait {
         $this->animals->moveAllCardsInLocation('table'.$position, 'discard');
         $this->ferries->moveAllCardsInLocation('table', 'discard', $position);
         $remainingFerries = intval($this->ferries->countCardInLocation('deck'));
-        $newFerry = $remainingFerries > 0;
-        if ($newFerry) {
-            $this->ferries->pickCardForLocation('deck', 'table', $position);
+        $newFerry = null;
+        if ($remainingFerries > 0) {
+            $newFerry = $this->getFerryFromDb($this->ferries->pickCardForLocation('deck', 'table', $position));
             $remainingFerries--;
         }
+
+        $topFerryDb = $this->ferries->getCardOnTop('deck');
+        $topFerry = $topFerryDb != null ? $this->getFerryFromDb($topFerryDb) : null;
         
         $playerId = self::getActivePlayerId();
         self::notifyAllPlayers('departure', clienttranslate('${player_name} completes ferry'), [
@@ -120,6 +125,7 @@ trait StateTrait {
             'position' => $position,
             'newFerry' => $newFerry,
             'remainingFerries' => $remainingFerries,
+            'topFerry' => $topFerry,
         ]);
 
         self::incStat(1, 'optimalLoading');
