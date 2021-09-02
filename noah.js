@@ -125,10 +125,29 @@ var FerrySpot = /** @class */ (function () {
         var yBackgroundPercent = row * 100;
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
     };
-    FerrySpot.prototype.addAnimal = function (animal) {
-        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top: " + (FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP) + "px; background-position: " + this.getBackgroundPosition(animal) + "\"></div>";
+    FerrySpot.prototype.addAnimal = function (animal, originId) {
+        var top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
+        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + this.getBackgroundPosition(animal) + ";";
+        if (originId) {
+            var originBR = document.getElementById(originId).getBoundingClientRect();
+            var destination = document.getElementById("center-board");
+            var destinationBR = destination.getBoundingClientRect();
+            var xdiff = originBR.x - destinationBR.x;
+            var ydiff = originBR.y - destinationBR.y + Number(destination.style.marginLeft.replace('px', ''));
+            var deg = -(72 * this.position + 90);
+            if (this.position > 1) {
+                deg += 360;
+            }
+            html += "transform: translate(2px, -" + (222 + top) + "px) rotate(" + deg + "deg) translate(-164px, -233px) translate(" + xdiff + "px, " + ydiff + "px);";
+        }
+        html += "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
+        if (originId) {
+            var card_1 = document.getElementById("ferry-spot-" + this.position + "-animal" + animal.id);
+            card_1.style.transition = "transform 0.5s";
+            setTimeout(function () { return card_1.style.transform = "unset"; });
+        }
         this.updateCounter();
     };
     FerrySpot.prototype.removeAnimals = function () {
@@ -170,7 +189,7 @@ var FerrySpot = /** @class */ (function () {
         this.empty = false;
         dojo.removeClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
         this.removeAnimals();
-        ferry.animals.forEach(function (animal) { return _this.addAnimal(animal); });
+        ferry.animals.forEach(function (animal) { return _this.addAnimal(animal, 'topbar'); });
         this.updateCounter();
     };
     return FerrySpot;
@@ -294,8 +313,8 @@ var Table = /** @class */ (function () {
         board.style.marginLeft = leftMargin + "px";
         board.style.marginRight = rightMargin + "px";
     };
-    Table.prototype.addAnimal = function (animal) {
-        this.spots[this.noahPosition].addAnimal(animal);
+    Table.prototype.addAnimal = function (animal, originId) {
+        this.spots[this.noahPosition].addAnimal(animal, originId);
         this.updateMargins();
     };
     Table.prototype.removeAnimals = function () {
@@ -876,7 +895,8 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_animalLoaded = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id);
-        this.table.addAnimal(notif.args.animal);
+        var originId = this.getPlayerId() === Number(notif.args.playerId) ? 'my-animals' : "player_board_" + notif.args.playerId;
+        this.table.addAnimal(notif.args.animal, originId);
     };
     Noah.prototype.notif_ferryAnimalsTaken = function (notif) {
         var _this = this;

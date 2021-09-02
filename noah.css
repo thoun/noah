@@ -7,7 +7,7 @@
 }
 #table .ferry-spot {
   top: 233px;
-  left: 136px;
+  left: 130px;
   position: absolute;
   width: 185px;
   transform-origin: top center;
@@ -59,6 +59,7 @@
   background: url("img/ferry-roomates.jpg");
 }
 #table .ferry-spot .animal-card {
+  transform-origin: top center;
   position: absolute;
   left: 25px;
   width: 128px;

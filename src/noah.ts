@@ -668,7 +668,8 @@ class Noah implements NoahGame {
 
     notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
         this.playerHand.removeFromStockById(''+notif.args.animal.id);
-        this.table.addAnimal(notif.args.animal);
+        const originId = this.getPlayerId() === Number(notif.args.playerId) ? 'my-animals' : `player_board_${notif.args.playerId}`;
+        this.table.addAnimal(notif.args.animal, originId);
     }
 
     notif_ferryAnimalsTaken(notif: Notif<NotifFerryAnimalsTakenArgs>) {

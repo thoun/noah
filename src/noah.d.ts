@@ -95,6 +95,7 @@ interface MoveNoahArgs {
 }
 
 interface NotifAnimalLoadedArgs {
+    playerId: number;
     animal: Animal;
     position: number;
 }

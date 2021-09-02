@@ -44,12 +44,36 @@ class FerrySpot {
         return `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
     }
 
-    public addAnimal(animal: Animal) {
-        const html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top: ${FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP}px; background-position: ${this.getBackgroundPosition(animal)}"></div>`;
+    public addAnimal(animal: Animal, originId?: string) {
+        const top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
+        let html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${this.getBackgroundPosition(animal)};`;
+        
+
+        if (originId) {
+            const originBR = document.getElementById(originId).getBoundingClientRect();
+            const destination = document.getElementById(`center-board`);
+            const destinationBR = destination.getBoundingClientRect();
+            const xdiff = originBR.x - destinationBR.x;
+            const ydiff = originBR.y - destinationBR.y + Number(destination.style.marginLeft.replace('px', ''));
+            let deg = -(72 * this.position + 90);
+            if (this.position > 1) {
+                deg += 360;
+            }
+
+            html += `transform: translate(2px, -${222 + top}px) rotate(${deg}deg) translate(-164px, -233px) translate(${xdiff}px, ${ydiff}px);`;
+        }
+
+        html += `"></div>`;
 
         this.animals.push(animal);
 
         dojo.place(html, `ferry-spot-${this.position}`);
+
+        if (originId) {
+            const card = document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`);
+            card.style.transition = `transform 0.5s`;
+            setTimeout(() => card.style.transform = `unset`);
+        }
 
         this.updateCounter();
     }
@@ -95,7 +119,7 @@ class FerrySpot {
         this.empty = false;
         dojo.removeClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
         this.removeAnimals();
-        ferry.animals.forEach(animal => this.addAnimal(animal));
+        ferry.animals.forEach(animal => this.addAnimal(animal, 'topbar'));
 
         this.updateCounter();
     }
