@@ -154,8 +154,8 @@ class Table {
         board.style.marginRight = `${rightMargin}px`;        
     }
 
-    public addAnimal(animal: Animal, originId?: string) {
-        this.spots[this.noahPosition].addAnimal(animal, originId);
+    public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {
+        this.spots[this.noahPosition].addAnimal(animal, originId, xShift);
 
         this.updateMargins();
     }

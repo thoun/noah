@@ -44,7 +44,7 @@ class FerrySpot {
         return `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
     }
 
-    public addAnimal(animal: Animal, originId?: string) {
+    public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {
         const top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
         let html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${this.getBackgroundPosition(animal)};`;
         
@@ -60,7 +60,7 @@ class FerrySpot {
                 deg += 360;
             }
 
-            html += `transform: translate(2px, -${222 + top}px) rotate(${deg}deg) translate(-164px, -233px) translate(${xdiff}px, ${ydiff}px);`;
+            html += `transform: translate(2px, -${222 + top}px) rotate(${deg}deg) translate(-164px, -233px) translate(${xdiff + xShift}px, ${ydiff}px);`;
         }
 
         html += `"></div>`;

@@ -238,13 +238,11 @@
 }
 
 html {
-  background: url("img/background.jpg") #2DA7EA;
-  background-repeat: no-repeat;
+  background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
 }
 
 .mode_3d #game_play_area_background {
-  background: url("img/background.jpg") #2DA7EA;
-  background-repeat: no-repeat;
+  background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
 }
 
 #zoom-wrapper {
@@ -276,6 +274,15 @@ html {
 }
 #zoom-wrapper #full-table {
   transform-origin: left top;
+}
+
+#pagesection_gameview {
+  background: url("img/wave.svg") no-repeat #92dcf8;
+  background-size: cover;
+  transition: background-position 0.5s ease;
+}
+#pagesection_gameview.downcolor {
+  background: url("img/wave.svg") no-repeat #1577c6;
 }
 
 #round-counter-wrapper, #solo-counter-wrapper {

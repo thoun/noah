@@ -96,7 +96,9 @@ class Noah implements NoahGame {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     public onEnteringState(stateName: string, args: any) {
-        log( 'Entering state: '+stateName , args.args );
+        log( 'Entering state: '+stateName , args.args);
+
+        this.setProgressionBackground(Number(args.updateGameProgression));
 
         switch (stateName) {
             case 'loadAnimal':
@@ -625,6 +627,16 @@ class Noah implements NoahGame {
         this.hideBubble(cardId);
     }
 
+    private setProgressionBackground(progression: number) {
+        if (isNaN(progression)) {
+            return;
+        }
+
+        const position = (progression * 4.5) - 100;
+        document.getElementById('pagesection_gameview').style.backgroundPositionY = `${position}%`;
+        dojo.toggleClass('pagesection_gameview', 'downcolor', position > 100);
+    }
+
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -668,8 +680,15 @@ class Noah implements NoahGame {
 
     notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
         this.playerHand.removeFromStockById(''+notif.args.animal.id);
-        const originId = this.getPlayerId() === Number(notif.args.playerId) ? 'my-animals' : `player_board_${notif.args.playerId}`;
-        this.table.addAnimal(notif.args.animal, originId);
+        const fromHand = this.getPlayerId() === Number(notif.args.playerId);
+        const originId = fromHand ? 'my-animals' : `player_board_${notif.args.playerId}`;
+        let xShift = 0;
+        if (fromHand) {
+            const cardBR = document.getElementById(`my-animals_item_${notif.args.animal.id}`).getBoundingClientRect();
+            const handBR = document.getElementById('my-animals').getBoundingClientRect();
+            xShift = cardBR.x - handBR.x;
+        }
+        this.table.addAnimal(notif.args.animal, originId, xShift);
     }
 
     notif_ferryAnimalsTaken(notif: Notif<NotifFerryAnimalsTakenArgs>) {

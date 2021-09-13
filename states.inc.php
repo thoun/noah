@@ -200,7 +200,8 @@ $playerActionsGameStates = [
         "transitions" => [
             "checkOptimalLoading" => ST_OPTIMAL_LOADING,
             "zombiePass" => ST_NEXT_PLAYER,
-        ]
+        ],
+        "updateGameProgression" => true,
     ],
 
     ST_PLAYER_OPTIMAL_LOADING_GIVE_CARDS => [
@@ -230,6 +231,7 @@ $gameGameStates = [
         "transitions" => [ 
             "" => ST_PLAYER_LOAD_ANIMAL,
         ],
+        "updateGameProgression" => true,
     ],
 
     ST_DRAW_CARDS => [

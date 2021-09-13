@@ -125,7 +125,8 @@ var FerrySpot = /** @class */ (function () {
         var yBackgroundPercent = row * 100;
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
     };
-    FerrySpot.prototype.addAnimal = function (animal, originId) {
+    FerrySpot.prototype.addAnimal = function (animal, originId, xShift) {
+        if (xShift === void 0) { xShift = 0; }
         var top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
         var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + this.getBackgroundPosition(animal) + ";";
         if (originId) {
@@ -138,7 +139,7 @@ var FerrySpot = /** @class */ (function () {
             if (this.position > 1) {
                 deg += 360;
             }
-            html += "transform: translate(2px, -" + (222 + top) + "px) rotate(" + deg + "deg) translate(-164px, -233px) translate(" + xdiff + "px, " + ydiff + "px);";
+            html += "transform: translate(2px, -" + (222 + top) + "px) rotate(" + deg + "deg) translate(-164px, -233px) translate(" + (xdiff + xShift) + "px, " + ydiff + "px);";
         }
         html += "\"></div>";
         this.animals.push(animal);
@@ -313,8 +314,9 @@ var Table = /** @class */ (function () {
         board.style.marginLeft = leftMargin + "px";
         board.style.marginRight = rightMargin + "px";
     };
-    Table.prototype.addAnimal = function (animal, originId) {
-        this.spots[this.noahPosition].addAnimal(animal, originId);
+    Table.prototype.addAnimal = function (animal, originId, xShift) {
+        if (xShift === void 0) { xShift = 0; }
+        this.spots[this.noahPosition].addAnimal(animal, originId, xShift);
         this.updateMargins();
     };
     Table.prototype.removeAnimals = function () {
@@ -412,6 +414,7 @@ var Noah = /** @class */ (function () {
     //
     Noah.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
+        this.setProgressionBackground(Number(args.updateGameProgression));
         switch (stateName) {
             case 'loadAnimal':
                 this.clickAction = 'load';
@@ -856,6 +859,14 @@ var Noah = /** @class */ (function () {
         this.updateGiveCardsButton();
         this.hideBubble(cardId);
     };
+    Noah.prototype.setProgressionBackground = function (progression) {
+        if (isNaN(progression)) {
+            return;
+        }
+        var position = (progression * 4.5) - 100;
+        document.getElementById('pagesection_gameview').style.backgroundPositionY = position + "%";
+        dojo.toggleClass('pagesection_gameview', 'downcolor', position > 100);
+    };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     /*
@@ -895,8 +906,15 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.notif_animalLoaded = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id);
-        var originId = this.getPlayerId() === Number(notif.args.playerId) ? 'my-animals' : "player_board_" + notif.args.playerId;
-        this.table.addAnimal(notif.args.animal, originId);
+        var fromHand = this.getPlayerId() === Number(notif.args.playerId);
+        var originId = fromHand ? 'my-animals' : "player_board_" + notif.args.playerId;
+        var xShift = 0;
+        if (fromHand) {
+            var cardBR = document.getElementById("my-animals_item_" + notif.args.animal.id).getBoundingClientRect();
+            var handBR = document.getElementById('my-animals').getBoundingClientRect();
+            xShift = cardBR.x - handBR.x;
+        }
+        this.table.addAnimal(notif.args.animal, originId, xShift);
     };
     Noah.prototype.notif_ferryAnimalsTaken = function (notif) {
         var _this = this;
