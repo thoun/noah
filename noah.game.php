@@ -184,6 +184,11 @@ class Noah extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
+        $stateName = $this->gamestate->state()['name']; 
+        if ($stateName === 'gameEnd') {
+            return 100;
+        }
+
         if ($this->isSoloMode()) {
             $allAnimals = intval(self::getUniqueValueFromDB("SELECT count(*) FROM animal"));
             $remainingAnimals = intval($this->animals->countCardInLocation('deck'));
@@ -191,7 +196,7 @@ class Noah extends Table {
         } else if ($this->isVariant()) {
             return max(round($this->getMaxPlayerScore() * 3.85), 100);
         } else {
-            return intval($this->getGameStateValue(ROUND_NUMBER)) * 100 / 3;
+            return (intval($this->getGameStateValue(ROUND_NUMBER))-1) * 100 / 3;
         }
     }
 

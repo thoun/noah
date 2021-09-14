@@ -7,6 +7,11 @@ trait DebugUtilTrait {
 ////////////
 
     function debugSetup() {
+        global $g_config;
+        if (!$g_config['debug_from_chat']) { 
+            return;
+        } 
+
         //self::DbQuery("UPDATE card SET `card_location_arg` = card_location_arg + 200 where `card_type` = 117");
         //$this->debugSetPoints(19);
         $this->debugSetAnimalsInFerry(0, [
