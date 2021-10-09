@@ -61,6 +61,7 @@ $animal-height: 179px;
             width: $animal-width; 
             height: $animal-height;
             background-image: url('img/cards.jpg');
+            border-radius: 10px;
         }
 
         #animal1 {

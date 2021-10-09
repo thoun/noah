@@ -143,8 +143,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_REORDER_TOP_DECK => [
         "name" => "reorderTopDeck",
-        "description" => clienttranslate('${actplayer} must reorder top deck cards'),
-        "descriptionmyturn" => clienttranslate('${you} must reorder top deck cards'),
+        "description" => clienttranslate('${actplayer} can reorder top deck cards'),
+        "descriptionmyturn" => clienttranslate('${you} can reorder top deck cards'),
         "type" => "activeplayer",    
         "args" => "argReorderTopDeck",  
         "possibleactions" => [ 

@@ -86,7 +86,7 @@ trait ActionTrait {
             $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, null, 'location_arg'))[$animalCount-2];
             if ($this->isSoloMode()) {
                 if ($animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
-                    self::setGameStateValue(SOLO_DRAW_TWO_CARDS, 1);
+                    self::setGameStateValue(SOLO_DRAW_CARDS, 2);
                 }
             } else {
                 if ($animal->type == $previousAnimal->type) {
@@ -122,7 +122,11 @@ trait ActionTrait {
         if ($animal->power == POWER_LOOK_CARDS) {
             $soloMode = $this->isSoloMode(); 
             if ($soloMode) {
-                $this->gamestate->nextState('reorderTopDeck');
+                if (intval($this->animals->countCardInLocation('deck')) > 0) {
+                    $this->gamestate->nextState('reorderTopDeck');
+                } else {
+                    $this->gamestate->nextState('moveNoah');
+                }
             } else {
                 self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
     

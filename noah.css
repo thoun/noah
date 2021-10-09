@@ -204,6 +204,7 @@
   width: 128px;
   height: 179px;
   background-image: url("img/cards.jpg");
+  border-radius: 10px;
 }
 #help-popin .help-animals #animal1 {
   background-position: 11.1111111111% 0%;
@@ -342,4 +343,50 @@ html {
 #opponent-hand {
   width: 660px;
   max-width: 90vh;
+}
+
+#order-selector {
+  display: flex;
+  justify-content: center;
+}
+#order-selector .order-card-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px;
+}
+#order-selector .order-card-zone .animal-card {
+  display: inline-block;
+  left: 25px;
+  width: 128px;
+  height: 179px;
+  background-image: url("img/cards.jpg");
+  border-radius: 10px;
+  pointer-events: none;
+}
+#order-selector .order-card-zone .selector {
+  position: relative;
+  background-image: url("img/select-card-order.svg");
+  width: 180px;
+  height: 110px;
+}
+#order-selector .order-card-zone .selector .selector-arrow {
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  cursor: pointer;
+}
+#order-selector .order-card-zone .selector .selector-arrow[data-selected=true] {
+  border: 1px solid red;
+  box-shadow: 0 0 2px 2px red;
+}
+#order-selector .order-card-zone .selector .selector-arrow[data-number="1"] {
+  top: 7px;
+}
+#order-selector .order-card-zone .selector .selector-arrow[data-number="2"] {
+  top: 30px;
+}
+#order-selector .order-card-zone .selector .selector-arrow[data-number="3"] {
+  top: 52px;
 }

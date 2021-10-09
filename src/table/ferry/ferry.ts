@@ -33,21 +33,10 @@ class FerrySpot {
         dojo.toggleClass(`ferry-spot-${this.position}`, 'active', active);
     }
 
-    private getBackgroundPosition(animal: Animal) {
-        const imagePosition = animal.type >= 20 ?
-            24 + (animal.type - 20) * 2 + animal.gender :
-            (animal.type - 1) * 2 + animal.gender;
-        const image_items_per_row = 10;
-        var row = Math.floor(imagePosition / image_items_per_row);
-        const xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-        const yBackgroundPercent = row * 100;
-        return `-${xBackgroundPercent}% -${yBackgroundPercent}%`;
-    }
-
     public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {
         const top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
         const id = `ferry-spot-${this.position}-animal${animal.id}`;
-        let html = `<div id="${id}" data-id="${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${this.getBackgroundPosition(animal)};`;
+        let html = `<div id="${id}" data-id="${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${getBackgroundPosition(animal)};`;
         
 
         if (originId) {

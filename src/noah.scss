@@ -120,3 +120,57 @@ html {
     width: 660px;
     max-width: 90vh;
 }
+
+#order-selector {
+  display: flex;
+  justify-content: center;
+
+  .order-card-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px;
+
+    .animal-card {
+      display: inline-block;
+      left: 25px;
+      width: 128px;
+      height: 179px;
+      background-image: url('img/cards.jpg');
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .selector {
+      position: relative;
+      background-image: url('img/select-card-order.svg');
+      width: 180px;
+      height: 110px;
+
+      .selector-arrow {
+        width: 100%;
+        height: 20px;
+        position: absolute;
+        cursor: pointer;
+
+        &[data-selected="true"] {
+          border: 1px solid red;
+          box-shadow: 0 0 2px 2px red;
+        }
+
+        &[data-number="1"] {
+          top: 7px;
+        }
+
+        &[data-number="2"] {
+          top: 30px;
+        }
+
+        &[data-number="3"] {
+          top: 52px;
+        }
+      }
+    }
+  }
+}

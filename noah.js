@@ -87,6 +87,16 @@ function setupAnimalCard(game, cardDiv, uniqueId) {
         game.addTooltipHtml(cardDiv.id, tooltip);
     }
 }
+function getBackgroundPosition(animal) {
+    var imagePosition = animal.type >= 20 ?
+        24 + (animal.type - 20) * 2 + animal.gender :
+        (animal.type - 1) * 2 + animal.gender;
+    var image_items_per_row = 10;
+    var row = Math.floor(imagePosition / image_items_per_row);
+    var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
+    var yBackgroundPercent = row * 100;
+    return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
+}
 function formatTextIcons(rawText) {
     return rawText
         .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
@@ -115,22 +125,12 @@ var FerrySpot = /** @class */ (function () {
     FerrySpot.prototype.setActive = function (active) {
         dojo.toggleClass("ferry-spot-" + this.position, 'active', active);
     };
-    FerrySpot.prototype.getBackgroundPosition = function (animal) {
-        var imagePosition = animal.type >= 20 ?
-            24 + (animal.type - 20) * 2 + animal.gender :
-            (animal.type - 1) * 2 + animal.gender;
-        var image_items_per_row = 10;
-        var row = Math.floor(imagePosition / image_items_per_row);
-        var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;
-        var yBackgroundPercent = row * 100;
-        return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
-    };
     FerrySpot.prototype.addAnimal = function (animal, originId, xShift) {
         var _this = this;
         if (xShift === void 0) { xShift = 0; }
         var top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
         var id = "ferry-spot-" + this.position + "-animal" + animal.id;
-        var html = "<div id=\"" + id + "\" data-id=\"" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + this.getBackgroundPosition(animal) + ";";
+        var html = "<div id=\"" + id + "\" data-id=\"" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + getBackgroundPosition(animal) + ";";
         if (originId) {
             var originBR = document.getElementById(originId).getBoundingClientRect();
             var destination = document.getElementById("center-board");
@@ -540,8 +540,43 @@ var Noah = /** @class */ (function () {
         this.table.makeCardsSelectable(args.animals);
     };
     Noah.prototype.onEnteringStateReorderTopDeck = function (args) {
-        // TODO make order selector like nicodemus project selector
-        throw new Error("Method not implemented.");
+        var _this = this;
+        var html = "<div id=\"order-selector\">";
+        args.topCards.forEach(function (animal, index) {
+            html += "\n            <div class=\"order-card-zone\">\n                <div id=\"order-card-zone-" + animal.id + "\" class=\"animal-card\" style=\"background-position: " + getBackgroundPosition(animal) + "\"></div>\n                <div id=\"order-card-zone-" + animal.id + "-selector\" class=\"selector\">";
+            for (var i = 1; i <= args.topCards.length; i++) {
+                html += "<div id=\"order-card-zone-" + animal.id + "-selector-" + i + "\" class=\"selector-arrow\" data-selected=\"" + (i == index + 1 ? 'true' : 'false') + "\" data-number=\"" + i + "\"></div>";
+            }
+            html += "\n                </div>\n            </div>";
+            _this.topDeckOrder[animal.id] = index + 1;
+        });
+        html += "</div>";
+        dojo.place(html, 'table', 'before');
+        args.topCards.forEach(function (animal) {
+            var _loop_2 = function (i) {
+                document.getElementById("order-card-zone-" + animal.id + "-selector-" + i).addEventListener('click', function () {
+                    return _this.orderSelectorClick(animal.id, i);
+                });
+            };
+            for (var i = 1; i <= args.topCards.length; i++) {
+                _loop_2(i);
+            }
+        });
+    };
+    Noah.prototype.orderSelectorClick = function (id, order) {
+        this.topDeckOrder[id] = order;
+        for (var i = 1; i <= Object.keys(this.topDeckOrder).length; i++) {
+            document.getElementById("order-card-zone-" + id + "-selector-" + i).dataset.selected = i === order ? 'true' : 'false';
+        }
+        var valid = true;
+        var _loop_3 = function (i) {
+            valid = valid && Object.values(this_2.topDeckOrder).some(function (val) { return Number(val) === i; });
+        };
+        var this_2 = this;
+        for (var i = 1; i <= Object.keys(this.topDeckOrder).length; i++) {
+            _loop_3(i);
+        }
+        dojo.toggleClass('reorderTopDeck-button', 'disabled', !valid);
     };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
@@ -563,6 +598,9 @@ var Noah = /** @class */ (function () {
                 break;
             case 'replaceOnTopDeck':
                 this.onLeavingStateReplaceOnTopDeck();
+                break;
+            case 'reorderTopDeck':
+                this.onLeavingStateReorderTopDeck();
                 break;
         }
     };
@@ -588,6 +626,9 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.onLeavingStateReplaceOnTopDeck = function () {
         this.table.endCardSelection();
+    };
+    Noah.prototype.onLeavingStateReorderTopDeck = function () {
+        dojo.destroy('order-selector');
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -857,19 +898,17 @@ var Noah = /** @class */ (function () {
         dojo.connect($('noah-help-button'), 'onclick', this, function () { return _this.showHelp(); });
     };
     Noah.prototype.showHelp = function () {
-        if (!this.helpDialog) {
-            this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create('noahHelpDialog');
-            this.helpDialog.setTitle(_("Cards help"));
-            var html = "\n            <div id=\"help-popin\">\n                <h1>" + _("Animal traits") + "</h1>\n                <div class=\"help-section help-animals\">\n                    <table>";
-            ANIMALS_WITH_TRAITS.forEach(function (number) { return html += "<tr><td><div id=\"animal" + number + "\" class=\"animal\"></div></td><td>" + getAnimalTooltip(number) + "</td></tr>"; });
-            html += "</table>\n                </div>\n                <h1>" + _("Bonus animal traits") + "</h1>\n                <div class=\"help-section help-animals\">\n                    <table>";
-            BONUS_ANIMALS_WITH_TRAITS.forEach(function (number) { return html += "<tr><td><div id=\"animal" + number + "\" class=\"animal\"></div></td><td>" + getAnimalTooltip(number) + "</td></tr>"; });
-            html += "</table>\n                </div>\n            </div>";
-            // Show the dialog
-            this.helpDialog.setContent(html);
-        }
-        this.helpDialog.show();
+        var helpDialog = new ebg.popindialog();
+        helpDialog.create('noahHelpDialog');
+        helpDialog.setTitle(_("Cards help"));
+        var html = "\n        <div id=\"help-popin\">\n            <h1>" + _("Animal traits") + "</h1>\n            <div class=\"help-section help-animals\">\n                <table>";
+        ANIMALS_WITH_TRAITS.forEach(function (number) { return html += "<tr><td><div id=\"animal" + number + "\" class=\"animal\"></div></td><td>" + getAnimalTooltip(number) + "</td></tr>"; });
+        html += "</table>\n            </div>\n            <h1>" + _("Bonus animal traits") + "</h1>\n            <div class=\"help-section help-animals\">\n                <table>";
+        BONUS_ANIMALS_WITH_TRAITS.forEach(function (number) { return html += "<tr><td><div id=\"animal" + number + "\" class=\"animal\"></div></td><td>" + getAnimalTooltip(number) + "</td></tr>"; });
+        html += "</table>\n            </div>\n        </div>";
+        // Show the dialog
+        helpDialog.setContent(html);
+        helpDialog.show();
     };
     Noah.prototype.removeAllBubbles = function () {
         Array.from(document.getElementsByClassName('choose-opponent-discussion_bubble')).forEach(function (elem) { return elem.parentElement.removeChild(elem); });

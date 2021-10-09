@@ -18,7 +18,6 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class Noah implements NoahGame {
     public gamedatas: NoahGamedatas;
-    private helpDialog: any;
 
     private playerHand: Stock;
     private table: Table;
@@ -212,8 +211,46 @@ class Noah implements NoahGame {
     }
 
     private onEnteringStateReorderTopDeck(args: EnteringReorderTopDeckArgs) {
-        // TODO make order selector like nicodemus project selector
-        throw new Error("Method not implemented.");
+        let html = `<div id="order-selector">`;
+        args.topCards.forEach((animal, index) => {
+            html += `
+            <div class="order-card-zone">
+                <div id="order-card-zone-${animal.id}" class="animal-card" style="background-position: ${getBackgroundPosition(animal)}"></div>
+                <div id="order-card-zone-${animal.id}-selector" class="selector">`;
+            for (let i=1; i<=args.topCards.length; i++) {
+                html += `<div id="order-card-zone-${animal.id}-selector-${i}" class="selector-arrow" data-selected="${i == index + 1 ? 'true' : 'false'}" data-number="${i}"></div>`;
+            }
+            html += `
+                </div>
+            </div>`;
+
+            this.topDeckOrder[animal.id] = index + 1;
+        });
+        html += `</div>`;
+        dojo.place(html, 'table', 'before');
+
+        args.topCards.forEach(animal => {
+            for (let i=1; i<=args.topCards.length; i++) {
+                document.getElementById(`order-card-zone-${animal.id}-selector-${i}`).addEventListener('click', () => 
+                    this.orderSelectorClick(animal.id, i)
+                );
+            }
+        });
+    }
+
+    private orderSelectorClick(id: number, order: number) {
+        this.topDeckOrder[id] = order;
+        for (let i=1; i<=Object.keys(this.topDeckOrder).length; i++) {
+            document.getElementById(`order-card-zone-${id}-selector-${i}`).dataset.selected = i === order ? 'true' : 'false';
+        }
+
+        let valid = true;
+
+        for (let i=1; i<=Object.keys(this.topDeckOrder).length; i++) {
+            valid = valid && Object.values(this.topDeckOrder).some(val => Number(val) === i);
+        }
+        
+        dojo.toggleClass('reorderTopDeck-button', 'disabled', !valid);
     }
 
     // onLeavingState: this method is called each time we are leaving a game state.
@@ -237,6 +274,9 @@ class Noah implements NoahGame {
                 break;
             case 'replaceOnTopDeck':
                 this.onLeavingStateReplaceOnTopDeck();
+                break;
+            case 'reorderTopDeck':
+                this.onLeavingStateReorderTopDeck();
                 break;
         }
     }
@@ -267,6 +307,10 @@ class Noah implements NoahGame {
 
     onLeavingStateReplaceOnTopDeck() {
         this.table.endCardSelection();
+    }
+
+    onLeavingStateReorderTopDeck() {
+        dojo.destroy('order-selector');
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -585,32 +629,30 @@ class Noah implements NoahGame {
     }
 
     private showHelp() {
-        if (!this.helpDialog) {
-            this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create( 'noahHelpDialog' );
-            this.helpDialog.setTitle( _("Cards help") );
-            
-            var html = `
-            <div id="help-popin">
-                <h1>${_("Animal traits")}</h1>
-                <div class="help-section help-animals">
-                    <table>`;
-                ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
-                html += `</table>
-                </div>
-                <h1>${_("Bonus animal traits")}</h1>
-                <div class="help-section help-animals">
-                    <table>`;
-                BONUS_ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
-                html += `</table>
-                </div>
-            </div>`;
-            
-            // Show the dialog
-            this.helpDialog.setContent(html);
-        }
+        const helpDialog = new ebg.popindialog();
+        helpDialog.create( 'noahHelpDialog' );
+        helpDialog.setTitle( _("Cards help") );
+        
+        var html = `
+        <div id="help-popin">
+            <h1>${_("Animal traits")}</h1>
+            <div class="help-section help-animals">
+                <table>`;
+            ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+            html += `</table>
+            </div>
+            <h1>${_("Bonus animal traits")}</h1>
+            <div class="help-section help-animals">
+                <table>`;
+            BONUS_ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+            html += `</table>
+            </div>
+        </div>`;
+        
+        // Show the dialog
+        helpDialog.setContent(html);
 
-        this.helpDialog.show();
+        helpDialog.show();
     }
 
     public removeAllBubbles() {
