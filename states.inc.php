@@ -105,6 +105,8 @@ $playerActionsGameStates = [
             "chooseGender" => ST_PLAYER_CHOOSE_GENDER,
             "chooseWeight" => ST_PLAYER_CHOOSE_WEIGHT,
             "chooseOpponent" => ST_PLAYER_CHOOSE_OPPONENT,
+            "reorderTopDeck" => ST_PLAYER_REORDER_TOP_DECK,
+            "replaceOnTopDeck" => ST_PLAYER_REPLACE_ON_TOP_DECK,
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
             "zombiePass" => ST_NEXT_PLAYER,
         ]
@@ -132,6 +134,37 @@ $playerActionsGameStates = [
         "args" => "argChooseWeight",  
         "possibleactions" => [ 
             "setWeight",
+        ],
+        "transitions" => [
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_REORDER_TOP_DECK => [
+        "name" => "reorderTopDeck",
+        "description" => clienttranslate('${actplayer} must reorder top deck cards'),
+        "descriptionmyturn" => clienttranslate('${you} must reorder top deck cards'),
+        "type" => "activeplayer",    
+        "args" => "argReorderTopDeck",  
+        "possibleactions" => [ 
+            "reorderTopDeck",
+        ],
+        "transitions" => [
+            "moveNoah" => ST_PLAYER_MOVE_NOAH,
+            "zombiePass" => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_PLAYER_REPLACE_ON_TOP_DECK => [
+        "name" => "replaceOnTopDeck",
+        "description" => clienttranslate('${actplayer} can replace an animal on top of the deck'),
+        "descriptionmyturn" => clienttranslate('${you} can replace an animal on top of the deck'),
+        "type" => "activeplayer",  
+        "args" => "argReplaceOnTopDeck",  
+        "possibleactions" => [ 
+            "replaceOnTopDeck",
+            "skipReplaceOnTopDeck",
         ],
         "transitions" => [
             "moveNoah" => ST_PLAYER_MOVE_NOAH,

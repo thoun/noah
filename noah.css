@@ -66,6 +66,14 @@
   height: 179px;
   background-image: url("img/cards.jpg");
   border-radius: 10px;
+  pointer-events: none;
+}
+#table .ferry-spot .animal-card.unselectable {
+  filter: contrast(0.6);
+}
+#table .ferry-spot .animal-card.selectable {
+  pointer-events: all;
+  cursor: pointer;
 }
 #table #center-board {
   position: relative;

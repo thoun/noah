@@ -31,6 +31,7 @@ class Noah implements NoahGame {
     private cardsToGive: number;
     private giveCardsTo: Map<number, number>; // key = card id, value = toPlayerId
     private opponentsIds: number[];
+    private topDeckOrder = {};
 
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -127,6 +128,12 @@ class Noah implements NoahGame {
                 this.clickAction = 'lion';
                 this.onEnteringStateGiveCard();
                 break;
+            case 'reorderTopDeck':
+                this.onEnteringStateReorderTopDeck(args.args);
+                break;
+            case 'replaceOnTopDeck':
+                this.onEnteringStateReplaceOnTopDeck(args.args);
+                break;
         }
     }
     
@@ -200,6 +207,15 @@ class Noah implements NoahGame {
         });
     }
 
+    private onEnteringStateReplaceOnTopDeck(args: EnteringReplaceOnTopDeckArgs) {
+        this.table.makeCardsSelectable(args.animals);
+    }
+
+    private onEnteringStateReorderTopDeck(args: EnteringReorderTopDeckArgs) {
+        // TODO make order selector like nicodemus project selector
+        throw new Error("Method not implemented.");
+    }
+
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
     //
@@ -218,6 +234,9 @@ class Noah implements NoahGame {
                 break;
             case 'giveCard':
                 this.onLeavingStateGiveCard();
+                break;
+            case 'replaceOnTopDeck':
+                this.onLeavingStateReplaceOnTopDeck();
                 break;
         }
     }
@@ -244,6 +263,10 @@ class Noah implements NoahGame {
     onLeavingStateGiveCard() {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
+    }
+
+    onLeavingStateReplaceOnTopDeck() {
+        this.table.endCardSelection();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -287,9 +310,17 @@ class Noah implements NoahGame {
                     (this as any).addActionButton('giveCards-button', this.getGiveCardsButtonText(), () => this.giveCards());
                     dojo.addClass('giveCards-button', 'disabled');
                     break;
+
+                case 'reorderTopDeck':
+                    (this as any).addActionButton('reorderTopDeck-button', _('Replace on top deck'), () => this.reorderTopDeck());
+                    break;
+
+                case 'replaceOnTopDeck':
+                    (this as any).addActionButton('skipReplaceOnTopDeck-button', _('Skip'), () => this.skipReplaceOnTopDeck());
+                    break;
             }
         }
-    }    
+    }
 
     ///////////////////////////////////////////////////
     //// Utility methods
@@ -501,6 +532,40 @@ class Noah implements NoahGame {
         this.takeAction('giveCards', {
             giveCardsTo: base64
         });
+    }
+
+    private reorderTopDeck() {
+        if(!(this as any).checkAction('reorderTopDeck')) {
+            return;
+        }
+
+        const base64 = btoa(JSON.stringify(this.topDeckOrder));
+
+        this.takeAction('reorderTopDeck', {
+            reorderTopDeck: base64
+        });
+    }
+    
+    public tableCardSelected(id: number): void {
+        this.replaceOnTopDeck(id);
+    }
+
+    private replaceOnTopDeck(id: number) {
+        if(!(this as any).checkAction('replaceOnTopDeck')) {
+            return;
+        }
+        
+        this.takeAction('replaceOnTopDeck', {
+            id
+        });
+    }
+
+    private skipReplaceOnTopDeck() {
+        if(!(this as any).checkAction('skipReplaceOnTopDeck')) {
+            return;
+        }
+
+        this.takeAction('skipReplaceOnTopDeck');
     }
 
     public takeAction(action: string, data?: any) {
@@ -733,14 +798,22 @@ class Noah implements NoahGame {
         // TODO animate
     }
 
-    notif_animalGivenFromFerry(notif: Notif<NotifAnimalGivenArgs>) {
-        if (this.getPlayerId() == notif.args.toPlayerId) {
-            const animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
-        }
-        this.table.removeFirstAnimalFromFerry();
+    notif_animalGivenFromFerry(notif: Notif<NotifAnimalGivenFromFerryArgs>) {
+        if (!notif.args.toPlayerId) { // lion in solo mode
+            const animal = notif.args.animal;
 
-        // TODO animate
+            this.table.removeAnimalToDeck(animal);
+
+        } else {
+
+            if (this.getPlayerId() == notif.args.toPlayerId) {
+                const animal = notif.args.animal;
+                this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
+            }
+            this.table.removeFirstAnimalFromFerry();
+
+            // TODO animate
+        }
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {

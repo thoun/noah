@@ -54,6 +54,7 @@ interface NoahGamedatas {
 interface NoahGame extends Game {
     gamedatas: NoahGamedatas;
     moveNoah(destination: number): void;
+    tableCardSelected(id: number): void;
 }
 
 interface EnteringLoadAnimalArgs {
@@ -82,6 +83,14 @@ interface EnteringOptimalLoadingGiveCardsArgs {
 
 interface EnteringLookCardsArgs {
     opponentId: number;
+    animals: Animal[];
+}
+
+interface EnteringReorderTopDeckArgs {
+    topCards: Animal[];
+}
+
+interface EnteringReplaceOnTopDeckArgs {
     animals: Animal[];
 }
 
@@ -130,7 +139,7 @@ interface NotifAnimalGivenArgs {
 
 interface NotifAnimalGivenFromFerryArgs {
     playerId: number;
-    toPlayerId: number;
+    toPlayerId?: number;
     animal: Animal;
 }
 

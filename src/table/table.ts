@@ -196,4 +196,22 @@ class Table {
             this.spots[i].newRound(ferries[i]);
         }
     }
+
+    public removeAnimalToDeck(animal: Animal) {
+        this.spots[Number(animal.location.replace('table', ''))].removeAnimalToDeck(animal);
+    }
+    
+    public makeCardsSelectable(animals: Animal[]) {
+        (Array.from(document.getElementsByClassName('animal-card')) as HTMLDivElement[]).forEach(elem => {
+            const elemAnimalId = Number(elem.dataset.id);
+            elem.classList.add(animals.some(animal => animal.id == elemAnimalId) ? 'selectable' : 'unselectable');
+        });
+    }
+    
+    public endCardSelection() {
+        (Array.from(document.getElementsByClassName('animal-card')) as HTMLDivElement[]).forEach(elem => {
+            elem.classList.remove('selectable');
+            elem.classList.remove('unselectable');
+        });
+    }
 }

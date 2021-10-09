@@ -161,4 +161,49 @@ trait ArgsTrait {
             'opponentsIds' => $opponentsIds,
         ];
     }
+    
+    function argReorderTopDeck() {
+        $topCards = $this->getAnimalsFromDb($this->animals->getCardsOnTop(3, 'deck'));
+
+        return [
+            'topCards' => $topCards,
+        ];
+    }
+
+    private function getPossibleCardsToReplaceOnTopDeck(int $position) {
+        $animals = [];
+        $ferryAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.$position, null, 'location_arg'));
+        $animalCount = count($ferryAnimals);
+
+        // 2 or less, can replace any
+        if ($animalCount <= 2) {
+            return $ferryAnimals;
+        }
+
+        // same gender, can replace any
+        if ($ferry->animals[$animalCount - 1]->gender == $ferry->animals[$animalCount - 2]->gender) {
+            return $ferryAnimals;
+        }
+
+        // more than 2 and alternate gender, can replace first or last
+        return [$ferry->animals[0], $ferry->animals[$animalCount - 1]];
+    }
+    
+    function argReplaceOnTopDeck() {
+        $animals = [];
+
+        for ($position=0; $position<5; $position++) {
+            $animals = array_merge($animals, $this->getPossibleCardsToReplaceOnTopDeck($position));
+        }
+
+        $currentPositionAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.self::getGameStateValue(LAST_LOADED_ANIMAL_POSITION), null, 'location_arg'));
+        $lionId = $currentPositionAnimals[count($currentPositionAnimals)-1]->id;
+
+        $animals = array_values(array_filter($animals, function($animal) use ($lionId) { return $animal->id != $lionId; }));
+
+        return [
+            'animals' => $animals,
+        ];
+    }
+
 }

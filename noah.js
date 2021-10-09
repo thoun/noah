@@ -126,9 +126,11 @@ var FerrySpot = /** @class */ (function () {
         return "-" + xBackgroundPercent + "% -" + yBackgroundPercent + "%";
     };
     FerrySpot.prototype.addAnimal = function (animal, originId, xShift) {
+        var _this = this;
         if (xShift === void 0) { xShift = 0; }
         var top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
-        var html = "<div id=\"ferry-spot-" + this.position + "-animal" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + this.getBackgroundPosition(animal) + ";";
+        var id = "ferry-spot-" + this.position + "-animal" + animal.id;
+        var html = "<div id=\"" + id + "\" data-id=\"" + animal.id + "\" class=\"animal-card\" style=\"top: " + top + "px; background-position: " + this.getBackgroundPosition(animal) + ";";
         if (originId) {
             var originBR = document.getElementById(originId).getBoundingClientRect();
             var destination = document.getElementById("center-board");
@@ -144,6 +146,7 @@ var FerrySpot = /** @class */ (function () {
         html += "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
+        document.getElementById(id).addEventListener('click', function () { return _this.game.tableCardSelected(animal.id); });
         if (originId) {
             var card_1 = document.getElementById("ferry-spot-" + this.position + "-animal" + animal.id);
             card_1.style.transition = "transform 0.5s";
@@ -192,6 +195,12 @@ var FerrySpot = /** @class */ (function () {
         this.removeAnimals();
         ferry.animals.forEach(function (animal) { return _this.addAnimal(animal, 'topbar'); });
         this.updateCounter();
+    };
+    FerrySpot.prototype.removeAnimalToDeck = function (animal) {
+        var _this = this;
+        this.animals.splice(this.animals.findIndex(function (a) { return a.id == animal.id; }), 1);
+        dojo.destroy("ferry-spot-" + this.position + "-animal" + animal.id);
+        this.animals.forEach(function (animal, index) { return document.getElementById("ferry-spot-" + _this.position + "-animal" + animal.id).style.top = FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP + "px"; });
     };
     return FerrySpot;
 }());
@@ -347,6 +356,21 @@ var Table = /** @class */ (function () {
             this.spots[i].newRound(ferries[i]);
         }
     };
+    Table.prototype.removeAnimalToDeck = function (animal) {
+        this.spots[Number(animal.location.replace('table', ''))].removeAnimalToDeck(animal);
+    };
+    Table.prototype.makeCardsSelectable = function (animals) {
+        Array.from(document.getElementsByClassName('animal-card')).forEach(function (elem) {
+            var elemAnimalId = Number(elem.dataset.id);
+            elem.classList.add(animals.some(function (animal) { return animal.id == elemAnimalId; }) ? 'selectable' : 'unselectable');
+        });
+    };
+    Table.prototype.endCardSelection = function () {
+        Array.from(document.getElementsByClassName('animal-card')).forEach(function (elem) {
+            elem.classList.remove('selectable');
+            elem.classList.remove('unselectable');
+        });
+    };
     return Table;
 }());
 var ANIMATION_MS = 500;
@@ -359,6 +383,7 @@ var Noah = /** @class */ (function () {
     function Noah() {
         this.zoom = 1;
         this.clickAction = 'load';
+        this.topDeckOrder = {};
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
@@ -443,6 +468,12 @@ var Noah = /** @class */ (function () {
                 this.clickAction = 'lion';
                 this.onEnteringStateGiveCard();
                 break;
+            case 'reorderTopDeck':
+                this.onEnteringStateReorderTopDeck(args.args);
+                break;
+            case 'replaceOnTopDeck':
+                this.onEnteringStateReplaceOnTopDeck(args.args);
+                break;
         }
     };
     Noah.prototype.setGamestateDescription = function (property) {
@@ -505,6 +536,13 @@ var Noah = /** @class */ (function () {
             viewCardsDialog.destroy();
         });
     };
+    Noah.prototype.onEnteringStateReplaceOnTopDeck = function (args) {
+        this.table.makeCardsSelectable(args.animals);
+    };
+    Noah.prototype.onEnteringStateReorderTopDeck = function (args) {
+        // TODO make order selector like nicodemus project selector
+        throw new Error("Method not implemented.");
+    };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
     //
@@ -522,6 +560,9 @@ var Noah = /** @class */ (function () {
                 break;
             case 'giveCard':
                 this.onLeavingStateGiveCard();
+                break;
+            case 'replaceOnTopDeck':
+                this.onLeavingStateReplaceOnTopDeck();
                 break;
         }
     };
@@ -544,6 +585,9 @@ var Noah = /** @class */ (function () {
     Noah.prototype.onLeavingStateGiveCard = function () {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
+    };
+    Noah.prototype.onLeavingStateReplaceOnTopDeck = function () {
+        this.table.endCardSelection();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -582,6 +626,12 @@ var Noah = /** @class */ (function () {
                     this.onEnteringStateOptimalLoadingGiveCards(args);
                     this.addActionButton('giveCards-button', this.getGiveCardsButtonText(), function () { return _this.giveCards(); });
                     dojo.addClass('giveCards-button', 'disabled');
+                    break;
+                case 'reorderTopDeck':
+                    this.addActionButton('reorderTopDeck-button', _('Replace on top deck'), function () { return _this.reorderTopDeck(); });
+                    break;
+                case 'replaceOnTopDeck':
+                    this.addActionButton('skipReplaceOnTopDeck-button', _('Skip'), function () { return _this.skipReplaceOnTopDeck(); });
                     break;
             }
         }
@@ -764,6 +814,32 @@ var Noah = /** @class */ (function () {
         this.takeAction('giveCards', {
             giveCardsTo: base64
         });
+    };
+    Noah.prototype.reorderTopDeck = function () {
+        if (!this.checkAction('reorderTopDeck')) {
+            return;
+        }
+        var base64 = btoa(JSON.stringify(this.topDeckOrder));
+        this.takeAction('reorderTopDeck', {
+            reorderTopDeck: base64
+        });
+    };
+    Noah.prototype.tableCardSelected = function (id) {
+        this.replaceOnTopDeck(id);
+    };
+    Noah.prototype.replaceOnTopDeck = function (id) {
+        if (!this.checkAction('replaceOnTopDeck')) {
+            return;
+        }
+        this.takeAction('replaceOnTopDeck', {
+            id: id
+        });
+    };
+    Noah.prototype.skipReplaceOnTopDeck = function () {
+        if (!this.checkAction('skipReplaceOnTopDeck')) {
+            return;
+        }
+        this.takeAction('skipReplaceOnTopDeck');
     };
     Noah.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -955,12 +1031,18 @@ var Noah = /** @class */ (function () {
         // TODO animate
     };
     Noah.prototype.notif_animalGivenFromFerry = function (notif) {
-        if (this.getPlayerId() == notif.args.toPlayerId) {
-            var animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
+        if (!notif.args.toPlayerId) { // lion in solo mode
+            var animal = notif.args.animal;
+            this.table.removeAnimalToDeck(animal);
         }
-        this.table.removeFirstAnimalFromFerry();
-        // TODO animate
+        else {
+            if (this.getPlayerId() == notif.args.toPlayerId) {
+                var animal = notif.args.animal;
+                this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
+            }
+            this.table.removeFirstAnimalFromFerry();
+            // TODO animate
+        }
     };
     Noah.prototype.notif_departure = function (notif) {
         this.table.departure(notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);

@@ -100,7 +100,6 @@ trait ActionTrait {
                 self::incStat(1, $stat, $playerId);
             }
         }
-        
 
         self::incStat(1, 'playedCards');
         self::incStat(1, 'playedCards', $playerId);
@@ -121,13 +120,28 @@ trait ActionTrait {
         self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
 
         if ($animal->power == POWER_LOOK_CARDS) {
-            self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
-
-            $this->gamestate->nextState('chooseOpponent');
+            $soloMode = $this->isSoloMode(); 
+            if ($soloMode) {
+                $this->gamestate->nextState('reorderTopDeck');
+            } else {
+                self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
+    
+                $this->gamestate->nextState('chooseOpponent');
+            }
         } else if ($animal->power == POWER_EXCHANGE_CARD) {
-            self::setGameStateValue(EXCHANGE_CARD, 1);
+            $soloMode = $this->isSoloMode(); 
+            if ($soloMode) {
 
-            $this->gamestate->nextState('chooseOpponent');
+                if (count($this->argReplaceOnTopDeck()['animals']) > 0) {
+                    $this->gamestate->nextState('replaceOnTopDeck');
+                } else {
+                    $this->gamestate->nextState('moveNoah');
+                }
+            } else {
+                self::setGameStateValue(EXCHANGE_CARD, 1);
+
+                $this->gamestate->nextState('chooseOpponent');
+            }
         } else {
             $this->gamestate->nextState('moveNoah');
         }
@@ -259,8 +273,7 @@ trait ActionTrait {
         }
     }
 
-    function updateIndexesForFerry($overIndex = 0) {
-        $position = $this->getNoahPosition();
+    function updateIndexesForFerry(int $position, $overIndex = 0) {
         $location = 'table'.$position;
         self::DbQuery("UPDATE animal SET `card_location_arg` = `card_location_arg` - 1 where `card_location` = '$location' and `card_location_arg` > $overIndex");
     }
@@ -271,7 +284,8 @@ trait ActionTrait {
             $playerId = intval(self::getActivePlayerId());
 
             $this->animals->moveCard($animal->id, 'hand', $toPlayerId);
-            $this->updateIndexesForFerry();
+            $position = $this->getNoahPosition();
+            $this->updateIndexesForFerry($position);
             
             self::notifyAllPlayers('animalGivenFromFerry', clienttranslate('${player_name} makes first animal of ferry flee to ${player_name2}\'s hand'), [
                 'playerId' => $playerId,
@@ -314,5 +328,39 @@ trait ActionTrait {
         self::checkAction('seen');
 
         $this->gamestate->nextState('seen');
+    }
+
+    public function reorderTopDeck(array $reorderTopDeck) {
+        self::checkAction('reorderTopDeck');
+
+        foreach($reorderTopDeck as $id => $position) {
+            $locationArg = 1000 - $position;
+            self::DbQuery("UPDATE animal SET `card_location_arg` = $locationArg where `card_id` = $id");
+        }
+
+        $this->gamestate->nextState('moveNoah');
+    }
+        
+    public function replaceOnTopDeck(int $cardId) {
+        self::checkAction('replaceOnTopDeck');
+
+        $animal = $this->getAnimalFromDb($this->animals->getCard($cardId));
+        $position = intval(str_replace('table', '', $animal->location));
+        $locationArg = $animal->location_arg;
+        
+        $this->animals->moveCard($animal->id, 'deck', intval($this->animals->countCardInLocation('deck')) + 1);
+        $this->updateIndexesForFerry($position, $locationArg);
+            
+        self::notifyAllPlayers('animalGivenFromFerry', '', [
+            'animal' => $animal,
+        ]);
+
+        $this->gamestate->nextState('moveNoah');
+    }
+        
+    public function skipReplaceOnTopDeck() {
+        self::checkAction('skipReplaceOnTopDeck');
+
+        $this->gamestate->nextState('moveNoah');
     }
 }

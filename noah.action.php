@@ -143,6 +143,35 @@
         self::ajaxResponse();
     }
 
-}
-  
+    public function reorderTopDeck() {
+        self::setAjaxMode();
 
+        $reorderTopDeck = array_filter(
+            json_decode(base64_decode(self::getArg("reorderTopDeck", AT_base64, true)), true),
+            function($value) { return $value !== null; }
+        );
+
+        $this->game->reorderTopDeck($reorderTopDeck);
+
+        self::ajaxResponse();
+    }
+  	
+    public function replaceOnTopDeck() {
+        self::setAjaxMode();
+
+        $id = self::getArg("id", AT_posint, true);
+
+        $this->game->replaceOnTopDeck($id);
+
+        self::ajaxResponse();
+    }
+  	
+    public function skipReplaceOnTopDeck() {
+        self::setAjaxMode();
+
+        $this->game->skipReplaceOnTopDeck();
+
+        self::ajaxResponse();
+    }
+
+}

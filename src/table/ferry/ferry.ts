@@ -46,7 +46,8 @@ class FerrySpot {
 
     public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {
         const top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
-        let html = `<div id="ferry-spot-${this.position}-animal${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${this.getBackgroundPosition(animal)};`;
+        const id = `ferry-spot-${this.position}-animal${animal.id}`;
+        let html = `<div id="${id}" data-id="${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${this.getBackgroundPosition(animal)};`;
         
 
         if (originId) {
@@ -68,6 +69,8 @@ class FerrySpot {
         this.animals.push(animal);
 
         dojo.place(html, `ferry-spot-${this.position}`);
+        
+        document.getElementById(id).addEventListener('click', () => this.game.tableCardSelected(animal.id));
 
         if (originId) {
             const card = document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`);
@@ -122,5 +125,12 @@ class FerrySpot {
         ferry.animals.forEach(animal => this.addAnimal(animal, 'topbar'));
 
         this.updateCounter();
+    }
+
+    public removeAnimalToDeck(animal: Animal) {
+        this.animals.splice(this.animals.findIndex(a => a.id == animal.id), 1);
+
+        dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`);
+        this.animals.forEach((animal, index) => document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`).style.top = `${FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP}px`);
     }
 }
