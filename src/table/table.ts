@@ -185,9 +185,9 @@ class Table {
 
         this.setRemainingFerries(remainingFerries);
 
-        this.spots[position].departure(newFerry);
+        this.spots[position].departure();
         // ferry is destroy, we build a new one
-        this.spots[position] = new FerrySpot(this.game, position, newFerry);
+        this.spots[position] = new FerrySpot(this.game, position, newFerry, true);
 
 
         this.updateMargins();

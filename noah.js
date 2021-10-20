@@ -104,17 +104,21 @@ function formatTextIcons(rawText) {
 var CARD_OVERLAP = 30;
 var FIRST_ANIMAL_SHIFT = 28;
 var FerrySpot = /** @class */ (function () {
-    function FerrySpot(game, position, ferry) {
+    function FerrySpot(game, position, ferry, withAnimation) {
         var _this = this;
+        if (withAnimation === void 0) { withAnimation = false; }
         var _a;
         this.game = game;
         this.position = position;
         this.animals = [];
         this.empty = false;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot position" + position + "\">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot\" " + (withAnimation ? '' : " style=\"transform: " + this.getFerryTransform() + "\"") + ">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
         html += "</div>";
         dojo.place(html, 'center-board');
         dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
+        if (withAnimation) {
+            setTimeout(function () { return document.getElementById("ferry-spot-" + position).style.transform = _this.getFerryTransform(); });
+        }
         if (ferry) {
             (_a = ferry.animals) === null || _a === void 0 ? void 0 : _a.forEach(function (animal) { return _this.addAnimal(animal); });
         }
@@ -123,6 +127,10 @@ var FerrySpot = /** @class */ (function () {
         }
         this.updateCounter();
     }
+    FerrySpot.prototype.getFerryTransform = function () {
+        var angle = 72 * this.position + 90;
+        return "rotate(" + (angle > 180 ? angle - 360 : angle) + "deg) translateY(222px)";
+    };
     FerrySpot.prototype.setActive = function (active) {
         dojo.toggleClass("ferry-spot-" + this.position, 'active', active);
     };
@@ -168,20 +176,7 @@ var FerrySpot = /** @class */ (function () {
             this.animals.forEach(function (animal, index) { return document.getElementById("ferry-spot-" + _this.position + "-animal" + animal.id).style.top = FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP + "px"; });
         }
     };
-    FerrySpot.prototype.departure = function (newFerry) {
-        /*// TODO animate
-        this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
-        this.animals = [];
-
-        if (newFerry) {
-            dojo.toggleClass(`ferry-spot-${this.position}-ferry-card`, 'roomates', newFerry.roomates);
-        } else {
-            this.empty = true;
-            dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
-        }
-
-        this.updateCounter();*/
-        console.log("[id^=\"ferry-spot-" + this.position + "\"]", document.querySelectorAll("[id^=\"ferry-spot-" + this.position + "\"]"));
+    FerrySpot.prototype.departure = function () {
         Array.from(document.querySelectorAll("[id^=\"ferry-spot-" + this.position + "\"]")).forEach(function (elem) {
             return elem.id = "departure-" + elem.id;
         });
@@ -356,9 +351,9 @@ var Table = /** @class */ (function () {
             dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
         }
         this.setRemainingFerries(remainingFerries);
-        this.spots[position].departure(newFerry);
+        this.spots[position].departure();
         // ferry is destroy, we build a new one
-        this.spots[position] = new FerrySpot(this.game, position, newFerry);
+        this.spots[position] = new FerrySpot(this.game, position, newFerry, true);
         this.updateMargins();
     };
     Table.prototype.newRound = function (ferries) {

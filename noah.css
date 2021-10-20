@@ -30,21 +30,6 @@
   right: 5px;
   top: 5px;
 }
-#table .ferry-spot.position0 {
-  transform: rotate(90deg) translateY(222px);
-}
-#table .ferry-spot.position1 {
-  transform: rotate(162deg) translateY(222px);
-}
-#table .ferry-spot.position2 {
-  transform: rotate(234deg) translateY(222px);
-}
-#table .ferry-spot.position3 {
-  transform: rotate(306deg) translateY(222px);
-}
-#table .ferry-spot.position4 {
-  transform: rotate(378deg) translateY(222px);
-}
 #table .ferry-spot .ferry-card {
   background: url("img/ferry.jpg");
   width: 179px;

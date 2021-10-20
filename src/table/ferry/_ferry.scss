@@ -21,12 +21,6 @@
       right: 5px;
       top: 5px;
     }
-
-    @for $i from 0 through 4 {
-      &.position#{$i} {
-          transform: rotate(#{72 * $i + 90}deg) translateY(222px);
-      }
-    }
   
     .ferry-card {
       background: url('img/ferry.jpg');

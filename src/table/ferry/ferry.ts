@@ -10,9 +10,10 @@ class FerrySpot {
         private game: NoahGame,
         public position: number,
         ferry: Ferry,
+        withAnimation: boolean = false
     ) { 
         let html = `
-        <div id="ferry-spot-${position}" class="ferry-spot position${position}">
+        <div id="ferry-spot-${position}" class="ferry-spot" ${withAnimation ? '' : ` style="transform: ${this.getFerryTransform()}"`}>
             <div id="ferry-spot-${position}-ferry-card" class="stockitem ferry-card"></div>
             <div id="ferry-spot-${position}-weight-indicator" class="weight-indicator remaining-counter"></div>         
         `;
@@ -21,12 +22,21 @@ class FerrySpot {
         dojo.place(html, 'center-board');
         dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);
 
+        if (withAnimation) {
+            setTimeout(() => document.getElementById(`ferry-spot-${position}`).style.transform = this.getFerryTransform());
+        }
+
         if (ferry) {
             ferry.animals?.forEach(animal => this.addAnimal(animal));
         } else {
             this.empty = true;
         }
         this.updateCounter();
+    }
+
+    private getFerryTransform() {
+        const angle = 72 * this.position + 90;
+        return `rotate(${angle > 180 ? angle-360 : angle}deg) translateY(222px)`;
     }
 
     public setActive(active: boolean): void {
@@ -84,21 +94,7 @@ class FerrySpot {
         }
     }
 
-    public departure(newFerry: Ferry) {
-        /*// TODO animate
-        this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
-        this.animals = [];
-
-        if (newFerry) {
-            dojo.toggleClass(`ferry-spot-${this.position}-ferry-card`, 'roomates', newFerry.roomates);
-        } else {
-            this.empty = true;
-            dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
-        }
-
-        this.updateCounter();*/
-
-        console.log(`[id^="ferry-spot-${this.position}"]`, document.querySelectorAll(`[id^="ferry-spot-${this.position}"]`));
+    public departure() {
         (Array.from(document.querySelectorAll(`[id^="ferry-spot-${this.position}"]`)) as HTMLDivElement[]).forEach(elem => 
             elem.id = `departure-${elem.id}`
         );
