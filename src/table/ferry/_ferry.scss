@@ -5,7 +5,7 @@
     width: 185px;
     transform-origin: top center;
     border-radius: 10px;
-    transition: box-shadow 0.5s, background-color 0.5s;
+    transition: box-shadow 0.5s, background-color 0.5s, transform 1s ease-in, opacity 1s ease-in;
 
     &.active {
       background-color: #FFFFFFBB;

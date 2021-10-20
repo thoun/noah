@@ -859,7 +859,7 @@ class Noah implements NoahGame {
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
-        this.table.departure(notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
     }
     
     notif_removedCard(notif: Notif<NotifRemovedCardArgs>) {

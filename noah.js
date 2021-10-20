@@ -106,6 +106,7 @@ var FIRST_ANIMAL_SHIFT = 28;
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry) {
         var _this = this;
+        var _a;
         this.game = game;
         this.position = position;
         this.animals = [];
@@ -115,7 +116,7 @@ var FerrySpot = /** @class */ (function () {
         dojo.place(html, 'center-board');
         dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
         if (ferry) {
-            ferry.animals.forEach(function (animal) { return _this.addAnimal(animal); });
+            (_a = ferry.animals) === null || _a === void 0 ? void 0 : _a.forEach(function (animal) { return _this.addAnimal(animal); });
         }
         else {
             this.empty = true;
@@ -168,18 +169,26 @@ var FerrySpot = /** @class */ (function () {
         }
     };
     FerrySpot.prototype.departure = function (newFerry) {
-        var _this = this;
-        // TODO animate
-        this.animals.forEach(function (animal) { return dojo.destroy("ferry-spot-" + _this.position + "-animal" + animal.id); });
+        /*// TODO animate
+        this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
         this.animals = [];
+
         if (newFerry) {
-            dojo.toggleClass("ferry-spot-" + this.position + "-ferry-card", 'roomates', newFerry.roomates);
-        }
-        else {
+            dojo.toggleClass(`ferry-spot-${this.position}-ferry-card`, 'roomates', newFerry.roomates);
+        } else {
             this.empty = true;
-            dojo.addClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
+            dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
         }
-        this.updateCounter();
+
+        this.updateCounter();*/
+        console.log("[id^=\"ferry-spot-" + this.position + "\"]", document.querySelectorAll("[id^=\"ferry-spot-" + this.position + "\"]"));
+        Array.from(document.querySelectorAll("[id^=\"ferry-spot-" + this.position + "\"]")).forEach(function (elem) {
+            return elem.id = "departure-" + elem.id;
+        });
+        var spotDiv = document.getElementById("departure-ferry-spot-" + this.position);
+        spotDiv.addEventListener('transitionend', function () { return spotDiv.parentElement.removeChild(spotDiv); });
+        spotDiv.style.transform = "rotate(" + (72 * this.position + 90) + "deg) translateY(1500px)";
+        spotDiv.style.opacity = '0';
     };
     FerrySpot.prototype.updateCounter = function () {
         var text = '';
@@ -342,12 +351,14 @@ var Table = /** @class */ (function () {
         document.getElementById('ferry-deck').style.visibility = visibility;
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     };
-    Table.prototype.departure = function (topFerry, newFerry, remainingFerries) {
+    Table.prototype.departure = function (position, topFerry, newFerry, remainingFerries) {
         if (topFerry) {
             dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
         }
         this.setRemainingFerries(remainingFerries);
-        this.spots[this.noahPosition].departure(newFerry);
+        this.spots[position].departure(newFerry);
+        // ferry is destroy, we build a new one
+        this.spots[position] = new FerrySpot(this.game, position, newFerry);
         this.updateMargins();
     };
     Table.prototype.newRound = function (ferries) {
@@ -1084,7 +1095,7 @@ var Noah = /** @class */ (function () {
         }
     };
     Noah.prototype.notif_departure = function (notif) {
-        this.table.departure(notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
     };
     Noah.prototype.notif_removedCard = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);

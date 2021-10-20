@@ -31,7 +31,3 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 
 ## Hint
 Make sure ftp-sync.json and node_modules are in .gitignore
-
-## TODO
-solo mode : lion & giraffe powers, what to do with fleeing animal for crocodile ? is lion weight checked before or after is power is done ?
-solo mode : progression

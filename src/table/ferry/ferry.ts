@@ -22,7 +22,7 @@ class FerrySpot {
         dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);
 
         if (ferry) {
-            ferry.animals.forEach(animal => this.addAnimal(animal));
+            ferry.animals?.forEach(animal => this.addAnimal(animal));
         } else {
             this.empty = true;
         }
@@ -85,7 +85,7 @@ class FerrySpot {
     }
 
     public departure(newFerry: Ferry) {
-        // TODO animate
+        /*// TODO animate
         this.animals.forEach(animal => dojo.destroy(`ferry-spot-${this.position}-animal${animal.id}`));
         this.animals = [];
 
@@ -96,7 +96,17 @@ class FerrySpot {
             dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
         }
 
-        this.updateCounter();
+        this.updateCounter();*/
+
+        console.log(`[id^="ferry-spot-${this.position}"]`, document.querySelectorAll(`[id^="ferry-spot-${this.position}"]`));
+        (Array.from(document.querySelectorAll(`[id^="ferry-spot-${this.position}"]`)) as HTMLDivElement[]).forEach(elem => 
+            elem.id = `departure-${elem.id}`
+        );
+
+        const spotDiv = document.getElementById(`departure-ferry-spot-${this.position}`);
+        spotDiv.addEventListener('transitionend', () => spotDiv.parentElement.removeChild(spotDiv));
+        spotDiv.style.transform = `rotate(${72 * this.position + 90}deg) translateY(1500px)`;
+        spotDiv.style.opacity = '0';
     }
 
     private updateCounter() {

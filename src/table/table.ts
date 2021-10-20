@@ -178,14 +178,17 @@ class Table {
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     }
 
-    public departure(topFerry: Ferry, newFerry: Ferry, remainingFerries: number) {
+    public departure(position: number, topFerry: Ferry, newFerry: Ferry, remainingFerries: number) {
         if (topFerry) {
             dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
         }
 
         this.setRemainingFerries(remainingFerries);
 
-        this.spots[this.noahPosition].departure(newFerry);
+        this.spots[position].departure(newFerry);
+        // ferry is destroy, we build a new one
+        this.spots[position] = new FerrySpot(this.game, position, newFerry);
+
 
         this.updateMargins();
     }
