@@ -155,7 +155,9 @@ var FerrySpot = /** @class */ (function () {
         html += "\"></div>";
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
-        document.getElementById(id).addEventListener('click', function () { return _this.game.tableCardSelected(animal.id); });
+        var animalDiv = document.getElementById(id);
+        // animalDiv.style.transform = window.getComputedStyle(animalDiv).transform;
+        animalDiv.addEventListener('click', function () { return _this.game.tableCardSelected(animal.id); });
         if (originId) {
             var card_1 = document.getElementById("ferry-spot-" + this.position + "-animal" + animal.id);
             card_1.style.transition = "transform 0.5s";
@@ -530,7 +532,6 @@ var Noah = /** @class */ (function () {
         opponentHand.centerItems = true;
         //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
         setupAnimalCards(opponentHand);
-        console.log(opponentHand.item_type);
         args.animals.forEach(function (animal) { return opponentHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
         viewCardsDialog.show();
         setTimeout(function () { return opponentHand.updateDisplay(); }, 100);
@@ -1067,13 +1068,12 @@ var Noah = /** @class */ (function () {
     Noah.prototype.notif_animalGiven = function (notif) {
         if (this.getPlayerId() == notif.args.playerId) {
             var animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.removeFromStockById('' + animal.id);
+            this.playerHand.removeFromStockById('' + animal.id, "overall_player_board_" + notif.args.toPlayerId);
         }
         else if (this.getPlayerId() == notif.args.toPlayerId) {
             var animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
+            this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id, "overall_player_board_" + notif.args.playerId);
         }
-        // TODO animate
     };
     Noah.prototype.notif_animalGivenFromFerry = function (notif) {
         if (!notif.args.toPlayerId) { // lion in solo mode
@@ -1086,7 +1086,6 @@ var Noah = /** @class */ (function () {
                 this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id);
             }
             this.table.removeFirstAnimalFromFerry();
-            // TODO animate
         }
     };
     Noah.prototype.notif_departure = function (notif) {

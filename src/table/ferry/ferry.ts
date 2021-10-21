@@ -68,8 +68,11 @@ class FerrySpot {
         this.animals.push(animal);
 
         dojo.place(html, `ferry-spot-${this.position}`);
-        
-        document.getElementById(id).addEventListener('click', () => this.game.tableCardSelected(animal.id));
+
+        const animalDiv = document.getElementById(id);
+        // animalDiv.style.transform = window.getComputedStyle(animalDiv).transform;
+
+        animalDiv.addEventListener('click', () => this.game.tableCardSelected(animal.id));
 
         if (originId) {
             const card = document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`);

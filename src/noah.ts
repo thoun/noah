@@ -189,7 +189,6 @@ class Noah implements NoahGame {
         opponentHand.centerItems = true;
         //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
         setupAnimalCards(opponentHand);
-        console.log(opponentHand.item_type);
         args.animals.forEach(animal => opponentHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
 
         viewCardsDialog.show();
@@ -832,12 +831,11 @@ class Noah implements NoahGame {
     notif_animalGiven(notif: Notif<NotifAnimalGivenArgs>) {
         if (this.getPlayerId() == notif.args.playerId) {
             const animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.removeFromStockById(''+animal.id);
+            this.playerHand.removeFromStockById(''+animal.id, `overall_player_board_${notif.args.toPlayerId}`);
         } else if (this.getPlayerId() == notif.args.toPlayerId) {
             const animal = notif.args._private[this.getPlayerId()].animal;
-            this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
+            this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, `overall_player_board_${notif.args.playerId}`);
         }
-        // TODO animate
     }
 
     notif_animalGivenFromFerry(notif: Notif<NotifAnimalGivenFromFerryArgs>) {
@@ -845,7 +843,6 @@ class Noah implements NoahGame {
             const animal = notif.args.animal;
 
             this.table.removeAnimalToDeck(animal);
-
         } else {
 
             if (this.getPlayerId() == notif.args.toPlayerId) {
@@ -853,8 +850,6 @@ class Noah implements NoahGame {
                 this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id);
             }
             this.table.removeFirstAnimalFromFerry();
-
-            // TODO animate
         }
     }
 
