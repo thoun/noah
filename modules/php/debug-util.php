@@ -11,7 +11,7 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //self::DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 2");
+        //$this->DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 2");
         //$this->debugSetPoints(19);
         /*$this->debugSetAnimalsInFerry(0, [
             $this->debugGetAnimalByType(6, 1),
@@ -25,11 +25,11 @@ trait DebugUtilTrait {
     }
 
     private function debugSetPlayerPoints(int $playerId, int $score) {
-        self::DbQuery("UPDATE player SET `player_score` = $score where `player_id` = $playerId");
+        $this->DbQuery("UPDATE player SET `player_score` = $score where `player_id` = $playerId");
     }
 
     private function debugSetPoints(int $score) {
-        self::DbQuery("UPDATE player SET `player_score` = $score");
+        $this->DbQuery("UPDATE player SET `player_score` = $score");
     }
 
     private function debugGetAnimalByType($type, $subType, $index = 0) {

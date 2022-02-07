@@ -39,9 +39,9 @@
 
         /*********** Place your code below:  ************/
 
-        $this->tpl['MY_HAND'] = self::_("My hand");
-        $this->tpl['ROUND'] = self::_("Round");
-        $this->tpl['REMAINING_ANIMALS_IN_DECK'] = self::_("Remaining animals in deck");
+        $this->tpl['MY_HAND'] = $this->_("My hand");
+        $this->tpl['ROUND'] = $this->_("Round");
+        $this->tpl['REMAINING_ANIMALS_IN_DECK'] = $this->_("Remaining animals in deck");
 
         /*********** Do not change anything below this line  ************/
   	}

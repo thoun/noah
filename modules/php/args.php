@@ -54,7 +54,7 @@ trait ArgsTrait {
     }
     
     function argLoadAnimal() {
-        $playerId = self::getActivePlayerId();
+        $playerId = $this->getActivePlayerId();
 
         $selectableAnimals = $this->getSelectableAnimals($playerId);
     
@@ -114,19 +114,19 @@ trait ArgsTrait {
     }
 
     function argChooseOpponent() {
-        $playerId = intval(self::getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
         $opponentsIds = $this->getOrderedOpponentsIds($playerId);
 
         return [
             'opponentsIds' => $opponentsIds,            
-            'viewCards' => intval(self::getGameStateValue(LOOK_OPPONENT_HAND)) == 1,
-            'exchangeCard' => intval(self::getGameStateValue(EXCHANGE_CARD)) == 1,
-            'giveCardFromFerry' => intval(self::getGameStateValue(GIVE_CARD_FROM_FERRY)) == 1,
+            'viewCards' => intval($this->getGameStateValue(LOOK_OPPONENT_HAND)) == 1,
+            'exchangeCard' => intval($this->getGameStateValue(EXCHANGE_CARD)) == 1,
+            'giveCardFromFerry' => intval($this->getGameStateValue(GIVE_CARD_FROM_FERRY)) == 1,
         ];
     }
 
     function argViewCards() {
-        $opponentId = intval(self::getGameStateValue(LOOK_OPPONENT_HAND));
+        $opponentId = intval($this->getGameStateValue(LOOK_OPPONENT_HAND));
         $playerHand = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $opponentId));
 
         return [
@@ -151,7 +151,7 @@ trait ArgsTrait {
     }
 
     function argOptimalLoadingGiveCards() {
-        $playerId = intval(self::getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
 
         $opponentsIds = $this->getOrderedOpponentsIds($playerId);
         $number = $this->getNumberOfCardsToGive($playerId);
@@ -171,7 +171,6 @@ trait ArgsTrait {
     }
 
     private function getPossibleCardsToReplaceOnTopDeck(int $position) {
-        $animals = [];
         $ferryAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.$position, null, 'location_arg'));
         $animalCount = count($ferryAnimals);
 
@@ -181,12 +180,12 @@ trait ArgsTrait {
         }
 
         // same gender, can replace any
-        if ($ferry->animals[$animalCount - 1]->gender == $ferry->animals[$animalCount - 2]->gender) {
+        if ($ferryAnimals[$animalCount - 1]->gender == $ferryAnimals[$animalCount - 2]->gender) {
             return $ferryAnimals;
         }
 
         // more than 2 and alternate gender, can replace first or last
-        return [$ferry->animals[0], $ferry->animals[$animalCount - 1]];
+        return [$ferryAnimals[0], $ferryAnimals[$animalCount - 1]];
     }
     
     function argReplaceOnTopDeck() {
@@ -196,7 +195,7 @@ trait ArgsTrait {
             $animals = array_merge($animals, $this->getPossibleCardsToReplaceOnTopDeck($position));
         }
 
-        $currentPositionAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.self::getGameStateValue(LAST_LOADED_ANIMAL_POSITION), null, 'location_arg'));
+        $currentPositionAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.$this->getGameStateValue(LAST_LOADED_ANIMAL_POSITION), null, 'location_arg'));
         $lionId = $currentPositionAnimals[count($currentPositionAnimals)-1]->id;
 
         $animals = array_values(array_filter($animals, fn($animal) => $animal->id != $lionId));

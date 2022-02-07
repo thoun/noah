@@ -25,153 +25,153 @@
   class action_noah extends APP_GameAction { 
     // Constructor: please do not modify
    	public function __default() {
-        if (self::isArg('notifwindow')) {
+        if ($this->isArg('notifwindow')) {
             $this->view = "common_notifwindow";
-            $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+            $this->viewArgs['table'] = $this->getArg("table", AT_posint, true);
         } else {
             $this->view = "noah_noah";
-            self::trace("Complete reinitialization of board game");
+            $this->trace("Complete reinitialization of board game");
         }
   	}
   	
     public function loadAnimal() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $id = self::getArg("id", AT_posint, true);
+        $id = $this->getArg("id", AT_posint, true);
 
         $this->game->loadAnimal($id);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function takeAllAnimals() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
         $this->game->takeAllAnimals();
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function setGender() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $gender = self::getArg("gender", AT_posint, true);
+        $gender = $this->getArg("gender", AT_posint, true);
 
         $this->game->setGender($gender);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function setWeight() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $weight = self::getArg("weight", AT_posint, true);
+        $weight = $this->getArg("weight", AT_posint, true);
 
         $this->game->setWeight($weight);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function lookCards() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $playerId = self::getArg("playerId", AT_posint, true);
+        $playerId = $this->getArg("playerId", AT_posint, true);
 
         $this->game->lookCards($playerId);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function exchangeCard() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $playerId = self::getArg("playerId", AT_posint, true);
+        $playerId = $this->getArg("playerId", AT_posint, true);
 
         $this->game->exchangeCard($playerId);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function giveCardFromFerry() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $playerId = self::getArg("playerId", AT_posint, true);
+        $playerId = $this->getArg("playerId", AT_posint, true);
 
         $this->game->giveCardFromFerry($playerId);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function seen() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
         $this->game->seen();
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function giveCard() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $id = self::getArg("id", AT_posint, true);
+        $id = $this->getArg("id", AT_posint, true);
 
         $this->game->giveCard($id);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function moveNoah() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $destination = self::getArg("destination", AT_posint, true);
+        $destination = $this->getArg("destination", AT_posint, true);
 
         $this->game->moveNoah($destination);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
 
     public function giveCards() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
         $giveCardsTo = array_filter(
-            json_decode(base64_decode(self::getArg("giveCardsTo", AT_base64, true)), true),
+            json_decode(base64_decode($this->getArg("giveCardsTo", AT_base64, true)), true),
             fn($value) => $value !== null
         );
 
         $this->game->giveCards($giveCardsTo);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
 
     public function reorderTopDeck() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
         $reorderTopDeck = array_filter(
-            json_decode(base64_decode(self::getArg("reorderTopDeck", AT_base64, true)), true),
+            json_decode(base64_decode($this->getArg("reorderTopDeck", AT_base64, true)), true),
             fn($value) => $value !== null
         );
 
         $this->game->reorderTopDeck($reorderTopDeck);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function replaceOnTopDeck() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
-        $id = self::getArg("id", AT_posint, true);
+        $id = $this->getArg("id", AT_posint, true);
 
         $this->game->replaceOnTopDeck($id);
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
   	
     public function skipReplaceOnTopDeck() {
-        self::setAjaxMode();
+        $this->setAjaxMode();
 
         $this->game->skipReplaceOnTopDeck();
 
-        self::ajaxResponse();
+        $this->ajaxResponse();
     }
 
 }

@@ -46,11 +46,11 @@ trait UtilTrait {
             throw new \Error('Global Variable null');
         }*/
         $jsonObj = json_encode($obj);
-        self::DbQuery("INSERT INTO `global_variables`(`name`, `value`)  VALUES ('$name', '$jsonObj') ON DUPLICATE KEY UPDATE `value` = '$jsonObj'");
+        $this->DbQuery("INSERT INTO `global_variables`(`name`, `value`)  VALUES ('$name', '$jsonObj') ON DUPLICATE KEY UPDATE `value` = '$jsonObj'");
     }
 
     function getGlobalVariable(string $name, $asArray = null) {
-        $json_obj = self::getUniqueValueFromDB("SELECT `value` FROM `global_variables` where `name` = '$name'");
+        $json_obj = $this->getUniqueValueFromDB("SELECT `value` FROM `global_variables` where `name` = '$name'");
         if ($json_obj) {
             $object = json_decode($json_obj, $asArray);
             return $object;
@@ -60,37 +60,37 @@ trait UtilTrait {
     }
 
     function deleteGlobalVariable(string $name) {
-        self::DbQuery("DELETE FROM `global_variables` where `name` = '$name'");
+        $this->DbQuery("DELETE FROM `global_variables` where `name` = '$name'");
     }
 
     function isVariant() {
-        return intval(self::getGameStateValue(OPTION_VARIANT)) === 2;
+        return intval($this->getGameStateValue(OPTION_VARIANT)) === 2;
     }
 
     function useFrog() {
-        return intval(self::getGameStateValue(OPTION_FROG)) === 2;
+        return intval($this->getGameStateValue(OPTION_FROG)) === 2;
     }
 
     function useCrocodile() {
-        return intval(self::getGameStateValue(OPTION_CROCODILE)) === 2;
+        return intval($this->getGameStateValue(OPTION_CROCODILE)) === 2;
     }
 
     function useRoomates() {
-        return intval(self::getGameStateValue(OPTION_ROOMATES)) === 2;
+        return intval($this->getGameStateValue(OPTION_ROOMATES)) === 2;
     }
 
     function getMaxPlayerScore() {
-        return -intval(self::getUniqueValueFromDB("SELECT min(player_score) FROM player"));
+        return -intval($this->getUniqueValueFromDB("SELECT min(player_score) FROM player"));
     }
 
     function getPlayersIds() {
         $sql = "SELECT player_id FROM player ORDER BY player_no";
-        $dbResults = self::getCollectionFromDB($sql);
+        $dbResults = $this->getCollectionFromDB($sql);
         return array_map(fn($dbResult) => intval($dbResult['player_id']), array_values($dbResults));
     }
 
     function getOpponentId(int $playerId) {
-        return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
+        return intval($this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
     }    
 
     function getOrderedOpponentsIds(int $playerId) {
@@ -102,7 +102,7 @@ trait UtilTrait {
 
     function getPlayers() {
         $sql = "SELECT * FROM player ORDER BY player_no";
-        $dbResults = self::getCollectionFromDB($sql);
+        $dbResults = $this->getCollectionFromDB($sql);
         return array_map(fn($dbResult) => new NoahPlayer($dbResult), array_values($dbResults));
     }
 
@@ -126,11 +126,11 @@ trait UtilTrait {
     }
 
     function isSoloMode() {
-        return intval(self::getUniqueValueFromDb("SELECT count(*) FROM player")) == 1;
+        return intval($this->getUniqueValueFromDb("SELECT count(*) FROM player")) == 1;
     }
 
     function getPlayerName(int $playerId) {
-        return self::getUniqueValueFromDb("SELECT player_name FROM player WHERE player_id = $playerId");
+        return $this->getUniqueValueFromDb("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
     function isEndOfRound() {
@@ -151,21 +151,21 @@ trait UtilTrait {
     }
 
     function getNoahPosition() {
-        return intval(self::getGameStateValue(NOAH_POSITION));
+        return intval($this->getGameStateValue(NOAH_POSITION));
     }
 
     function setNoahPosition(int $position) {
-        self::setGameStateValue(NOAH_POSITION, $position);
+        $this->setGameStateValue(NOAH_POSITION, $position);
     }
 
     function getPlayerScore(int $playerId) {
-        return intval(self::getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
+        return intval($this->getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
     }
 
     function incPlayerScore(int $playerId, int $incScore) {
-        self::DbQuery("UPDATE player SET player_score = player_score - $incScore WHERE player_id = $playerId");
+        $this->DbQuery("UPDATE player SET player_score = player_score - $incScore WHERE player_id = $playerId");
 
-        self::notifyAllPlayers('points', '', [
+        $this->notifyAllPlayers('points', '', [
             'playerId' => $playerId,
             'points' => $this->getPlayerScore($playerId),
         ]);
@@ -173,16 +173,16 @@ trait UtilTrait {
 
     function decPlayerScore(int $playerId, int $decScore) {
         $newScore = min(0, $this->getPlayerScore($playerId) + 2);
-        self::DbQuery("UPDATE player SET player_score = $newScore WHERE player_id = $playerId");
+        $this->DbQuery("UPDATE player SET player_score = $newScore WHERE player_id = $playerId");
 
-        self::notifyAllPlayers('points', '', [
+        $this->notifyAllPlayers('points', '', [
             'playerId' => $playerId,
             'points' => $newScore,
         ]);
     }
 
     function setPlayerScore(int $playerId, int $score) {
-        self::DbQuery("UPDATE player SET player_score = $score WHERE player_id = $playerId");
+        $this->DbQuery("UPDATE player SET player_score = $score WHERE player_id = $playerId");
     }
 
     function setupCards(int $playerCount) {
@@ -216,16 +216,16 @@ trait UtilTrait {
     }
 
     function applySetGender(int $animalId, int $gender) {
-        self::DbQuery("UPDATE animal SET `card_type_arg` = $gender where `card_id` = $animalId");
+        $this->DbQuery("UPDATE animal SET `card_type_arg` = $gender where `card_id` = $animalId");
     }
 
     function applySetWeight(int $animalId, int $weight) {
-        self::DbQuery("UPDATE animal SET `card_weight` = $weight where `card_id` = $animalId");
+        $this->DbQuery("UPDATE animal SET `card_weight` = $weight where `card_id` = $animalId");
     }
 
     function setInitialCardsAndResources(array $playersIds) {
         // reset frog weights
-        self::DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20"); 
+        $this->DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20"); 
         $soloMode = $this->isSoloMode(); 
 
         // set table ferries and first animal on it
@@ -243,14 +243,14 @@ trait UtilTrait {
         for ($position=0; $position<5; $position++) {
             $ferries[$position] = $this->getFerry($position);
         }
-        self::notifyAllPlayers('newRound', '', [
+        $this->notifyAllPlayers('newRound', '', [
             'ferries' => $ferries,
         ]);
 
         // set players animals
         foreach ($playersIds as $playerId) {
             $this->animals->pickCardsForLocation($soloMode ? 2 : 8, 'deck', 'hand', $playerId);
-            self::notifyPlayer($playerId, 'newHand', '', [
+            $this->notifyPlayer($playerId, 'newHand', '', [
                 'playerId' => $playerId,
                 'animals' => $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId)),
             ]);
@@ -265,7 +265,7 @@ trait UtilTrait {
         $animal = new Animal($dbObject, $this->ANIMALS, $this);
 
         if ($animal->power == POWER_ADJUSTABLE_WEIGHT) {
-            $animal->weight = intval(self::getUniqueValueFromDB("SELECT card_weight FROM animal where `card_id` = ".$animal->id));
+            $animal->weight = intval($this->getUniqueValueFromDB("SELECT card_weight FROM animal where `card_id` = ".$animal->id));
         }
 
         return $animal;

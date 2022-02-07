@@ -42,7 +42,7 @@ class Noah extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels([
+        $this->initGameStateLabels([
             NOAH_POSITION => 10,
             ROUND_NUMBER => 11,
             PAIR_PLAY_AGAIN => 12,
@@ -62,10 +62,10 @@ class Noah extends Table {
             OPTION_SOLO_MODE_DIFFICULTY => 120,
         ]); 
 
-        $this->animals = self::getNew("module.common.deck");
+        $this->animals = $this->getNew("module.common.deck");
         $this->animals->init("animal");
 
-        $this->ferries = self::getNew("module.common.deck");
+        $this->ferries = $this->getNew("module.common.deck");
         $this->ferries->init("ferry");       
 	}
 	
@@ -85,7 +85,7 @@ class Noah extends Table {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
-        $gameinfos = self::getGameinfos();
+        $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
  
         // Create players
@@ -96,35 +96,35 @@ class Noah extends Table {
             $color = array_shift($default_colors);
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode($values, ',');
-        self::DbQuery($sql);
-        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
-        self::reloadPlayersBasicInfos();
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
+        $this->reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
+        $this->reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        self::setGameStateInitialValue(NOAH_POSITION, 0);
-        self::setGameStateInitialValue(ROUND_NUMBER, 0);
-        self::setGameStateInitialValue(PAIR_PLAY_AGAIN, 0);
-        self::setGameStateInitialValue(SOLO_DRAW_CARDS, 1);
+        $this->setGameStateInitialValue(NOAH_POSITION, 0);
+        $this->setGameStateInitialValue(ROUND_NUMBER, 0);
+        $this->setGameStateInitialValue(PAIR_PLAY_AGAIN, 0);
+        $this->setGameStateInitialValue(SOLO_DRAW_CARDS, 1);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        self::initStat('table', 'turnsNumber', 0);
-        self::initStat('player', 'turnsNumber', 0);
-        self::initStat('table', 'playedCards', 0);
-        self::initStat('player', 'playedCards', 0);
-        self::initStat('table', 'takeAllAnimals', 0);
-        self::initStat('player', 'takeAllAnimals', 0);
-        self::initStat('table', 'optimalLoading', 0);
-        self::initStat('player', 'optimalLoading', 0);
-        self::initStat('table', 'alternateGender', 0);
-        self::initStat('player', 'alternateGender', 0);
-        self::initStat('table', 'sameGender', 0);
-        self::initStat('player', 'sameGender', 0);
+        $this->initStat('table', 'turnsNumber', 0);
+        $this->initStat('player', 'turnsNumber', 0);
+        $this->initStat('table', 'playedCards', 0);
+        $this->initStat('player', 'playedCards', 0);
+        $this->initStat('table', 'takeAllAnimals', 0);
+        $this->initStat('player', 'takeAllAnimals', 0);
+        $this->initStat('table', 'optimalLoading', 0);
+        $this->initStat('player', 'optimalLoading', 0);
+        $this->initStat('table', 'alternateGender', 0);
+        $this->initStat('player', 'alternateGender', 0);
+        $this->initStat('table', 'sameGender', 0);
+        $this->initStat('player', 'sameGender', 0);
         
-        $this->setupCards($this->isSoloMode() ? intval(self::getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
+        $this->setupCards($this->isSoloMode() ? intval($this->getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -144,12 +144,12 @@ class Noah extends Table {
     protected function getAllDatas() {
         $result = [];
     
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $current_player_id = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb($sql);
+        $result['players'] = $this->getCollectionFromDb($sql);
         
         $ferries = [];
         for ($position=0; $position<5; $position++) {
@@ -166,7 +166,7 @@ class Noah extends Table {
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
 
-        $result['roundNumber'] = intval(self::getGameStateValue(ROUND_NUMBER));
+        $result['roundNumber'] = intval($this->getGameStateValue(ROUND_NUMBER));
         $result['variant'] = $this->isVariant();
         $result['solo'] = count($result['players']) == 1;
   
@@ -190,7 +190,7 @@ class Noah extends Table {
         }
 
         if ($this->isSoloMode()) {
-            $allAnimals = intval(self::getUniqueValueFromDB("SELECT count(*) FROM animal"));
+            $allAnimals = intval($this->getUniqueValueFromDB("SELECT count(*) FROM animal"));
             $remainingAnimals = intval($this->animals->countCardInLocation('deck'));
             return 100 * ($allAnimals - $remainingAnimals) / $allAnimals;
         } else if ($this->isVariant()) {
@@ -266,14 +266,14 @@ class Noah extends Table {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            $this->applyDbUpgradeToAllDB( $sql );
 //        }
 //        if( $from_version <= 1405061421 )
 //        {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            $this->applyDbUpgradeToAllDB( $sql );
 //        }
 //        // Please add your future database scheme changes here
 //

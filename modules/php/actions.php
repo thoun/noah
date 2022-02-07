@@ -12,7 +12,7 @@ trait ActionTrait {
     */
 
     public function loadAnimal(int $id) {
-        self::checkAction('loadAnimal');
+        $this->checkAction('loadAnimal');
         
         $animal = $this->getAnimalFromDb($this->animals->getCard($id));
 
@@ -26,14 +26,14 @@ trait ActionTrait {
         $nbr = count($animalsInFerry);
 
         if ($nbr < 2 && $animal->power == POWER_HERMAPHRODITE) { // need to set gender
-            self::setGameStateValue(SELECTED_ANIMAL, $id);
+            $this->setGameStateValue(SELECTED_ANIMAL, $id);
             $this->gamestate->nextState('chooseGender');
         } else if ($animal->power == POWER_ADJUSTABLE_WEIGHT && $this->getWeightForDeparture() != null) {
-            self::setGameStateValue(SELECTED_ANIMAL, $id);
+            $this->setGameStateValue(SELECTED_ANIMAL, $id);
             $this->gamestate->nextState('chooseWeight');
         } else if ($animal->power == POWER_CROCODILE && $this->getFirstAnimalFromFerry() != null) {
-            self::setGameStateValue(SELECTED_ANIMAL, $id);            
-            self::setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
+            $this->setGameStateValue(SELECTED_ANIMAL, $id);            
+            $this->setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
             $this->gamestate->nextState('chooseOpponent');
         } else {
             $this->applyLoadAnimal($id);
@@ -41,14 +41,14 @@ trait ActionTrait {
     }
 
     function setGender(int $gender) {
-        self::checkAction('setGender'); 
+        $this->checkAction('setGender'); 
         
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
         $nbr = count($animalsInFerry);
 
-        $animal = $this->getAnimalFromDb($this->animals->getCard(intval(self::getGameStateValue(SELECTED_ANIMAL))));
+        $animal = $this->getAnimalFromDb($this->animals->getCard(intval($this->getGameStateValue(SELECTED_ANIMAL))));
 
         if ($nbr > 2 || $animal->power != POWER_HERMAPHRODITE) {
             throw new Error("No animal need to set gender");
@@ -59,12 +59,12 @@ trait ActionTrait {
     }
 
     function setWeight(int $weight) {
-        self::checkAction('setWeight'); 
+        $this->checkAction('setWeight'); 
         
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
 
-        $animal = $this->getAnimalFromDb($this->animals->getCard(intval(self::getGameStateValue(SELECTED_ANIMAL))));
+        $animal = $this->getAnimalFromDb($this->animals->getCard(intval($this->getGameStateValue(SELECTED_ANIMAL))));
         if ($animal->power != POWER_ADJUSTABLE_WEIGHT) {
             throw new Error("No animal need to set weight");
         }
@@ -80,33 +80,33 @@ trait ActionTrait {
         $animalCount = intval($this->animals->countCardInLocation($location));
         $this->animals->moveCard($id, $location, $animalCount++);
 
-        $playerId = self::getActivePlayerId();
+        $playerId = $this->getActivePlayerId();
 
         if ($animalCount > 1) {
             $previousAnimal = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location, null, 'location_arg'))[$animalCount-2];
             if ($this->isSoloMode()) {
                 if ($animal->type == $previousAnimal->type && $animal->gender != $previousAnimal->gender) {
-                    self::setGameStateValue(SOLO_DRAW_CARDS, 2);
+                    $this->setGameStateValue(SOLO_DRAW_CARDS, 2);
                 }
             } else {
                 if ($animal->type == $previousAnimal->type) {
-                    self::setGameStateValue(PAIR_PLAY_AGAIN, 1);
+                    $this->setGameStateValue(PAIR_PLAY_AGAIN, 1);
                 }
             }
 
             if ($animalCount == 2) {   
                 $stat = $animal->type == $previousAnimal->type ? 'sameGender' : 'alternateGender';
-                self::incStat(1, $stat);
-                self::incStat(1, $stat, $playerId);
+                $this->incStat(1, $stat);
+                $this->incStat(1, $stat, $playerId);
             }
         }
 
-        self::incStat(1, 'playedCards');
-        self::incStat(1, 'playedCards', $playerId);
+        $this->incStat(1, 'playedCards');
+        $this->incStat(1, 'playedCards', $playerId);
 
-        self::notifyAllPlayers('animalLoaded', clienttranslate('${player_name} loads animal ${animalName}'), [
+        $this->notifyAllPlayers('animalLoaded', clienttranslate('${player_name} loads animal ${animalName}'), [
             'playerId' => $playerId,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => $this->getActivePlayerName(),
             'animal' => $animal,
             'position' => $position,
             'animalName' => $this->getAnimalName($animal->type),
@@ -116,8 +116,8 @@ trait ActionTrait {
             $this->decPlayerScore($playerId, 2);
         }
           
-        self::setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
-        self::setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
+        $this->setGameStateValue(LAST_LOADED_ANIMAL_POSITION, $position);
+        $this->setGameStateValue(NOAH_NEXT_MOVE, $animal->power == POWER_DONT_MOVE_NOAH ? 0 : $animal->gender);
 
         if ($animal->power == POWER_LOOK_CARDS) {
             $soloMode = $this->isSoloMode(); 
@@ -128,7 +128,7 @@ trait ActionTrait {
                     $this->gamestate->nextState('moveNoah');
                 }
             } else {
-                self::setGameStateValue(LOOK_OPPONENT_HAND, 1);
+                $this->setGameStateValue(LOOK_OPPONENT_HAND, 1);
     
                 $this->gamestate->nextState('chooseOpponent');
             }
@@ -142,7 +142,7 @@ trait ActionTrait {
                     $this->gamestate->nextState('moveNoah');
                 }
             } else {
-                self::setGameStateValue(EXCHANGE_CARD, 1);
+                $this->setGameStateValue(EXCHANGE_CARD, 1);
 
                 $this->gamestate->nextState('chooseOpponent');
             }
@@ -152,41 +152,41 @@ trait ActionTrait {
     }
 
     public function takeAllAnimals() {
-        self::checkAction('takeAllAnimals');
+        $this->checkAction('takeAllAnimals');
         
-        $playerId = self::getActivePlayerId();
+        $playerId = $this->getActivePlayerId();
         
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
         $this->animals->moveCards(array_map(fn($animal) => $animal->id, $animalsInFerry), 'hand', $playerId);
 
-        self::notifyAllPlayers('ferryAnimalsTaken', clienttranslate('${player_name} takes back all animals present on the ferry'), [
+        $this->notifyAllPlayers('ferryAnimalsTaken', clienttranslate('${player_name} takes back all animals present on the ferry'), [
             'playerId' => $playerId,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => $this->getActivePlayerName(),
             'animals' => $animalsInFerry,
             'position' => $position,
         ]);
 
-        self::incStat(1, 'takeAllAnimals');
-        self::incStat(1, 'takeAllAnimals', $playerId);
+        $this->incStat(1, 'takeAllAnimals');
+        $this->incStat(1, 'takeAllAnimals', $playerId);
         
         $this->gamestate->nextState('loadAnimal');
     }
 
     public function moveNoah(int $destination) {
-        self::checkAction('moveNoah'); 
+        $this->checkAction('moveNoah'); 
 
         $possiblePositions = $this->getPossiblePositions();
         if (array_search($destination,  $possiblePositions) === false) {
             throw new Error("Invalid destination for Noah");
         }
         
-        $playerId = self::getActivePlayerId();
+        $playerId = $this->getActivePlayerId();
 
-        self::setGameStateValue(NOAH_POSITION, $destination);
+        $this->setGameStateValue(NOAH_POSITION, $destination);
 
-        self::notifyAllPlayers('noahMoved', '', [
+        $this->notifyAllPlayers('noahMoved', '', [
             'position' => $destination,
         ]);
 
@@ -194,9 +194,9 @@ trait ActionTrait {
     }
 
     public function giveCards(array $giveCardsTo) {
-        self::checkAction('giveCards'); 
+        $this->checkAction('giveCards'); 
 
-        $playerId = intval(self::getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
 
         $numberSelected = count($giveCardsTo);
         $numberExpected = $this->getNumberOfCardsToGive($playerId);
@@ -216,11 +216,11 @@ trait ActionTrait {
             $this->animals->moveCard($animalId, 'hand', $toPlayerId);
             $animal = $this->array_find($handAnimals, fn($animal) => $animal->id == $animalId);
 
-            self::notifyAllPlayers('animalGiven', clienttranslate('${player_name} gives an animal to ${player_name2}'), [
+            $this->notifyAllPlayers('animalGiven', clienttranslate('${player_name} gives an animal to ${player_name2}'), [
                 'playerId' => $playerId,
-                'player_name' => self::getActivePlayerName(),
+                'player_name' => $this->getActivePlayerName(),
                 'toPlayerId' => $toPlayerId,
-                'player_name2' => self::getPlayerNameById($toPlayerId),
+                'player_name2' => $this->getPlayerNameById($toPlayerId),
                 '_private' => [          // Using "_private" keyword, all data inside this array will be made private
                     $playerId => [       // Using "active" keyword inside "_private", you select active player(s)
                         'animal' => $animal,
@@ -236,31 +236,31 @@ trait ActionTrait {
     }
 
     public function lookCards(int $playerId) {
-        self::checkAction('lookCards'); 
+        $this->checkAction('lookCards'); 
 
         $this->applyLookCards($playerId);
     }
 
     function applyLookCards(int $playerId) {
-        self::setGameStateValue(LOOK_OPPONENT_HAND, $playerId);
+        $this->setGameStateValue(LOOK_OPPONENT_HAND, $playerId);
 
         $this->gamestate->nextState('look');
     }
 
     public function exchangeCard(int $playerId) {
-        self::checkAction('exchangeCard'); 
+        $this->checkAction('exchangeCard'); 
 
         $this->applyExchangeCard($playerId);
     }
 
     function applyExchangeCard(int $playerId) {
-        self::setGameStateValue(EXCHANGE_CARD, $playerId);
+        $this->setGameStateValue(EXCHANGE_CARD, $playerId);
 
         $this->gamestate->nextState('exchange');
     }
 
     public function giveCardFromFerry(int $playerId) {
-        self::checkAction('giveCardFromFerry'); 
+        $this->checkAction('giveCardFromFerry'); 
 
         $this->applyGiveCardFromFerry($playerId);
     }
@@ -279,37 +279,37 @@ trait ActionTrait {
 
     function updateIndexesForFerry(int $position, $overIndex = 0) {
         $location = 'table'.$position;
-        self::DbQuery("UPDATE animal SET `card_location_arg` = `card_location_arg` - 1 where `card_location` = '$location' and `card_location_arg` > $overIndex");
+        $this->DbQuery("UPDATE animal SET `card_location_arg` = `card_location_arg` - 1 where `card_location` = '$location' and `card_location_arg` > $overIndex");
     }
 
     function applyGiveCardFromFerry(int $toPlayerId) {
         $animal = $this->getFirstAnimalFromFerry();
         if ($animal != null) {
-            $playerId = intval(self::getActivePlayerId());
+            $playerId = intval($this->getActivePlayerId());
 
             $this->animals->moveCard($animal->id, 'hand', $toPlayerId);
             $position = $this->getNoahPosition();
             $this->updateIndexesForFerry($position);
             
-            self::notifyAllPlayers('animalGivenFromFerry', clienttranslate('${player_name} makes first animal of ferry flee to ${player_name2}\'s hand'), [
+            $this->notifyAllPlayers('animalGivenFromFerry', clienttranslate('${player_name} makes first animal of ferry flee to ${player_name2}\'s hand'), [
                 'playerId' => $playerId,
-                'player_name' => self::getActivePlayerName(),
+                'player_name' => $this->getActivePlayerName(),
                 'toPlayerId' => $toPlayerId,
-                'player_name2' => self::getPlayerNameById($toPlayerId),
+                'player_name2' => $this->getPlayerNameById($toPlayerId),
                 'animal' => $animal,
             ]);
         }
 
-        $this->applyLoadAnimal(intval(self::getGameStateValue(SELECTED_ANIMAL)));
+        $this->applyLoadAnimal(intval($this->getGameStateValue(SELECTED_ANIMAL)));
     }
 
     function giveCard(int $cardId) {
-        $playerId = self::getActivePlayerId();
-        $opponentId = intval(self::getGameStateValue(EXCHANGE_CARD));
+        $playerId = $this->getActivePlayerId();
+        $opponentId = intval($this->getGameStateValue(EXCHANGE_CARD));
 
         $animal = $this->getAnimalFromDb($this->animals->getCard($cardId));
 
-        self::notifyPlayer($playerId, 'removedCard', clienttranslate('Card ${animalName} was given to chosen opponent'), [
+        $this->notifyPlayer($playerId, 'removedCard', clienttranslate('Card ${animalName} was given to chosen opponent'), [
             'playerId' => $playerId,
             'animal' => $animal,
             'fromPlayerId' => $opponentId,
@@ -318,9 +318,9 @@ trait ActionTrait {
 
         $this->animals->moveCard($cardId, 'hand', $opponentId);
 
-        self::notifyPlayer($opponentId, 'newCard', clienttranslate('${player_name} gives you ${animalName}'), [
+        $this->notifyPlayer($opponentId, 'newCard', clienttranslate('${player_name} gives you ${animalName}'), [
             'animal' => $animal,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => $this->getActivePlayerName(),
             'fromPlayerId' => $playerId,
             'animalName' => $this->getAnimalName($animal->type),
         ]);
@@ -329,24 +329,24 @@ trait ActionTrait {
     }
 
     public function seen() {
-        self::checkAction('seen');
+        $this->checkAction('seen');
 
         $this->gamestate->nextState('seen');
     }
 
     public function reorderTopDeck(array $reorderTopDeck) {
-        self::checkAction('reorderTopDeck');
+        $this->checkAction('reorderTopDeck');
 
         foreach($reorderTopDeck as $id => $position) {
             $locationArg = 1000 - $position;
-            self::DbQuery("UPDATE animal SET `card_location_arg` = $locationArg where `card_id` = $id");
+            $this->DbQuery("UPDATE animal SET `card_location_arg` = $locationArg where `card_id` = $id");
         }
 
         $this->gamestate->nextState('moveNoah');
     }
         
     public function replaceOnTopDeck(int $cardId) {
-        self::checkAction('replaceOnTopDeck');
+        $this->checkAction('replaceOnTopDeck');
 
         $animal = $this->getAnimalFromDb($this->animals->getCard($cardId));
         $position = intval(str_replace('table', '', $animal->location));
@@ -355,7 +355,7 @@ trait ActionTrait {
         $this->animals->moveCard($animal->id, 'deck', intval($this->animals->countCardInLocation('deck')) + 1);
         $this->updateIndexesForFerry($position, $locationArg);
             
-        self::notifyAllPlayers('animalGivenFromFerry', '', [
+        $this->notifyAllPlayers('animalGivenFromFerry', '', [
             'animal' => $animal,
         ]);
 
@@ -363,7 +363,7 @@ trait ActionTrait {
     }
         
     public function skipReplaceOnTopDeck() {
-        self::checkAction('skipReplaceOnTopDeck');
+        $this->checkAction('skipReplaceOnTopDeck');
 
         $this->gamestate->nextState('moveNoah');
     }
