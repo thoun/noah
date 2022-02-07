@@ -209,7 +209,7 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
         foreach($playersIds as $playerId) {
             $animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
-            $points = array_reduce($animals, function ($carry, $item) { return $carry + $item->points; }, 0);
+            $points = array_reduce($animals, fn($carry, $item) => $carry + $item->points, 0);
             $this->incPlayerScore($playerId, $points);
         }
         

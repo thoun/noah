@@ -199,7 +199,7 @@ trait ArgsTrait {
         $currentPositionAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('table'.self::getGameStateValue(LAST_LOADED_ANIMAL_POSITION), null, 'location_arg'));
         $lionId = $currentPositionAnimals[count($currentPositionAnimals)-1]->id;
 
-        $animals = array_values(array_filter($animals, function($animal) use ($lionId) { return $animal->id != $lionId; }));
+        $animals = array_values(array_filter($animals, fn($animal) => $animal->id != $lionId));
 
         return [
             'animals' => $animals,

@@ -159,7 +159,7 @@ trait ActionTrait {
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
-        $this->animals->moveCards(array_map(function($animal) { return $animal->id; }, $animalsInFerry), 'hand', $playerId);
+        $this->animals->moveCards(array_map(fn($animal) => $animal->id, $animalsInFerry), 'hand', $playerId);
 
         self::notifyAllPlayers('ferryAnimalsTaken', clienttranslate('${player_name} takes back all animals present on the ferry'), [
             'playerId' => $playerId,
@@ -207,14 +207,14 @@ trait ActionTrait {
         $handAnimals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
 
         foreach($giveCardsTo as $animalId => $toPlayerId) {
-            if (!$this->array_some($handAnimals, function ($animal) use ($animalId) { return $animal->id == $animalId; })) {
+            if (!$this->array_some($handAnimals, fn($animal) => $animal->id == $animalId)) {
                 throw new Error("You can't give a card which is not in your hand");
             }
         }
 
         foreach($giveCardsTo as $animalId => $toPlayerId) {
             $this->animals->moveCard($animalId, 'hand', $toPlayerId);
-            $animal = $this->array_find($handAnimals, function ($animal) use ($animalId) { return $animal->id == $animalId; });
+            $animal = $this->array_find($handAnimals, fn($animal) => $animal->id == $animalId);
 
             self::notifyAllPlayers('animalGiven', clienttranslate('${player_name} gives an animal to ${player_name2}'), [
                 'playerId' => $playerId,

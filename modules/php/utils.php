@@ -86,7 +86,7 @@ trait UtilTrait {
     function getPlayersIds() {
         $sql = "SELECT player_id FROM player ORDER BY player_no";
         $dbResults = self::getCollectionFromDB($sql);
-        return array_map(function($dbResult) { return intval($dbResult['player_id']); }, array_values($dbResults));
+        return array_map(fn($dbResult) => intval($dbResult['player_id']), array_values($dbResults));
     }
 
     function getOpponentId(int $playerId) {
@@ -95,15 +95,15 @@ trait UtilTrait {
 
     function getOrderedOpponentsIds(int $playerId) {
         $players = $this->getOrderedPlayers($playerId);
-        $opponents = array_values(array_filter($players, function($player) use ($playerId) { return $player->id != $playerId; }));
-        $opponentsIds = array_map(function($player) { return $player->id; }, $opponents);
+        $opponents = array_values(array_filter($players, fn($player) => $player->id != $playerId));
+        $opponentsIds = array_map(fn($player) => $player->id, $opponents);
         return $opponentsIds;
     }
 
     function getPlayers() {
         $sql = "SELECT * FROM player ORDER BY player_no";
         $dbResults = self::getCollectionFromDB($sql);
-        return array_map(function($dbResult) { return new NoahPlayer($dbResult); }, array_values($dbResults));
+        return array_map(fn($dbResult) => new NoahPlayer($dbResult), array_values($dbResults));
     }
 
     function getOrderedPlayers(int $currentTurnPlayerId) {
@@ -272,7 +272,7 @@ trait UtilTrait {
     }
 
     function getAnimalsFromDb(array $dbObjects) {
-        return array_map(function($dbObject) { return $this->getAnimalFromDb($dbObject); }, array_values($dbObjects));
+        return array_map(fn($dbObject) => $this->getAnimalFromDb($dbObject), array_values($dbObjects));
     }
 
     function getFerryFromDb($dbObject) {
@@ -283,7 +283,7 @@ trait UtilTrait {
     }
 
     function getFerriesFromDb(array $dbObjects) {
-        return array_map(function($dbObject) { return $this->getFerryFromDb($dbObject); }, array_values($dbObjects));
+        return array_map(fn($dbObject) => $this->getFerryFromDb($dbObject), array_values($dbObjects));
     }
 
     function getFerry(int $position) {

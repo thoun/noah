@@ -135,7 +135,7 @@
 
         $giveCardsTo = array_filter(
             json_decode(base64_decode(self::getArg("giveCardsTo", AT_base64, true)), true),
-            function($value) { return $value !== null; }
+            fn($value) => $value !== null
         );
 
         $this->game->giveCards($giveCardsTo);
@@ -148,7 +148,7 @@
 
         $reorderTopDeck = array_filter(
             json_decode(base64_decode(self::getArg("reorderTopDeck", AT_base64, true)), true),
-            function($value) { return $value !== null; }
+            fn($value) => $value !== null
         );
 
         $this->game->reorderTopDeck($reorderTopDeck);
