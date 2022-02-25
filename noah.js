@@ -265,7 +265,10 @@ var Table = /** @class */ (function () {
         return "rotate(" + (72 * newPosition + 90) + "deg) translateY(90px)";
     };
     Table.prototype.getPointsCoordinates = function (points) {
-        var angle = (Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
+        if (points === 0) {
+            return [202, 64];
+        }
+        var angle = -(Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
         var left = POINTS_RADIUS * Math.sin(angle);
         var top = -POINTS_RADIUS * Math.cos(angle);
         return [202 + left, 213 + top];
