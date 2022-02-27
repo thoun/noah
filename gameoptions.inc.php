@@ -110,3 +110,17 @@ $game_options = [
         ]]
     ],
 ];
+
+$game_preferences = [
+    201 => [
+        'name' => totranslate('Hand position'),
+        'needReload' => false,
+        'values' => [
+            1 => [ 'name' => totranslate('Above table')],
+            2 => [ 'name' => totranslate('Under table')],
+        ],
+        'default' => 1
+    ],
+];
+
+

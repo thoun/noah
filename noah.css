@@ -1,5 +1,6 @@
 @import url(../../../css/csslayer.css);
 #table {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;

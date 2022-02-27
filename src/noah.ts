@@ -80,6 +80,8 @@ class Noah implements NoahGame {
         this.addHelp();
         this.setupNotifications();
 
+        this.setupPreferences();
+
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
         if (this.zoom !== 1) {
@@ -370,6 +372,43 @@ class Noah implements NoahGame {
 
 
     ///////////////////////////////////////////////////
+
+    private setupPreferences() {
+        // Extract the ID and value from the UI control
+        const onchange = (e) => {
+          var match = e.target.id.match(/^preference_control_(\d+)$/);
+          if (!match) {
+            return;
+          }
+          var prefId = +match[1];
+          var prefValue = +e.target.value;
+          (this as any).prefs[prefId].value = prefValue;
+          this.onPreferenceChange(prefId, prefValue);
+        }
+        
+        // Call onPreferenceChange() when any value changes
+        dojo.query(".preference_control").connect("onchange", onchange);
+        
+        // Call onPreferenceChange() now
+        dojo.forEach(
+          dojo.query("#ingame_menu_content .preference_control"),
+          el => onchange({ target: el })
+        );
+    }
+      
+    private onPreferenceChange(prefId: number, prefValue: number) {
+        switch (prefId) {
+            case 201: 
+                const hand = document.getElementById('myhand-wrap');
+                const table = document.getElementById('table');
+                if (prefValue == 2) {
+                    table.after(hand);
+                } else {
+                    table.before(hand);
+                }
+                break;
+        }
+    }
 
     private getGiveCardsButtonText() {
         return dojo.string.substitute(_('Give ${selecardCardsCount} selected cards'), { selecardCardsCount: this.giveCardsTo.size != this.cardsToGive ? `<span style="color: orange;">${this.giveCardsTo.size}</span>` : this.giveCardsTo.size });
