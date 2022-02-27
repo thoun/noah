@@ -183,7 +183,7 @@ var FerrySpot = /** @class */ (function () {
             return elem.id = "departure-" + elem.id;
         });
         var spotDiv = document.getElementById("departure-ferry-spot-" + this.position);
-        spotDiv.addEventListener('transitionend', function () { return spotDiv.parentElement.removeChild(spotDiv); });
+        spotDiv.addEventListener('transitionend', function () { var _a; return (_a = spotDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(spotDiv); });
         spotDiv.style.transform = "rotate(" + (72 * this.position + 90) + "deg) translateY(1500px)";
         spotDiv.style.opacity = '0';
     };

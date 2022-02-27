@@ -103,7 +103,7 @@ class FerrySpot {
         );
 
         const spotDiv = document.getElementById(`departure-ferry-spot-${this.position}`);
-        spotDiv.addEventListener('transitionend', () => spotDiv.parentElement.removeChild(spotDiv));
+        spotDiv.addEventListener('transitionend', () => spotDiv.parentElement?.removeChild(spotDiv));
         spotDiv.style.transform = `rotate(${72 * this.position + 90}deg) translateY(1500px)`;
         spotDiv.style.opacity = '0';
     }

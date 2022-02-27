@@ -36,6 +36,11 @@ trait ActionTrait {
             $this->setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
             $this->gamestate->nextState('chooseOpponent');
         } else {
+            if ($nbr >= 2 && $animal->power == POWER_HERMAPHRODITE) {
+                $gender = $animalsInFerry[$nbr - 2]->gender;
+                $this->applySetGender($animal->id, $gender);
+            }
+
             $this->applyLoadAnimal($id);
         }
     }
@@ -59,10 +64,7 @@ trait ActionTrait {
     }
 
     function setWeight(int $weight) {
-        $this->checkAction('setWeight'); 
-        
-        $position = $this->getNoahPosition();
-        $location = 'table'.$position;
+        $this->checkAction('setWeight');
 
         $animal = $this->getAnimalFromDb($this->animals->getCard(intval($this->getGameStateValue(SELECTED_ANIMAL))));
         if ($animal->power != POWER_ADJUSTABLE_WEIGHT) {

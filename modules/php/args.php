@@ -24,7 +24,7 @@ trait ArgsTrait {
 
         $animalCount = count($ferry->animals);
         // gender must always be the same as 2 cards before
-        if ($animalCount >= 2 && $newAnimal->gender != $ferry->animals[$animalCount - 2]->gender) {
+        if ($animalCount >= 2 && $newAnimal->power != POWER_HERMAPHRODITE && $newAnimal->gender != $ferry->animals[$animalCount - 2]->gender) {
             return false;
         }
 

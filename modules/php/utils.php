@@ -196,11 +196,12 @@ trait UtilTrait {
             if ($useCrocodile && $type == 3) { continue; } // crocodile remove donkeys
             if (!$useCrocodile && $type == 21) { continue; } // crocodile not used
 
+            $animalCard = [ 'type' => $type, 'nbr' => $animal->cardsByGender[$playerCount] ];
             if ($animal->power == POWER_HERMAPHRODITE) {
-                $animals[] = [ 'type' => $type, 'type_arg' => 0, 'nbr' => $animal->cardsByGender[$playerCount] ];
+                $animals[] = $animalCard + [ 'type_arg' => 0];
             } else {
-                $animals[] = [ 'type' => $type, 'type_arg' => 1, 'nbr' => $animal->cardsByGender[$playerCount] ];
-                $animals[] = [ 'type' => $type, 'type_arg' => 2, 'nbr' => $animal->cardsByGender[$playerCount] ];
+                $animals[] = $animalCard + [ 'type_arg' => 1 ];
+                $animals[] = $animalCard + [ 'type_arg' => 2 ];
             }
         }
         

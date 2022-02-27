@@ -31,10 +31,12 @@ $game_options = [
         'values' => [
             1 => [
                 'name' => totranslate('Disabled'),
+                'description' => totranslate("Game stops after 3 rounds."),
             ],
             2 => [
                 'name' => totranslate('Enabled'),
                 'description' => totranslate("Instead of playing 3 rounds, the game stops when a player reaches or goes over 26."),
+                'tmdisplay' => totranslate('Variant (end at 26 or more)'),
             ],
         ],
         'default' => 1,
@@ -49,6 +51,7 @@ $game_options = [
             2 => [
                 'name' => totranslate('Enabled'),
                 'description' => totranslate("Frog cards replace Snail cards."),
+                'tmdisplay' => totranslate('Use bonus card : Frog'),
             ],
         ],
         'default' => 1,
@@ -63,6 +66,7 @@ $game_options = [
             2 => [
                 'name' => totranslate('Enabled'),
                 'description' => totranslate("Crocodile cards replace Donkey cards."),
+                'tmdisplay' => totranslate('Use bonus card : Crocodile'),
             ],
         ],
         'default' => 1,
@@ -77,6 +81,7 @@ $game_options = [
             2 => [
                 'name' => totranslate('Enabled'),
                 'description' => totranslate("In the Ark, it is impossible to place twice the same animal, whether male or female"),
+                'tmdisplay' => totranslate('Use bonus card : Roomates'),
             ],
         ],
         'default' => 1,
