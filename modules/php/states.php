@@ -67,6 +67,8 @@ trait StateTrait {
                 'fromPlayerId' => $opponentId,
                 'animalName' => $this->getAnimalName($removedCard->type),
             ]);
+
+            $this->notifyHandCount([$playerId, $opponentId]);
         }
     }
 
@@ -153,6 +155,8 @@ trait StateTrait {
             'remainingAnimals' => intval($this->animals->countCardInLocation('deck')),
         ]);
 
+        $this->notifyHandCount([$playerId]);
+
         $this->setGameStateValue(SOLO_DRAW_CARDS, 1);
 
         $this->gamestate->nextState('nextPlayer');
@@ -205,12 +209,24 @@ trait StateTrait {
     }
 
     function stEndRound() {
+        $roundNumber = intval($this->getGameStateValue(ROUND_NUMBER));
+
+        $this->notifyAllPlayers('log', clienttranslate('End of round ${roundNumber}'), [
+            'roundNumber' => $roundNumber,
+        ]);
+
         // count points remaining in hands
         $playersIds = $this->getPlayersIds();
         foreach($playersIds as $playerId) {
             $animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
             $points = array_reduce($animals, fn($carry, $item) => $carry + $item->points, 0);
             $this->incPlayerScore($playerId, $points);
+
+            $this->notifyAllPlayers('log', clienttranslate('${player_name} adds ${handPoints} points from remaining hand cards, going to ${totalPoints} points'), [
+                'player_name' => $this->getPlayerName($playerId),
+                'handPoints' => $points,
+                'totalPoints' => -$this->getPlayerScore($playerId),
+            ]);
         }
         
         // player with highest score starts        
@@ -218,8 +234,6 @@ trait StateTrait {
         $minScorePlayerId = $this->getUniqueValueFromDB($sql);
         $this->gamestate->changeActivePlayer($minScorePlayerId);
         $this->giveExtraTime($minScorePlayerId);
-
-        $roundNumber = intval($this->getGameStateValue(ROUND_NUMBER));
 
         $endGame = null;
         if ($this->isVariant()) {

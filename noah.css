@@ -219,17 +219,17 @@
   align-items: center;
   margin: 5px 0;
 }
-.player-board .counters .charcoalium-counter, .player-board .counters .wood-counter, .player-board .counters .copper-counter, .player-board .counters .crystal-counter {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
 .player-board .counters .icon {
   margin-right: 5px;
 }
-.player-board .first-player {
-  width: 48px;
-  height: 48px;
+.player-board .player-hand-card {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-image: url("img/cards.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: bottom;
 }
 
 html {

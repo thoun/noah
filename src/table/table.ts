@@ -26,6 +26,8 @@ class Table {
                 html += `<div id="player-${player.id}-point-marker" class="point-marker" style="background-color: #${player.color};"></div>`
             );
             dojo.place(html, 'center-board');
+            players.forEach(player => (this.game as any).addTooltipHtml(`player-${player.id}-point-marker`, player.name));
+            
             players.forEach(player => this.points.set(Number(player.id), Number(player.score)));
             this.movePoints();
         }
@@ -76,7 +78,7 @@ class Table {
         if (points === 0) {
             return [202, 64];
         }
-        const angle = -(Math.min((points-1), MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
+        const angle = (-1-Math.max(points, 1-MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
         const left = POINTS_RADIUS*Math.sin(angle);
         let top = -POINTS_RADIUS*Math.cos(angle);
 

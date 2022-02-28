@@ -227,6 +227,7 @@ var Table = /** @class */ (function () {
                 return html += "<div id=\"player-" + player.id + "-point-marker\" class=\"point-marker\" style=\"background-color: #" + player.color + ";\"></div>";
             });
             dojo.place(html, 'center-board');
+            players.forEach(function (player) { return _this.game.addTooltipHtml("player-" + player.id + "-point-marker", player.name); });
             players.forEach(function (player) { return _this.points.set(Number(player.id), Number(player.score)); });
             this.movePoints();
         }
@@ -268,7 +269,7 @@ var Table = /** @class */ (function () {
         if (points === 0) {
             return [202, 64];
         }
-        var angle = -(Math.min((points - 1), MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
+        var angle = (-1 - Math.max(points, 1 - MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
         var left = POINTS_RADIUS * Math.sin(angle);
         var top = -POINTS_RADIUS * Math.cos(angle);
         return [202 + left, 213 + top];
@@ -392,6 +393,7 @@ var isDebug = window.location.host == 'studio.boardgamearena.com';
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var Noah = /** @class */ (function () {
     function Noah() {
+        this.handCounters = [];
         this.zoom = 1;
         this.clickAction = 'load';
         this.topDeckOrder = {};
@@ -417,7 +419,7 @@ var Noah = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        //this.createPlayerPanels(gamedatas);
+        this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
         this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
         this.roundCounter = new ebg.counter();
@@ -759,6 +761,18 @@ var Noah = /** @class */ (function () {
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
     };
+    Noah.prototype.createPlayerPanels = function (gamedatas) {
+        var _this = this;
+        Object.values(gamedatas.players).forEach(function (player) {
+            var playerId = Number(player.id);
+            // hand cards counter
+            dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-" + player.id + "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-" + player.id + "\"></span>\n                </div>\n            </div>", "player_board_" + player.id);
+            var handCounter = new ebg.counter();
+            handCounter.create("playerhand-counter-" + playerId);
+            handCounter.setValue(player.handCount);
+            _this.handCounters[playerId] = handCounter;
+        });
+    };
     Noah.prototype.setHand = function (animals) {
         var _this = this;
         this.playerHand = new ebg.stock();
@@ -793,7 +807,7 @@ var Noah = /** @class */ (function () {
             }
             else {
                 if (added) {
-                    this.toggleBubbleChangeDie(id);
+                    this.toggleBubbleGiveCards(id);
                 }
                 else {
                     this.cancelGiveToOpponent(id);
@@ -966,7 +980,7 @@ var Noah = /** @class */ (function () {
             setupAnimalCard(this, document.getElementById(cardDivId), this.playerHand.items.find(function (item) { return Number(item.id) == cardId; }).type);
         }
     };
-    Noah.prototype.toggleBubbleChangeDie = function (cardId) {
+    Noah.prototype.toggleBubbleGiveCards = function (cardId) {
         var _this = this;
         var divId = "card" + cardId;
         var cardDivId = "my-animals_item_" + cardId;
@@ -1047,6 +1061,7 @@ var Noah = /** @class */ (function () {
             ['points', 1],
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
+            ['handCount', 1],
             ['remainingAnimals', 1],
             ['animalGiven', ANIMATION_MS],
             ['animalGivenFromFerry', ANIMATION_MS],
@@ -1133,6 +1148,13 @@ var Noah = /** @class */ (function () {
     Noah.prototype.notif_newCard = function (notif) {
         var animal = notif.args.animal;
         this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);
+    };
+    Noah.prototype.notif_handCount = function (notif) {
+        var _this = this;
+        Object.keys(notif.args.handCount).forEach(function (key) {
+            var playerId = Number(key);
+            _this.handCounters[playerId].toValue(notif.args.handCount[playerId]);
+        });
     };
     Noah.prototype.getAnimalColor = function (gender) {
         switch (gender) {

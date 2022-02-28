@@ -19,6 +19,7 @@ interface Ferry {
 }
 
 interface NoahPlayer extends Player {
+    handCount: number;
 }
 
 /**
@@ -159,4 +160,8 @@ interface NotifRemovedCardArgs {
 interface NotifNewCardArgs {
     animal: Animal;
     fromPlayerId?: number;
+}
+
+interface NotifHandCountArgs {
+    handCount: {[playerId: number]: number};
 }

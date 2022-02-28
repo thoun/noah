@@ -114,6 +114,8 @@ trait ActionTrait {
             'animalName' => $this->getAnimalName($animal->type),
         ]);
 
+        $this->notifyHandCount([$playerId]);
+
         if ($animal->power == POWER_CROCODILE) {
             $this->decPlayerScore($playerId, 2);
         }
@@ -169,6 +171,8 @@ trait ActionTrait {
             'animals' => $animalsInFerry,
             'position' => $position,
         ]);
+
+        $this->notifyHandCount([$playerId]);
 
         $this->incStat(1, 'takeAllAnimals');
         $this->incStat(1, 'takeAllAnimals', $playerId);
@@ -233,6 +237,8 @@ trait ActionTrait {
                 ],
             ]);
         }
+
+        $this->notifyHandCount($this->getPlayersIds());
 
         $this->gamestate->nextState('nextPlayer');
     }
@@ -300,6 +306,8 @@ trait ActionTrait {
                 'player_name2' => $this->getPlayerNameById($toPlayerId),
                 'animal' => $animal,
             ]);
+
+            $this->notifyHandCount([$toPlayerId]);
         }
 
         $this->applyLoadAnimal(intval($this->getGameStateValue(SELECTED_ANIMAL)));
@@ -326,6 +334,8 @@ trait ActionTrait {
             'fromPlayerId' => $playerId,
             'animalName' => $this->getAnimalName($animal->type),
         ]);
+
+        $this->notifyHandCount([$playerId, $opponentId]);
 
         $this->gamestate->nextState('giveCard');
     }

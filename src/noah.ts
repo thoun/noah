@@ -18,6 +18,7 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class Noah implements NoahGame {
     public gamedatas: NoahGamedatas;
+    private handCounters: Counter[] = [];
 
     private playerHand: Stock;
     private table: Table;
@@ -59,7 +60,7 @@ class Noah implements NoahGame {
 
         log('gamedatas', gamedatas);
 
-        //this.createPlayerPanels(gamedatas);
+        this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
         this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
 
@@ -452,6 +453,26 @@ class Noah implements NoahGame {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
 
+    private createPlayerPanels(gamedatas: NoahGamedatas) {
+
+        Object.values(gamedatas.players).forEach(player => {
+            const playerId = Number(player.id);   
+
+            // hand cards counter
+            dojo.place(`<div class="counters">
+                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
+                    <div class="player-hand-card"></div> 
+                    <span id="playerhand-counter-${player.id}"></span>
+                </div>
+            </div>`, `player_board_${player.id}`);
+
+            const handCounter = new ebg.counter();
+            handCounter.create(`playerhand-counter-${playerId}`);
+            handCounter.setValue(player.handCount);
+            this.handCounters[playerId] = handCounter;
+        });
+    }
+
     public setHand(animals: Animal[]) {
         this.playerHand = new ebg.stock() as Stock;
         this.playerHand.create(this, $('my-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
@@ -484,7 +505,7 @@ class Noah implements NoahGame {
                 this.updateGiveCardsButton();
             } else {
                 if (added) {
-                    this.toggleBubbleChangeDie(id);
+                    this.toggleBubbleGiveCards(id);
                 } else {
                     this.cancelGiveToOpponent(id);
                 }
@@ -709,7 +730,7 @@ class Noah implements NoahGame {
         }
     }
 
-    private toggleBubbleChangeDie(cardId: number) {
+    private toggleBubbleGiveCards(cardId: number) {
         const divId = `card${cardId}`;
         const cardDivId = `my-animals_item_${cardId}`;
         if (!document.getElementById(`discussion_bubble_${divId}`)) { 
@@ -805,6 +826,7 @@ class Noah implements NoahGame {
             ['points', 1],
             ['newRound', ANIMATION_MS],
             ['newHand', 1],
+            ['handCount', 1],
             ['remainingAnimals', 1],
             ['animalGiven', ANIMATION_MS],
             ['animalGivenFromFerry', ANIMATION_MS],
@@ -823,7 +845,7 @@ class Noah implements NoahGame {
         this.table.setPoints(notif.args.playerId, notif.args.points);
     }
 
-    notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {        
+    notif_animalLoaded(notif: Notif<NotifAnimalLoadedArgs>) {
         this.playerHand.removeFromStockById(''+notif.args.animal.id);
         const fromHand = this.getPlayerId() === Number(notif.args.playerId);
         const originId = fromHand ? 'my-animals' : `player_board_${notif.args.playerId}`;
@@ -903,6 +925,13 @@ class Noah implements NoahGame {
     notif_newCard(notif: Notif<NotifNewCardArgs>) {
         const animal = notif.args.animal;
         this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, notif.args.fromPlayerId ? 'overall_player_board_'+notif.args.fromPlayerId : undefined);
+    }
+    
+    notif_handCount(notif: Notif<NotifHandCountArgs>) {
+        Object.keys(notif.args.handCount).forEach(key => {
+            const playerId = Number(key);
+            this.handCounters[playerId].toValue(notif.args.handCount[playerId]);
+        });
     }
 
     private getAnimalColor(gender: number) {

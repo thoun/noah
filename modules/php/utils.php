@@ -256,6 +256,8 @@ trait UtilTrait {
                 'animals' => $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId)),
             ]);
         }
+
+        $this->notifyHandCount($playersIds);
     }
 
     function getAnimalFromDb($dbObject) {
@@ -317,5 +319,21 @@ trait UtilTrait {
             case 21: return _('crocodile');
         }
         return null;
+    }
+
+    function getHandCount(int $playerId) {
+        return intval($this->animals->countCardInLocation('hand', $playerId));
+    }
+
+    function notifyHandCount(array $playersIds) {
+        $handCount = [];
+
+        foreach ($playersIds as $playerId) {
+            $handCount[$playerId] = $this->getHandCount($playerId);
+        }
+
+        $this->notifyAllPlayers('handCount', '', [
+            'handCount' => $handCount,
+        ]);
     }
 }

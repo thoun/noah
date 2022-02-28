@@ -144,12 +144,16 @@ class Noah extends Table {
     protected function getAllDatas() {
         $result = [];
     
-        $current_player_id = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = $this->getCollectionFromDb($sql);
+
+        foreach($result['players'] as $playerId => &$player) {
+            $player['handCount'] = $this->getHandCount($playerId);
+        }
         
         $ferries = [];
         for ($position=0; $position<5; $position++) {
@@ -164,7 +168,7 @@ class Noah extends Table {
         $result['remainingFerries'] = intval($this->ferries->countCardInLocation('deck'));
         $result['remainingAnimals'] = intval($this->animals->countCardInLocation('deck'));
 
-        $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $current_player_id));
+        $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $currentPlayerId));
 
         $result['roundNumber'] = intval($this->getGameStateValue(ROUND_NUMBER));
         $result['variant'] = $this->isVariant();
