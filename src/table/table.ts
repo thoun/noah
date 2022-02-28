@@ -78,7 +78,8 @@ class Table {
         if (points === 0) {
             return [202, 64];
         }
-        const angle = (-1-Math.max(points, 1-MAX_SCORE)/MAX_SCORE)*Math.PI*2; // in radians
+        const pointWithMaxLimit = Math.min(-points, MAX_SCORE);
+        const angle = -((1-pointWithMaxLimit)/MAX_SCORE)*Math.PI*2; // in radians
         const left = POINTS_RADIUS*Math.sin(angle);
         let top = -POINTS_RADIUS*Math.cos(angle);
 

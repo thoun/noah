@@ -269,7 +269,8 @@ var Table = /** @class */ (function () {
         if (points === 0) {
             return [202, 64];
         }
-        var angle = (-1 - Math.max(points, 1 - MAX_SCORE) / MAX_SCORE) * Math.PI * 2; // in radians
+        var pointWithMaxLimit = Math.min(-points, MAX_SCORE);
+        var angle = -((1 - pointWithMaxLimit) / MAX_SCORE) * Math.PI * 2; // in radians
         var left = POINTS_RADIUS * Math.sin(angle);
         var top = -POINTS_RADIUS * Math.cos(angle);
         return [202 + left, 213 + top];
