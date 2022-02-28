@@ -950,7 +950,7 @@ class Noah implements NoahGame {
             if (log && args && !args.processed) {
                 // Representation of the color of a card
                 if (typeof args.animalName == 'string' && args.animalName[0] != '<' && typeof args.animal == 'object') {
-                    args.animalName = `<strong style="color: ${this.getAnimalColor(args.animal?.gender ?? 'black')}">${args.animalName}</strong>`;
+                    args.animalName = `<strong style="color: ${this.getAnimalColor(args.animal?.gender ?? 'black')}">${_(args.animalName)}</strong>`;
                 }
             }
         } catch (e) {

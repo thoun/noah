@@ -302,21 +302,21 @@ trait UtilTrait {
 
     function getAnimalName(int $type) {
         switch ($type) {
-            case 1: return _('snail');
-            case 2: return _('giraffe');
-            case 3: return _('mule');
-            case 4: return _('lion');
-            case 5: return _('woodpecker');
-            case 6: return _('cat');
-            case 7: return _('elephant');
-            case 8: return _('panda');
-            case 9: return _('perrot');
-            case 10: return _('kangaroo');
-            case 11: return _('rhinoceros');
-            case 12: return _('bear');
+            case 1: return _('Snail');
+            case 2: return _('Giraffe');
+            case 3: return _('Mule');
+            case 4: return _('Lion');
+            case 5: return _('Woodpecker');
+            case 6: return _('Cat');
+            case 7: return _('Elephant');
+            case 8: return _('Panda');
+            case 9: return _('Parrot');
+            case 10: return _('Kangaroo');
+            case 11: return _('Rhinoceros');
+            case 12: return _('Bear');
 
-            case 20: return _('frog');
-            case 21: return _('crocodile');
+            case 20: return _('Frog');
+            case 21: return _('Crocodile');
         }
         return null;
     }

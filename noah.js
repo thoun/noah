@@ -1173,7 +1173,7 @@ var Noah = /** @class */ (function () {
             if (log && args && !args.processed) {
                 // Representation of the color of a card
                 if (typeof args.animalName == 'string' && args.animalName[0] != '<' && typeof args.animal == 'object') {
-                    args.animalName = "<strong style=\"color: " + this.getAnimalColor((_b = (_a = args.animal) === null || _a === void 0 ? void 0 : _a.gender) !== null && _b !== void 0 ? _b : 'black') + "\">" + args.animalName + "</strong>";
+                    args.animalName = "<strong style=\"color: " + this.getAnimalColor((_b = (_a = args.animal) === null || _a === void 0 ? void 0 : _a.gender) !== null && _b !== void 0 ? _b : 'black') + "\">" + _(args.animalName) + "</strong>";
                 }
             }
         }
