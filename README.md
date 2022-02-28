@@ -31,6 +31,3 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 
 ## Hint
 Make sure ftp-sync.json and node_modules are in .gitignore
-
-# TODO
-tooltip on animals / noah / ferries ?

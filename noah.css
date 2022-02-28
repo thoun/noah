@@ -52,13 +52,11 @@
   height: 179px;
   background-image: url("img/cards.jpg");
   border-radius: 10px;
-  pointer-events: none;
 }
 #table .ferry-spot .animal-card.unselectable {
   filter: contrast(0.6);
 }
 #table .ferry-spot .animal-card.selectable {
-  pointer-events: all;
   cursor: pointer;
 }
 #table #center-board {
@@ -78,7 +76,6 @@
   left: 182px;
   width: 71px;
   height: 71px;
-  pointer-events: none;
   z-index: 4;
   transform-origin: top center;
   transition: transform 0.5s;
@@ -86,7 +83,6 @@
 }
 #table #center-board .noah-spot.selectable {
   cursor: pointer;
-  pointer-events: all;
   border: 5px dashed red;
 }
 #table #center-board .noah-spot.position0 {
@@ -375,4 +371,8 @@ html {
 }
 #order-selector .order-card-zone .selector .selector-arrow[data-number="3"] {
   top: 52px;
+}
+
+.noah-tooltip-with-list li {
+  list-style: unset;
 }

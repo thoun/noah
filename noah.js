@@ -51,17 +51,45 @@ var ANIMAL_HEIGHT = 179;
 var FERRY_WIDTH = ANIMAL_HEIGHT;
 var FERRY_HEIGHT = ANIMAL_WIDTH;
 function getUniqueId(animal) {
-    return animal.type * 10 + (animal.gender || 1);
+    return animal.type * 10 + (animal.gender);
 }
 function setupAnimalCards(animalStock) {
     animalStock.image_items_per_row = 10;
     var cardsurl = g_gamethemeurl + "img/cards.jpg";
-    ANIMALS_TYPES.forEach(function (animalType, index) { return [1, 2].forEach(function (gender) {
-        animalStock.addItemType(animalType * 10 + gender, animalType, cardsurl, index * 2 + gender);
+    ANIMALS_TYPES.forEach(function (animalType, index) { return [0, 1, 2].forEach(function (gender) {
+        var defaultGender = gender === 0 ? 1 : gender;
+        animalStock.addItemType(animalType * 10 + gender, animalType, cardsurl, index * 2 + defaultGender);
     }); });
     BONUS_ANIMALS_TYPES.forEach(function (animalType, index) { return [1, 2].forEach(function (gender) {
         animalStock.addItemType(animalType * 10 + gender, animalType, cardsurl, 24 + index * 2 + gender);
     }); });
+}
+function getAnimalName(type) {
+    switch (type) {
+        case 1: return _('Snail');
+        case 2: return _('Giraffe');
+        case 3: return _('Mule');
+        case 4: return _('Lion');
+        case 5: return _('Woodpecker');
+        case 6: return _('Cat');
+        case 7: return _('Elephant');
+        case 8: return _('Panda');
+        case 9: return _('Parrot');
+        case 10: return _('Kangaroo');
+        case 11: return _('Rhinoceros');
+        case 12: return _('Bear');
+        case 20: return _('Frog');
+        case 21: return _('Crocodile');
+    }
+    return null;
+}
+function getAnimalGender(type) {
+    switch (type) {
+        case 0: return _('Hermaphrodite');
+        case 1: return _('Male');
+        case 2: return _('Female');
+    }
+    return null;
 }
 function getAnimalTooltip(type) {
     switch (type) {
@@ -82,10 +110,14 @@ function getAnimalTooltip(type) {
     return null;
 }
 function setupAnimalCard(game, cardDiv, uniqueId) {
-    var tooltip = getAnimalTooltip(Math.floor(uniqueId / 10));
-    if (tooltip) {
-        game.addTooltipHtml(cardDiv.id, tooltip);
+    var type = Math.floor(uniqueId / 10);
+    var gender = uniqueId % 10;
+    var tooltip = "<h3>" + getAnimalName(type) + "</h3>\n    <div>" + _('Gender') + " : " + getAnimalGender(gender) + "</div>\n    ";
+    var power = getAnimalTooltip(type);
+    if (power) {
+        tooltip += "<div>" + power + "</div>";
     }
+    game.setTooltip(cardDiv.id, tooltip);
 }
 function getBackgroundPosition(animal) {
     var imagePosition = animal.type >= 20 ?
@@ -116,6 +148,11 @@ var FerrySpot = /** @class */ (function () {
         html += "</div>";
         dojo.place(html, 'center-board');
         dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
+        var tooltip = "\n        <h3>" + _('Ferry') + "</h3>\n        <div>" + _('Animals are loaded into Ferries.') + "</div>\n        <h4>" + _('Gender') + "</h4>\n        <div class=\"noah-tooltip-with-list\">" + _("In a given ferry, there must be:\n<ul>\n    <li>EITHER animals from a single gender</li>\n    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>\n</ul>\nAs such, it\u2019s always the second card played on an ferry which defines the sequence to be played!") + "</div>\n\n        <h4>" + _('Weight') + "</h4>\n        <div>" + _('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).') + "</div>";
+        if (ferry.roomates) {
+            tooltip += "<h4>" + _('Roomates') + "</h4>\n            <div>" + _('in the Ark, it is impossible to place twice the same animal, whether male or female.') + "</div>";
+        }
+        game.setTooltip("ferry-spot-" + position + "-ferry-card", tooltip);
         if (withAnimation) {
             setTimeout(function () { return document.getElementById("ferry-spot-" + position).style.transform = _this.getFerryTransform(); });
         }
@@ -156,6 +193,7 @@ var FerrySpot = /** @class */ (function () {
         this.animals.push(animal);
         dojo.place(html, "ferry-spot-" + this.position);
         var animalDiv = document.getElementById(id);
+        setupAnimalCard(this.game, animalDiv, getUniqueId(animal));
         // animalDiv.style.transform = window.getComputedStyle(animalDiv).transform;
         animalDiv.addEventListener('click', function () { return _this.game.tableCardSelected(animal.id); });
         if (originId) {
@@ -251,6 +289,7 @@ var Table = /** @class */ (function () {
         this.noahLastPosition = noahPosition;
         dojo.place("<div id=\"noah\" class=\"noah-spot\" style=\"transform: " + this.getNoahStyle(noahPosition) + "\"></div>", 'center-board');
         this.spots[noahPosition].setActive(true);
+        game.setTooltip('noah', "<h3>" + _('Noah') + "</h3><div>" + _('Played cards will go to the Ferry in front of Noah.') + "</div>");
         this.updateMargins();
     }
     Table.prototype.getNoahStyle = function (noahPosition) {
@@ -398,6 +437,7 @@ var Noah = /** @class */ (function () {
         this.zoom = 1;
         this.clickAction = 'load';
         this.topDeckOrder = {};
+        this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
@@ -694,6 +734,12 @@ var Noah = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
+    Noah.prototype.setTooltip = function (id, html) {
+        this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
+    };
+    Noah.prototype.setTooltipToClass = function (className, html) {
+        this.addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
+    };
     Noah.prototype.setupPreferences = function () {
         var _this = this;
         // Extract the ID and value from the UI control
@@ -773,6 +819,7 @@ var Noah = /** @class */ (function () {
             handCounter.setValue(player.handCount);
             _this.handCounters[playerId] = handCounter;
         });
+        this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     };
     Noah.prototype.setHand = function (animals) {
         var _this = this;

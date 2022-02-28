@@ -25,7 +25,7 @@
       left: 182px;
       width: 71px;
       height: 71px;
-      pointer-events: none;
+      //pointer-events: none;
       z-index: 4;
       transform-origin: top center;
       transition: transform 0.5s;
@@ -33,7 +33,7 @@
 
       &.selectable {
         cursor: pointer;
-        pointer-events: all;
+        //pointer-events: all;
         border: 5px dashed red;
       }
 

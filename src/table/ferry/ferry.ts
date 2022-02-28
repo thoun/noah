@@ -21,6 +21,24 @@ class FerrySpot {
 
         dojo.place(html, 'center-board');
         dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);
+        let tooltip = `
+        <h3>${_('Ferry')}</h3>
+        <div>${_('Animals are loaded into Ferries.')}</div>
+        <h4>${_('Gender')}</h4>
+        <div class="noah-tooltip-with-list">${_(`In a given ferry, there must be:
+<ul>
+    <li>EITHER animals from a single gender</li>
+    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>
+</ul>
+As such, it’s always the second card played on an ferry which defines the sequence to be played!`)}</div>
+
+        <h4>${_('Weight')}</h4>
+        <div>${_('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).')}</div>`;
+        if (ferry.roomates) {
+            tooltip += `<h4>${_('Roomates')}</h4>
+            <div>${_('in the Ark, it is impossible to place twice the same animal, whether male or female.')}</div>`;
+        }
+        game.setTooltip(`ferry-spot-${position}-ferry-card`, tooltip);
 
         if (withAnimation) {
             setTimeout(() => document.getElementById(`ferry-spot-${position}`).style.transform = this.getFerryTransform());
@@ -69,7 +87,8 @@ class FerrySpot {
 
         dojo.place(html, `ferry-spot-${this.position}`);
 
-        const animalDiv = document.getElementById(id);
+        const animalDiv = document.getElementById(id) as HTMLDivElement;
+        setupAnimalCard(this.game, animalDiv, getUniqueId(animal));
         // animalDiv.style.transform = window.getComputedStyle(animalDiv).transform;
 
         animalDiv.addEventListener('click', () => this.game.tableCardSelected(animal.id));

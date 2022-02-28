@@ -27,7 +27,7 @@ const FERRY_WIDTH = ANIMAL_HEIGHT;
 const FERRY_HEIGHT = ANIMAL_WIDTH;
 
 function getUniqueId(animal: Animal): number {
-    return animal.type * 10 + (animal.gender || 1);
+    return animal.type * 10 + (animal.gender);
 }
 
 function setupAnimalCards(animalStock: Stock) {
@@ -35,12 +35,13 @@ function setupAnimalCards(animalStock: Stock) {
 
     const cardsurl = `${g_gamethemeurl}img/cards.jpg`;
 
-    ANIMALS_TYPES.forEach((animalType, index) => [1, 2].forEach(gender => {
+    ANIMALS_TYPES.forEach((animalType, index) => [0, 1, 2].forEach(gender => {
+        const defaultGender = gender === 0 ? 1 : gender;
         animalStock.addItemType(
             animalType * 10 + gender, 
             animalType, 
             cardsurl, 
-            index * 2 + gender
+            index * 2 + defaultGender
         );
     }));
 
@@ -52,6 +53,36 @@ function setupAnimalCards(animalStock: Stock) {
             24 + index * 2 + gender
         );
     }));
+}
+
+function getAnimalName(type: number) {
+    switch (type) {
+        case 1: return _('Snail');
+        case 2: return _('Giraffe');
+        case 3: return _('Mule');
+        case 4: return _('Lion');
+        case 5: return _('Woodpecker');
+        case 6: return _('Cat');
+        case 7: return _('Elephant');
+        case 8: return _('Panda');
+        case 9: return _('Parrot');
+        case 10: return _('Kangaroo');
+        case 11: return _('Rhinoceros');
+        case 12: return _('Bear');
+
+        case 20: return _('Frog');
+        case 21: return _('Crocodile');
+    }
+    return null;
+}
+
+function getAnimalGender(type: number) {
+    switch (type) {
+        case 0: return _('Hermaphrodite');
+        case 1: return _('Male');
+        case 2: return _('Female');
+    }
+    return null;
 }
 
 function getAnimalTooltip(type: number) {
@@ -74,11 +105,17 @@ function getAnimalTooltip(type: number) {
     return null;
 }
 
-function setupAnimalCard(game: Game, cardDiv: HTMLDivElement, uniqueId: number) {
-    const tooltip = getAnimalTooltip(Math.floor(uniqueId / 10));
-    if (tooltip) {
-        (game as any).addTooltipHtml(cardDiv.id, tooltip);
+function setupAnimalCard(game: NoahGame, cardDiv: HTMLDivElement, uniqueId: number) {
+    const type = Math.floor(uniqueId / 10);
+    const gender = uniqueId % 10;
+    let tooltip = `<h3>${getAnimalName(type)}</h3>
+    <div>${_('Gender')} : ${getAnimalGender(gender)}</div>
+    `;
+    const power = getAnimalTooltip(type);
+    if (power) {
+        tooltip += `<div>${power}</div>`;
     }
+    game.setTooltip(cardDiv.id, tooltip);
 }
 
 function getBackgroundPosition(animal: Animal) {

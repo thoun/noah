@@ -53,6 +53,7 @@ class Table {
         this.noahLastPosition = noahPosition;
         dojo.place(`<div id="noah" class="noah-spot" style="transform: ${this.getNoahStyle(noahPosition)}"></div>`, 'center-board');
         this.spots[noahPosition].setActive(true);
+        game.setTooltip('noah', `<h3>${_('Noah')}</h3><div>${_('Played cards will go to the Ferry in front of Noah.')}</div>`);
 
         this.updateMargins();
     }

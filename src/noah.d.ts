@@ -56,6 +56,7 @@ interface NoahGame extends Game {
     gamedatas: NoahGamedatas;
     moveNoah(destination: number): void;
     tableCardSelected(id: number): void;
+    setTooltip(id: string, html: string): void;
 }
 
 interface EnteringLoadAnimalArgs {

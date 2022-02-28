@@ -33,6 +33,8 @@ class Noah implements NoahGame {
     private opponentsIds: number[];
     private topDeckOrder = {};
 
+    private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -373,6 +375,13 @@ class Noah implements NoahGame {
 
 
     ///////////////////////////////////////////////////
+    public setTooltip(id: string, html: string) {
+        (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
+    }
+    public setTooltipToClass(className: string, html: string) {
+        (this as any).addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
+    }
+
 
     private setupPreferences() {
         // Extract the ID and value from the UI control
@@ -471,6 +480,8 @@ class Noah implements NoahGame {
             handCounter.setValue(player.handCount);
             this.handCounters[playerId] = handCounter;
         });
+
+        this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     }
 
     public setHand(animals: Animal[]) {
@@ -484,7 +495,6 @@ class Noah implements NoahGame {
         dojo.connect(this.playerHand, 'onChangeSelection', this, (_, id: string) => this.onPlayerHandSelectionChanged(Number(id)));
 
         setupAnimalCards(this.playerHand);
-
         animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
     }
 
