@@ -187,8 +187,6 @@ trait ActionTrait {
         if (array_search($destination,  $possiblePositions) === false) {
             throw new Error("Invalid destination for Noah");
         }
-        
-        $playerId = $this->getActivePlayerId();
 
         $this->setGameStateValue(NOAH_POSITION, $destination);
 

@@ -187,6 +187,11 @@ trait StateTrait {
                 $playerId = $this->getActivePlayerId();
             } else {
                 $this->setGameStateValue(PAIR_PLAY_AGAIN, 0);
+                
+                $this->notifyAllPlayers('log', clienttranslate('${player_name} loaded an animal of the same race as the last animal played on the ferry, allowing to play again!'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                ]);
             }
 
             $this->giveExtraTime($playerId);
