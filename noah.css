@@ -327,6 +327,17 @@ html {
   max-width: 90vh;
 }
 
+#full-table[data-hand-position=before] .choose-opponent-discussion_bubble {
+  top: 100%;
+  bottom: unset;
+  cursor: default;
+}
+#full-table[data-hand-position=before] .choose-opponent-discussion_bubble::after {
+  top: -10px;
+  bottom: unset;
+  border-width: 0 15px 15px 15px;
+}
+
 #order-selector {
   display: flex;
   justify-content: center;

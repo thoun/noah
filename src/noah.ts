@@ -416,6 +416,7 @@ class Noah implements NoahGame {
                 } else {
                     table.before(hand);
                 }
+                document.getElementById(`full-table`).dataset.handPosition = prefValue == 2 ? 'after' : 'before';
                 break;
         }
     }
@@ -903,6 +904,8 @@ class Noah implements NoahGame {
         if (this.getPlayerId() == notif.args.playerId) {
             const animal = notif.args._private[this.getPlayerId()].animal;
             this.playerHand.removeFromStockById(''+animal.id, `overall_player_board_${notif.args.toPlayerId}`);
+            const bubble = document.getElementById(`${this.playerHand.container_div.id}_item_${animal.id}`)?.getElementsByClassName('choose-opponent-discussion_bubble')?.[0];
+            bubble?.parentElement.removeChild(bubble);
         } else if (this.getPlayerId() == notif.args.toPlayerId) {
             const animal = notif.args._private[this.getPlayerId()].animal;
             this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id, `overall_player_board_${notif.args.playerId}`);

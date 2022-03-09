@@ -769,6 +769,7 @@ var Noah = /** @class */ (function () {
                 else {
                     table.before(hand);
                 }
+                document.getElementById("full-table").dataset.handPosition = prefValue == 2 ? 'after' : 'before';
                 break;
         }
     };
@@ -1165,9 +1166,12 @@ var Noah = /** @class */ (function () {
         }
     };
     Noah.prototype.notif_animalGiven = function (notif) {
+        var _a, _b;
         if (this.getPlayerId() == notif.args.playerId) {
             var animal = notif.args._private[this.getPlayerId()].animal;
             this.playerHand.removeFromStockById('' + animal.id, "overall_player_board_" + notif.args.toPlayerId);
+            var bubble = (_b = (_a = document.getElementById(this.playerHand.container_div.id + "_item_" + animal.id)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName('choose-opponent-discussion_bubble')) === null || _b === void 0 ? void 0 : _b[0];
+            bubble === null || bubble === void 0 ? void 0 : bubble.parentElement.removeChild(bubble);
         }
         else if (this.getPlayerId() == notif.args.toPlayerId) {
             var animal = notif.args._private[this.getPlayerId()].animal;
