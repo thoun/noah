@@ -191,12 +191,15 @@ trait UtilTrait {
         $useFrog = $this->useFrog();
         $useCrocodile = $this->useCrocodile();
         foreach($this->ANIMALS as $type => $animal) {
-            if ($useFrog && $type == 1) { continue; } // frog remove snails
             if (!$useFrog && $type == 20) { continue; } // frog not used
-            if ($useCrocodile && $type == 3) { continue; } // crocodile remove donkeys
             if (!$useCrocodile && $type == 21) { continue; } // crocodile not used
 
-            $animalCard = [ 'type' => $type, 'nbr' => $animal->cardsByGender[$playerCount] ];
+            $number = $animal->cardsByGender[$playerCount];
+
+            if ($useFrog && $type == 1) { $number -= 2; } // frog remove a couple of snails
+            if ($useCrocodile && $type == 3) { $number -= 1; } // crocodile remove a couple of donkeys
+
+            $animalCard = [ 'type' => $type, 'nbr' => $number ];
             if ($animal->power == POWER_HERMAPHRODITE) {
                 $animals[] = $animalCard + [ 'type_arg' => 0];
             } else {

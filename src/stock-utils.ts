@@ -93,10 +93,10 @@ function getAnimalTooltip(type: number) {
         case 4: return _("<strong>The Lion:</strong> how can we refuse anything to the king of animals? When you play a lion, <strong>draw a card from the hand of the opponent of your choice.</strong> Then, give that opponent a card from your hand (you can return the card you have just taken, if you want).");
         case 5: return _("<strong>The Woodpecker:</strong> this bird has got to be the stupidest animal in all Creation. While its very life is being saved, that idiot cannot help but give in to its vice: drilling holes in the ferry’s wooden hull! On that ferry, <strong>the total maximum weight goes from 21 to 13!</strong> It’s thus not possible to load a woodpecker on a ferry whose weight is already over 13. When a woodpecker is present, reaching 13 makes the ferry leave and grants the same advantages as a regular departure.");
 
-        case 20: return _("<strong>The Frog:</strong> if you choose to play the frogs, you must remove the snails from your game.") + 
+        case 20: return _("<strong>The Frog:</strong> if you choose to play the frogs, a couple of snails is removed.") + 
             `<br><br>` + 
             _("<strong>Larger than the cow?</strong> When added to the ferry, a frog can take a value of 1 to 5 based on the player’s choice. The only condition is that this move allows for a ferry to leave. Otherwise, the value is 1.");
-        case 21: return _("<strong>The crocodile:</strong> If you choose to play the crocodile , you must remove from your game the donkeys.") + 
+        case 21: return _("<strong>The crocodile:</strong> If you choose to play the crocodile, a couple of donkeys is removed.") + 
             `<br><br>` + 
             _("<strong>Crocodile Tears:</strong> The player who plays a crocodile must move back two squares on the scoring track. It is not possible to have a negative score.") + 
             `<br><br>` + 
