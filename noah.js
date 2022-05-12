@@ -144,8 +144,8 @@ var FerrySpot = /** @class */ (function () {
         this.position = position;
         this.animals = [];
         this.empty = false;
-        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot\" " + (withAnimation ? '' : " style=\"transform: " + this.getFerryTransform() + "\"") + ">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>\n            <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\"></div>         \n        ";
-        html += "</div>";
+        var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot\" " + (withAnimation ? '' : " style=\"transform: " + this.getFerryTransform() + "\"") + ">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>      \n        ";
+        html += "</div>\n        <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\" data-position=\"" + position + "\"></div>";
         dojo.place(html, 'center-board');
         dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
         var tooltip = "\n        <h3>" + _('Ferry') + "</h3>\n        <div>" + _('Animals are loaded into Ferries.') + "</div>\n        <h4>" + _('Gender') + "</h4>\n        <div class=\"noah-tooltip-with-list\">" + _("In a given ferry, there must be:\n<ul>\n    <li>EITHER animals from a single gender</li>\n    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>\n</ul>\nAs such, it\u2019s always the second card played on an ferry which defines the sequence to be played!") + "</div>\n\n        <h4>" + _('Weight') + "</h4>\n        <div>" + _('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).') + "</div>";
@@ -494,7 +494,6 @@ var Noah = /** @class */ (function () {
     //
     Noah.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
-        this.setProgressionBackground(Number(args.updateGameProgression));
         switch (stateName) {
             case 'loadAnimal':
                 this.clickAction = 'load';
@@ -1080,14 +1079,6 @@ var Noah = /** @class */ (function () {
         this.updateGiveCardsButton();
         this.hideBubble(cardId);
     };
-    Noah.prototype.setProgressionBackground = function (progression) {
-        if (isNaN(progression)) {
-            return;
-        }
-        var position = (progression * 4.5) - 100;
-        document.getElementById('pagesection_gameview').style.backgroundPositionY = position + "%";
-        dojo.toggleClass('pagesection_gameview', 'downcolor', position > 100);
-    };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     /*
@@ -1205,7 +1196,9 @@ var Noah = /** @class */ (function () {
         var _this = this;
         Object.keys(notif.args.handCount).forEach(function (key) {
             var playerId = Number(key);
-            _this.handCounters[playerId].toValue(notif.args.handCount[playerId]);
+            var count = notif.args.handCount[playerId];
+            // set count to player panel counter
+            _this.handCounters[playerId].toValue(count);
         });
     };
     Noah.prototype.getAnimalColor = function (gender) {

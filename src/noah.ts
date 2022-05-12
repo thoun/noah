@@ -103,8 +103,6 @@ class Noah implements NoahGame {
     public onEnteringState(stateName: string, args: any) {
         log( 'Entering state: '+stateName , args.args);
 
-        this.setProgressionBackground(Number(args.updateGameProgression));
-
         switch (stateName) {
             case 'loadAnimal':
                 this.clickAction = 'load';
@@ -804,16 +802,6 @@ class Noah implements NoahGame {
         this.hideBubble(cardId);
     }
 
-    private setProgressionBackground(progression: number) {
-        if (isNaN(progression)) {
-            return;
-        }
-
-        const position = (progression * 4.5) - 100;
-        document.getElementById('pagesection_gameview').style.backgroundPositionY = `${position}%`;
-        dojo.toggleClass('pagesection_gameview', 'downcolor', position > 100);
-    }
-
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -943,7 +931,9 @@ class Noah implements NoahGame {
     notif_handCount(notif: Notif<NotifHandCountArgs>) {
         Object.keys(notif.args.handCount).forEach(key => {
             const playerId = Number(key);
-            this.handCounters[playerId].toValue(notif.args.handCount[playerId]);
+            const count = notif.args.handCount[playerId];            
+            // set count to player panel counter
+            this.handCounters[playerId].toValue(count);
         });
     }
 

@@ -14,10 +14,10 @@ class FerrySpot {
     ) { 
         let html = `
         <div id="ferry-spot-${position}" class="ferry-spot" ${withAnimation ? '' : ` style="transform: ${this.getFerryTransform()}"`}>
-            <div id="ferry-spot-${position}-ferry-card" class="stockitem ferry-card"></div>
-            <div id="ferry-spot-${position}-weight-indicator" class="weight-indicator remaining-counter"></div>         
+            <div id="ferry-spot-${position}-ferry-card" class="stockitem ferry-card"></div>      
         `;
-        html += `</div>`;
+        html += `</div>
+        <div id="ferry-spot-${position}-weight-indicator" class="weight-indicator remaining-counter" data-position="${position}"></div>`;
 
         dojo.place(html, 'center-board');
         dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);

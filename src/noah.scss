@@ -1,5 +1,3 @@
-@import url(../../../css/csslayer.css);
-
 @import 'table/table';
 @import 'help';
 .player-board {
@@ -48,16 +46,6 @@ html {
 
   #full-table {
     transform-origin: left top;
-  }
-}
-
-#pagesection_gameview {
-  background: url("img/wave.svg") no-repeat #92dcf8;
-  background-size: cover;
-  transition: background-position 0.5s ease;
-
-  &.downcolor {
-    background: url("img/wave.svg") no-repeat #1577c6;
   }
 }
 
