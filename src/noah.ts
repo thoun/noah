@@ -111,9 +111,7 @@ class Noah implements NoahGame {
                 this.onEnteringStateLoadAnimal(args.args as EnteringLoadAnimalArgs);
                 break;
             case 'viewCards':
-                if ((this as any).isCurrentPlayerActive()) {
-                    this.onEnteringStateLookCards(args.args as EnteringLookCardsArgs);
-                }
+                this.onEnteringStateLookCards(args.args as EnteringLookCardsArgs, (this as any).isCurrentPlayerActive());
                 break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args as EnteringMoveNoahArgs);
@@ -176,36 +174,31 @@ class Noah implements NoahGame {
         }
     }
 
-    private onEnteringStateLookCards(args: EnteringLookCardsArgs) {
-        const viewCardsDialog = new ebg.popindialog();
-        viewCardsDialog.create( 'noahViewCardsDialog' );
-        viewCardsDialog.setTitle(dojo.string.substitute(_(" ${player_name} cards"), { player_name: this.getPlayer(args.opponentId).name }));
+    private onEnteringStateLookCards(args: EnteringLookCardsArgs, isActivePlayer: boolean) {
+        const opponent = this.getPlayer(args.opponentId);
+        const giraffeAnimalsDiv = document.getElementById('giraffe-animals');
+        giraffeAnimalsDiv.innerHTML = '';
+        document.getElementById('giraffe-hand-label').innerHTML = dojo.string.substitute(_(" ${player_name} cards"), { player_name: `<span style="color: #${opponent.color}">${opponent.name}</span>` });
         
-        var html = `<div id="opponent-hand"></div>`;
+        const giraffeHandWrap = document.getElementById('giraffe-hand-wrap');
+        giraffeHandWrap.classList.remove('hidden');
+        giraffeHandWrap.style.boxShadow = `0 0 3px 3px #${opponent.color}`;
         
-        // Show the dialog
-        viewCardsDialog.setContent(html);
-
-        const opponentHand = new ebg.stock() as Stock;
-        opponentHand.create( this, $('opponent-hand'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
-        opponentHand.setSelectionMode(0);
-        opponentHand.centerItems = true;
-        //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
-        setupAnimalCards(opponentHand);
-        args.animals.forEach(animal => opponentHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
-
-        viewCardsDialog.show();
-        setTimeout(() => opponentHand.updateDisplay(), 100);
-
-        // Replace the function call when it's clicked
-        viewCardsDialog.replaceCloseCallback(() => {
-            if(!(this as any).checkAction('seen'))
-            return;
-        
-            this.takeAction("seen");
-
-            viewCardsDialog.destroy();
-        });
+        giraffeAnimalsDiv.classList.toggle('text', !isActivePlayer);
+        if (isActivePlayer) {
+            const giraffeHand = new ebg.stock() as Stock;
+            giraffeHand.create( this, $('giraffe-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+            giraffeHand.setSelectionMode(0);
+            giraffeHand.centerItems = true;
+            setupAnimalCards(giraffeHand);
+            args.animals.forEach(animal => giraffeHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+        } else {
+            const active = this.getPlayer(Number((this as any).getActivePlayerId()));
+            document.getElementById('giraffe-animals').innerHTML = '<div>' + dojo.string.substitute(_("${active_player_name} is looking at ${player_name} cards"), { 
+                active_player_name: `<span style="color: #${active.color}">${active.name}</span>`,
+                player_name: `<span style="color: #${opponent.color}">${opponent.name}</span>` 
+            }) + '</div>';
+        }
     }
 
     private onEnteringStateReplaceOnTopDeck(args: EnteringReplaceOnTopDeckArgs) {
@@ -265,6 +258,8 @@ class Noah implements NoahGame {
             case 'loadAnimal':
                 this.onLeavingStateLoadAnimal();
                 break;
+            case 'viewCards':
+                this.onLeavingStateLookCards();
             case 'moveNoah':
                 this.onLeavingStateMoveNoah();
                 break;
@@ -287,6 +282,13 @@ class Noah implements NoahGame {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
         dojo.query('.stockitem').removeClass('disabled');
+    }
+
+    onLeavingStateLookCards() {
+        const giraffeHandWrap = document.getElementById('giraffe-hand-wrap');
+        giraffeHandWrap.classList.add('hidden');
+        giraffeHandWrap.style.boxShadow = '';
+        document.getElementById('giraffe-animals').innerHTML = '';
     }
 
     onLeavingStateMoveNoah() {
@@ -327,7 +329,9 @@ class Noah implements NoahGame {
                         (this as any).addActionButton('takeAllAnimals-button', _('Take all animals'), () => this.takeAllAnimals(), null, null, 'red');
                     }
                     break;
-
+                case 'viewCards':
+                    (this as any).addActionButton('seen-button', _('Seen'), () => this.seen());
+                    break;
                 case 'chooseGender':
                     (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
                     (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
@@ -407,7 +411,7 @@ class Noah implements NoahGame {
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
             case 201: 
-                const hand = document.getElementById('myhand-wrap');
+                const hand = document.getElementById('hands');
                 const table = document.getElementById('table');
                 if (prefValue == 2) {
                     table.after(hand);
@@ -551,6 +555,14 @@ class Noah implements NoahGame {
         this.takeAction('loadAnimal', {
             id
         });
+    }
+
+    private seen() {
+        if(!(this as any).checkAction('seen')) {
+            return;
+        }
+
+        this.takeAction('seen');
     }
 
     private takeAllAnimals() {

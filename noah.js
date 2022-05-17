@@ -502,9 +502,7 @@ var Noah = /** @class */ (function () {
                 this.onEnteringStateLoadAnimal(args.args);
                 break;
             case 'viewCards':
-                if (this.isCurrentPlayerActive()) {
-                    this.onEnteringStateLookCards(args.args);
-                }
+                this.onEnteringStateLookCards(args.args, this.isCurrentPlayerActive());
                 break;
             case 'moveNoah':
                 this.onEnteringStateMoveNoah(args.args);
@@ -564,30 +562,30 @@ var Noah = /** @class */ (function () {
             this.playerHand.setSelectionMode(1);
         }
     };
-    Noah.prototype.onEnteringStateLookCards = function (args) {
-        var _this = this;
-        var viewCardsDialog = new ebg.popindialog();
-        viewCardsDialog.create('noahViewCardsDialog');
-        viewCardsDialog.setTitle(dojo.string.substitute(_(" ${player_name} cards"), { player_name: this.getPlayer(args.opponentId).name }));
-        var html = "<div id=\"opponent-hand\"></div>";
-        // Show the dialog
-        viewCardsDialog.setContent(html);
-        var opponentHand = new ebg.stock();
-        opponentHand.create(this, $('opponent-hand'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
-        opponentHand.setSelectionMode(0);
-        opponentHand.centerItems = true;
-        //opponentHand.onItemCreate = (card_div: HTMLDivElement, card_type_id: number) => this.mowCards.setupNewCard(this, card_div, card_type_id); 
-        setupAnimalCards(opponentHand);
-        args.animals.forEach(function (animal) { return opponentHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
-        viewCardsDialog.show();
-        setTimeout(function () { return opponentHand.updateDisplay(); }, 100);
-        // Replace the function call when it's clicked
-        viewCardsDialog.replaceCloseCallback(function () {
-            if (!_this.checkAction('seen'))
-                return;
-            _this.takeAction("seen");
-            viewCardsDialog.destroy();
-        });
+    Noah.prototype.onEnteringStateLookCards = function (args, isActivePlayer) {
+        var opponent = this.getPlayer(args.opponentId);
+        var giraffeAnimalsDiv = document.getElementById('giraffe-animals');
+        giraffeAnimalsDiv.innerHTML = '';
+        document.getElementById('giraffe-hand-label').innerHTML = dojo.string.substitute(_(" ${player_name} cards"), { player_name: "<span style=\"color: #" + opponent.color + "\">" + opponent.name + "</span>" });
+        var giraffeHandWrap = document.getElementById('giraffe-hand-wrap');
+        giraffeHandWrap.classList.remove('hidden');
+        giraffeHandWrap.style.boxShadow = "0 0 3px 3px #" + opponent.color;
+        giraffeAnimalsDiv.classList.toggle('text', !isActivePlayer);
+        if (isActivePlayer) {
+            var giraffeHand_1 = new ebg.stock();
+            giraffeHand_1.create(this, $('giraffe-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
+            giraffeHand_1.setSelectionMode(0);
+            giraffeHand_1.centerItems = true;
+            setupAnimalCards(giraffeHand_1);
+            args.animals.forEach(function (animal) { return giraffeHand_1.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        }
+        else {
+            var active = this.getPlayer(Number(this.getActivePlayerId()));
+            document.getElementById('giraffe-animals').innerHTML = '<div>' + dojo.string.substitute(_("${active_player_name} is looking at ${player_name} cards"), {
+                active_player_name: "<span style=\"color: #" + active.color + "\">" + active.name + "</span>",
+                player_name: "<span style=\"color: #" + opponent.color + "\">" + opponent.name + "</span>"
+            }) + '</div>';
+        }
     };
     Noah.prototype.onEnteringStateReplaceOnTopDeck = function (args) {
         this.table.makeCardsSelectable(args.animals);
@@ -640,6 +638,8 @@ var Noah = /** @class */ (function () {
             case 'loadAnimal':
                 this.onLeavingStateLoadAnimal();
                 break;
+            case 'viewCards':
+                this.onLeavingStateLookCards();
             case 'moveNoah':
                 this.onLeavingStateMoveNoah();
                 break;
@@ -661,6 +661,12 @@ var Noah = /** @class */ (function () {
         this.playerHand.setSelectionMode(0);
         this.playerHand.unselectAll();
         dojo.query('.stockitem').removeClass('disabled');
+    };
+    Noah.prototype.onLeavingStateLookCards = function () {
+        var giraffeHandWrap = document.getElementById('giraffe-hand-wrap');
+        giraffeHandWrap.classList.add('hidden');
+        giraffeHandWrap.style.boxShadow = '';
+        document.getElementById('giraffe-animals').innerHTML = '';
     };
     Noah.prototype.onLeavingStateMoveNoah = function () {
         dojo.query('.noah-spot').removeClass('selectable');
@@ -695,6 +701,9 @@ var Noah = /** @class */ (function () {
                     if (!loadAnimalArgs.selectableAnimals.length) {
                         this.addActionButton('takeAllAnimals-button', _('Take all animals'), function () { return _this.takeAllAnimals(); }, null, null, 'red');
                     }
+                    break;
+                case 'viewCards':
+                    this.addActionButton('seen-button', _('Seen'), function () { return _this.seen(); });
                     break;
                 case 'chooseGender':
                     this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
@@ -760,7 +769,7 @@ var Noah = /** @class */ (function () {
     Noah.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
             case 201:
-                var hand = document.getElementById('myhand-wrap');
+                var hand = document.getElementById('hands');
                 var table = document.getElementById('table');
                 if (prefValue == 2) {
                     table.after(hand);
@@ -887,6 +896,12 @@ var Noah = /** @class */ (function () {
         this.takeAction('loadAnimal', {
             id: id
         });
+    };
+    Noah.prototype.seen = function () {
+        if (!this.checkAction('seen')) {
+            return;
+        }
+        this.takeAction('seen');
     };
     Noah.prototype.takeAllAnimals = function () {
         if (!this.checkAction('takeAllAnimals')) {

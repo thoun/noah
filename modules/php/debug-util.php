@@ -13,11 +13,11 @@ trait DebugUtilTrait {
 
         //$this->DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 2");
         //$this->debugSetPoints(19);
-        $this->debugSetAnimalsInFerry(0, [
+        /*$this->debugSetAnimalsInFerry(0, [
             $this->debugGetAnimalByType(7, 1),
             $this->debugGetAnimalByType(7, 2),
-        ]);
-        //$this->debugSetAnimalInHand(2343492, 2, 1);
+        ]);*/
+        $this->debugSetAnimalInHand(2343492, 2, 1);
         $this->debugSetAnimalInHand(2343492, 1, 0);
 
         // Activate first player must be commented in setup if this is used

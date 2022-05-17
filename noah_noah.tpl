@@ -16,9 +16,15 @@
                 <div id="remaining-ferry-counter" class="remaining-counter"></div>
             </div>
         </div>
-        <div id="myhand-wrap" class="whiteblock">
-            <div id="my-hand-label"><h3>{MY_HAND}</h3></div>
-            <div id="my-animals"></div>
+        <div id="hands">
+            <div id="myhand-wrap" class="whiteblock hand-wrap">
+                <div id="my-hand-label" class="hand-label"><h3>{MY_HAND}</h3></div>
+                <div id="my-animals" class="animals"></div>
+            </div>
+            <div id="giraffe-hand-wrap" class="whiteblock hand-wrap hidden">
+                <div class="hand-label"><h3 id="giraffe-hand-label"></h3></div>
+                <div id="giraffe-animals" class="animals"></div>
+            </div>
         </div>
     </div>
     <div id="zoom-controls">

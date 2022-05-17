@@ -77,11 +77,15 @@ html {
 }
 
 
-#myhand-wrap {
+.hand-wrap {
   display: flex;
   padding: 0;
 
-  #my-hand-label {
+  &.hidden {
+    display: none;
+  }
+
+  .hand-label {
     display: flex;
     padding-right: 5px;
 
@@ -92,11 +96,21 @@ html {
       transform: rotate(180deg);    
       //color: white;
       padding: 5px;
+      text-overflow: ellipsis;
     }
   }
 
-  #my-animals {
+  .animals {
     flex: 1;
+
+    &.text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      font-size: 120%;
+    }
   }
 }
 

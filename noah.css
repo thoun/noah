@@ -311,23 +311,35 @@ html {
   cursor: not-allowed;
 }
 
-#myhand-wrap {
+.hand-wrap {
   display: flex;
   padding: 0;
 }
-#myhand-wrap #my-hand-label {
+.hand-wrap.hidden {
+  display: none;
+}
+.hand-wrap .hand-label {
   display: flex;
   padding-right: 5px;
 }
-#myhand-wrap #my-hand-label h3 {
+.hand-wrap .hand-label h3 {
   flex: 1;
   text-align: center;
   writing-mode: vertical-lr;
   transform: rotate(180deg);
   padding: 5px;
+  text-overflow: ellipsis;
 }
-#myhand-wrap #my-animals {
+.hand-wrap .animals {
   flex: 1;
+}
+.hand-wrap .animals.text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  font-size: 120%;
 }
 
 .spectatorMode #myhand-wrap {
