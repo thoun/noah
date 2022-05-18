@@ -18,6 +18,18 @@ interface Ferry {
     roomates: boolean;
 }
 
+interface HandSort {
+    type: 'weight' | 'gender',
+    direction: 'asc' | 'desc',
+    currentWeights: any
+}
+
+interface AnimalTypeForSorting {
+    uniqueId: number;
+    gender: number;
+    weight: number;
+}
+
 interface NoahPlayer extends Player {
     handCount: number;
 }
@@ -43,6 +55,7 @@ interface NoahGamedatas {
     topFerry: Ferry;
     noahPosition: number;
     remainingFerries: number;
+    sentFerries: number;
     remainingAnimals: number;
 
     handAnimals: Animal[];
@@ -50,6 +63,9 @@ interface NoahGamedatas {
     roundNumber: number;
     variant: boolean;
     solo: boolean;
+    WEIGHTS: {
+        [animalId: number]: number;
+    }
 }
 
 interface NoahGame extends Game {
@@ -150,6 +166,7 @@ interface NotifDepartureArgs {
     newFerry: Ferry;
     topFerry: Ferry;
     remainingFerries: number;
+    sentFerries: number;
 }
 
 interface NotifRemovedCardArgs {

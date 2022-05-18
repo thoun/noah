@@ -166,6 +166,7 @@ class Noah extends Table {
 
         $result['noahPosition'] = $this->getNoahPosition();
         $result['remainingFerries'] = intval($this->ferries->countCardInLocation('deck'));
+        $result['sentFerries'] = intval($this->ferries->countCardInLocation('discard'));
         $result['remainingAnimals'] = intval($this->animals->countCardInLocation('deck'));
 
         $result['handAnimals'] = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $currentPlayerId));
@@ -173,6 +174,7 @@ class Noah extends Table {
         $result['roundNumber'] = intval($this->getGameStateValue(ROUND_NUMBER));
         $result['variant'] = $this->isVariant();
         $result['solo'] = count($result['players']) == 1;
+        $result['WEIGHTS'] = array_map(fn($animalCard) => $animalCard->weight, $this->ANIMALS);
   
         return $result;
     }

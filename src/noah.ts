@@ -35,6 +35,12 @@ class Noah implements NoahGame {
 
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
+    private sort: HandSort = {
+        type: 'weight',
+        direction: 'asc',
+        currentWeights: null
+    };
+
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -64,7 +70,7 @@ class Noah implements NoahGame {
 
         this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.sentFerries, gamedatas.topFerry);
 
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
@@ -499,6 +505,10 @@ class Noah implements NoahGame {
 
         setupAnimalCards(this.playerHand);
         animals.forEach(animal => this.playerHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
+
+        document.getElementById(`sortByWeight`).addEventListener('click', () => this.sortByWeight());
+        document.getElementById(`sortByGender`).addEventListener('click', () => this.sortByGender());
+        this.updateHandWeights();
     }
 
     public onPlayerHandSelectionChanged(id: number) {
@@ -524,6 +534,49 @@ class Noah implements NoahGame {
                 }
             }
         }
+    }
+
+    private updateHandWeights() {
+        const weights = {};
+
+        const animalTypes: AnimalTypeForSorting[] = [];
+
+        [...ANIMALS_TYPES, ...BONUS_ANIMALS_TYPES].forEach(animalType => [0, 1, 2].forEach(gender => {
+            animalTypes.push({
+                uniqueId: animalType * 10 + gender,
+                gender,
+                weight: this.gamedatas.WEIGHTS[animalType]
+            });
+        }));
+    
+        if (this.sort.type === 'weight') {
+            animalTypes.sort((a, b) => a.weight === b.weight ? b.gender - a.gender : this.sort.direction === 'asc' ? a.weight - b.weight : b.weight - a.weight);
+        } else if (this.sort.type === 'gender') {
+            animalTypes.sort((a, b) => a.gender === b.gender ? a.weight - b.weight : this.sort.direction === 'asc' ? a.gender - b.gender : b.gender - a.gender);
+        }
+
+        animalTypes.forEach((animalType, index) => weights[animalType.uniqueId] = index);
+
+        this.playerHand.changeItemsWeight(weights);
+    }
+
+    private sortByWeight() {
+        if (this.sort.type == 'weight') {
+            this.sort.direction = this.sort.direction == 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sort.type = 'weight';
+            this.sort.direction = 'asc';
+        }
+        this.updateHandWeights();
+    }
+    private sortByGender() {
+        if (this.sort.type == 'gender') {
+            this.sort.direction = this.sort.direction == 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sort.type = 'gender';
+            this.sort.direction = 'asc';
+        }
+        this.updateHandWeights();
     }
 
     private updateGiveCardsButton() {
@@ -928,7 +981,7 @@ class Noah implements NoahGame {
     }
 
     notif_departure(notif: Notif<NotifDepartureArgs>) {
-        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries, notif.args.sentFerries);
     }
     
     notif_removedCard(notif: Notif<NotifRemovedCardArgs>) {

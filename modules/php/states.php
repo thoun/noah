@@ -127,6 +127,7 @@ trait StateTrait {
             'position' => $position,
             'newFerry' => $newFerry,
             'remainingFerries' => $remainingFerries,
+            'sentFerries' => intval($this->ferries->countCardInLocation('discard')),
             'topFerry' => $topFerry,
         ]);
 

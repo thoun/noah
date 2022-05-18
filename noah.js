@@ -251,7 +251,7 @@ var FerrySpot = /** @class */ (function () {
 var POINTS_RADIUS = 194;
 var MAX_SCORE = 26;
 var Table = /** @class */ (function () {
-    function Table(game, players, ferries, noahPosition, remainingFerries, topFerry) {
+    function Table(game, players, ferries, noahPosition, remainingFerries, sentFerries, topFerry) {
         var _this = this;
         this.game = game;
         this.noahPosition = noahPosition;
@@ -282,6 +282,9 @@ var Table = /** @class */ (function () {
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(remainingFerries);
+        this.sentFerriesCounter = new ebg.counter();
+        this.sentFerriesCounter.create('sent-ferry-counter');
+        this.sentFerriesCounter.setValue(sentFerries);
         if (topFerry) {
             dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
         }
@@ -392,11 +395,12 @@ var Table = /** @class */ (function () {
         document.getElementById('ferry-deck').style.visibility = visibility;
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     };
-    Table.prototype.departure = function (position, topFerry, newFerry, remainingFerries) {
+    Table.prototype.departure = function (position, topFerry, newFerry, remainingFerries, sentFerries) {
         if (topFerry) {
             dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
         }
         this.setRemainingFerries(remainingFerries);
+        this.sentFerriesCounter.setValue(sentFerries);
         this.spots[position].departure();
         // ferry is destroy, we build a new one
         this.spots[position] = new FerrySpot(this.game, position, newFerry, true);
@@ -425,6 +429,11 @@ var Table = /** @class */ (function () {
     };
     return Table;
 }());
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var ANIMATION_MS = 500;
 var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
 var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0];
@@ -438,6 +447,11 @@ var Noah = /** @class */ (function () {
         this.clickAction = 'load';
         this.topDeckOrder = {};
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        this.sort = {
+            type: 'weight',
+            direction: 'asc',
+            currentWeights: null
+        };
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
@@ -462,7 +476,7 @@ var Noah = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.createPlayerPanels(gamedatas);
         this.setHand(gamedatas.handAnimals);
-        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.topFerry);
+        this.table = new Table(this, Object.values(gamedatas.players), gamedatas.ferries, gamedatas.noahPosition, gamedatas.remainingFerries, gamedatas.sentFerries, gamedatas.topFerry);
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
         this.roundCounter.setValue(gamedatas.roundNumber);
@@ -842,6 +856,9 @@ var Noah = /** @class */ (function () {
         dojo.connect(this.playerHand, 'onChangeSelection', this, function (_, id) { return _this.onPlayerHandSelectionChanged(Number(id)); });
         setupAnimalCards(this.playerHand);
         animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
+        document.getElementById("sortByWeight").addEventListener('click', function () { return _this.sortByWeight(); });
+        document.getElementById("sortByGender").addEventListener('click', function () { return _this.sortByGender(); });
+        this.updateHandWeights();
     };
     Noah.prototype.onPlayerHandSelectionChanged = function (id) {
         var added = (this.playerHand.getSelectedItems().some(function (item) { return Number(item.id) == id; }));
@@ -871,6 +888,46 @@ var Noah = /** @class */ (function () {
                 }
             }
         }
+    };
+    Noah.prototype.updateHandWeights = function () {
+        var _this = this;
+        var weights = {};
+        var animalTypes = [];
+        __spreadArray(__spreadArray([], ANIMALS_TYPES), BONUS_ANIMALS_TYPES).forEach(function (animalType) { return [0, 1, 2].forEach(function (gender) {
+            animalTypes.push({
+                uniqueId: animalType * 10 + gender,
+                gender: gender,
+                weight: _this.gamedatas.WEIGHTS[animalType]
+            });
+        }); });
+        if (this.sort.type === 'weight') {
+            animalTypes.sort(function (a, b) { return a.weight === b.weight ? b.gender - a.gender : _this.sort.direction === 'asc' ? a.weight - b.weight : b.weight - a.weight; });
+        }
+        else if (this.sort.type === 'gender') {
+            animalTypes.sort(function (a, b) { return a.gender === b.gender ? a.weight - b.weight : _this.sort.direction === 'asc' ? a.gender - b.gender : b.gender - a.gender; });
+        }
+        animalTypes.forEach(function (animalType, index) { return weights[animalType.uniqueId] = index; });
+        this.playerHand.changeItemsWeight(weights);
+    };
+    Noah.prototype.sortByWeight = function () {
+        if (this.sort.type == 'weight') {
+            this.sort.direction = this.sort.direction == 'asc' ? 'desc' : 'asc';
+        }
+        else {
+            this.sort.type = 'weight';
+            this.sort.direction = 'asc';
+        }
+        this.updateHandWeights();
+    };
+    Noah.prototype.sortByGender = function () {
+        if (this.sort.type == 'gender') {
+            this.sort.direction = this.sort.direction == 'asc' ? 'desc' : 'asc';
+        }
+        else {
+            this.sort.type = 'gender';
+            this.sort.direction = 'asc';
+        }
+        this.updateHandWeights();
     };
     Noah.prototype.updateGiveCardsButton = function () {
         dojo.toggleClass('giveCards-button', 'disabled', this.giveCardsTo.size != this.cardsToGive);
@@ -1198,7 +1255,7 @@ var Noah = /** @class */ (function () {
         }
     };
     Noah.prototype.notif_departure = function (notif) {
-        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries);
+        this.table.departure(notif.args.position, notif.args.topFerry, notif.args.newFerry, notif.args.remainingFerries, notif.args.sentFerries);
     };
     Noah.prototype.notif_removedCard = function (notif) {
         this.playerHand.removeFromStockById('' + notif.args.animal.id, notif.args.fromPlayerId ? 'overall_player_board_' + notif.args.fromPlayerId : undefined);

@@ -7,6 +7,7 @@ class Table {
     private spots: FerrySpot[] = [];
 
     private ferriesCounter: Counter;
+    private sentFerriesCounter: Counter;
 
     private noahLastPosition = 0;
 
@@ -16,6 +17,7 @@ class Table {
         ferries: Ferry[],
         private noahPosition: number,
         remainingFerries: number,
+        sentFerries: number,
         topFerry: Ferry,
     ) {
         let html = '';
@@ -44,6 +46,9 @@ class Table {
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
         this.setRemainingFerries(remainingFerries);
+        this.sentFerriesCounter = new ebg.counter();
+        this.sentFerriesCounter.create('sent-ferry-counter');
+        this.sentFerriesCounter.setValue(sentFerries);
         
         if (topFerry) {
             dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
@@ -185,12 +190,13 @@ class Table {
         document.getElementById('remaining-ferry-counter').style.visibility = visibility;
     }
 
-    public departure(position: number, topFerry: Ferry, newFerry: Ferry, remainingFerries: number) {
+    public departure(position: number, topFerry: Ferry, newFerry: Ferry, remainingFerries: number, sentFerries: number) {
         if (topFerry) {
             dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
         }
 
         this.setRemainingFerries(remainingFerries);
+        this.sentFerriesCounter.setValue(sentFerries);
 
         this.spots[position].departure();
         // ferry is destroy, we build a new one

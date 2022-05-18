@@ -77,13 +77,22 @@
       text-align: center;
       white-space: nowrap;    
     }
-    
-    #remaining-ferry-counter {
-      top: 300px;
-      left: 136px;
+
+    .table-counter-wrapper {
       width: 179px;
       text-shadow: 0 0 2px white, 0 0 4px white, 0 0 6px white;
       color: black;
+      font-size: 85%;
+    }
+    
+    #remaining-ferry-counter-wrapper {
+      bottom: 307px;
+      left: 136px;
+    }
+    
+    #sent-ferry-counter-wrapper {
+      top: 296px;
+      left: 136px;
     }
 
   }

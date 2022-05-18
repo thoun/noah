@@ -34,4 +34,5 @@ interface Stock {
     removeAllTo: (to: string) => void;
     unselectItem: (id: string) => void;
     setOverlap: (horizontal_percent: number, vertical_percent: number) => void;
+    changeItemsWeight(newWeights: {[cardType: number]: number}): void;
 }
