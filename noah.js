@@ -217,6 +217,9 @@ var FerrySpot = /** @class */ (function () {
         }
     };
     FerrySpot.prototype.departure = function () {
+        var _a;
+        var counter = document.getElementById("ferry-spot-" + this.position + "-weight-indicator");
+        (_a = counter.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(counter);
         Array.from(document.querySelectorAll("[id^=\"ferry-spot-" + this.position + "\"]")).forEach(function (elem) {
             return elem.id = "departure-" + elem.id;
         });

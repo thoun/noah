@@ -117,6 +117,9 @@ As such, it’s always the second card played on an ferry which defines the sequ
     }
 
     public departure() {
+        const counter = document.getElementById(`ferry-spot-${this.position}-weight-indicator`) as HTMLDivElement;
+        counter.parentElement?.removeChild(counter);
+
         (Array.from(document.querySelectorAll(`[id^="ferry-spot-${this.position}"]`)) as HTMLDivElement[]).forEach(elem => 
             elem.id = `departure-${elem.id}`
         );
