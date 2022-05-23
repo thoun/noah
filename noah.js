@@ -846,6 +846,7 @@ var Noah = /** @class */ (function () {
             _this.handCounters[playerId] = handCounter;
         });
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        dojo.place("\n            <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                    <div id=\"remaining-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Remaining ferries on deck:") + " <span id=\"remaining-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                    <div id=\"sent-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Ferries sent to the Great Ark:") + " <span id=\"sent-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                   \n                </div>\n            </div>", "player_boards", 'before');
     };
     Noah.prototype.setHand = function (animals) {
         var _this = this;
@@ -861,6 +862,8 @@ var Noah = /** @class */ (function () {
         animals.forEach(function (animal) { return _this.playerHand.addToStockWithId(getUniqueId(animal), '' + animal.id); });
         document.getElementById("sortByWeight").addEventListener('click', function () { return _this.sortByWeight(); });
         document.getElementById("sortByGender").addEventListener('click', function () { return _this.sortByGender(); });
+        this.setTooltip('sortByWeight', _('Sort hand cards by weight'));
+        this.setTooltip('sortByGender', _('Sort hand cards by gender'));
         this.updateHandWeights();
     };
     Noah.prototype.onPlayerHandSelectionChanged = function (id) {
@@ -909,6 +912,7 @@ var Noah = /** @class */ (function () {
         else if (this.sort.type === 'gender') {
             animalTypes.sort(function (a, b) { return a.gender === b.gender ? a.weight - b.weight : _this.sort.direction === 'asc' ? a.gender - b.gender : b.gender - a.gender; });
         }
+        document.getElementById(this.sort.type === 'weight' ? "sortByWeight" : "sortByGender").dataset.direction = this.sort.direction;
         animalTypes.forEach(function (animalType, index) { return weights[animalType.uniqueId] = index; });
         this.playerHand.changeItemsWeight(weights);
     };

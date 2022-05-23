@@ -87,6 +87,8 @@ html {
 
   .hand-label {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     padding-right: 5px;
 
     h3 {
@@ -97,6 +99,41 @@ html {
       //color: white;
       padding: 5px;
       text-overflow: ellipsis;
+    }
+  }
+
+  .sort-button {
+    display: inline-block;
+    width: auto;
+    background: #1577c6;
+    margin: 1px;
+    padding: 3px;
+    border-radius: 5px;
+
+    &[data-direction="asc"] {
+      .sort-icon {
+        background-position-x: 0%;
+      }
+    }
+    &[data-direction="desc"] {
+      .sort-icon {
+        background-position-x: 100%;
+      }
+    }
+
+    .sort-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      background: url('img/sort-icons.png');
+  
+      &[data-type="weight"] {
+        background-position-y: 0%;
+      }
+      &[data-type="gender"] {
+        background-position-y: 100%;
+      }
     }
   }
 
@@ -197,4 +234,14 @@ html {
   li {
     list-style: unset;
   }
+}
+
+.table-counter-wrapper {
+  white-space: nowrap; 
+  color: black;
+  font-size: 85%;
+}
+
+.remaining-counter-number {
+  font-weight: bold;
 }

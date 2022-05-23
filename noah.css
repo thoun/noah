@@ -149,20 +149,6 @@
   text-align: center;
   white-space: nowrap;
 }
-#table #center-board .table-counter-wrapper {
-  width: 179px;
-  text-shadow: 0 0 2px white, 0 0 4px white, 0 0 6px white;
-  color: black;
-  font-size: 85%;
-}
-#table #center-board #remaining-ferry-counter-wrapper {
-  bottom: 307px;
-  left: 136px;
-}
-#table #center-board #sent-ferry-counter-wrapper {
-  top: 296px;
-  left: 136px;
-}
 
 #noah-help-button {
   position: fixed;
@@ -327,6 +313,8 @@ html {
 }
 .hand-wrap .hand-label {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   padding-right: 5px;
 }
 .hand-wrap .hand-label h3 {
@@ -336,6 +324,33 @@ html {
   transform: rotate(180deg);
   padding: 5px;
   text-overflow: ellipsis;
+}
+.hand-wrap .sort-button {
+  display: inline-block;
+  width: auto;
+  background: #1577c6;
+  margin: 1px;
+  padding: 3px;
+  border-radius: 5px;
+}
+.hand-wrap .sort-button[data-direction=asc] .sort-icon {
+  background-position-x: 0%;
+}
+.hand-wrap .sort-button[data-direction=desc] .sort-icon {
+  background-position-x: 100%;
+}
+.hand-wrap .sort-button .sort-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background: url("img/sort-icons.png");
+}
+.hand-wrap .sort-button .sort-icon[data-type=weight] {
+  background-position-y: 0%;
+}
+.hand-wrap .sort-button .sort-icon[data-type=gender] {
+  background-position-y: 100%;
 }
 .hand-wrap .animals {
   flex: 1;
@@ -417,4 +432,14 @@ html {
 
 .noah-tooltip-with-list li {
   list-style: unset;
+}
+
+.table-counter-wrapper {
+  white-space: nowrap;
+  color: black;
+  font-size: 85%;
+}
+
+.remaining-counter-number {
+  font-weight: bold;
 }

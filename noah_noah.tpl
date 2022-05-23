@@ -13,16 +13,14 @@
             </div>
             <div id="center-board">
                 <div id="ferry-deck" class="stockitem"></div>
-                <div id="remaining-ferry-counter-wrapper" class="remaining-counter table-counter-wrapper">{REMAINING_FERRIES_LABEL} <span id="remaining-ferry-counter"></span></div>
-                <div id="sent-ferry-counter-wrapper" class="remaining-counter table-counter-wrapper">{SENT_FERRIES_LABEL} <span id="sent-ferry-counter"></span></div>
             </div>
         </div>
         <div id="hands">
             <div id="myhand-wrap" class="whiteblock hand-wrap">
-                <div id="my-hand-label" class="hand-label"><h3>{MY_HAND}</h3></div>
-                <div>
-                    <button id="sortByWeight">Sort by weight</button>
-                    <button id="sortByGender">Sort by gender</button>
+                <div id="my-hand-label" class="hand-label">
+                    <button id="sortByWeight" class="sort-button"><div class="sort-icon" data-type="weight"></div></button>
+                    <button id="sortByGender" class="sort-button"><div class="sort-icon" data-type="gender"></div></button>
+                    <h3>{MY_HAND}</h3>
                 </div>
                 <div id="my-animals" class="animals"></div>
             </div>

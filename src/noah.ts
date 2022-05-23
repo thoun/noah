@@ -491,6 +491,16 @@ class Noah implements NoahGame {
         });
 
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+
+        dojo.place(`
+            <div id="overall_player_board_0" class="player-board current-player-board">					
+                <div class="player_board_inner" id="player_board_inner_982fff">
+
+                    <div id="remaining-ferry-counter-wrapper" class="remaining-counter table-counter-wrapper">${_("Remaining ferries on deck:")} <span id="remaining-ferry-counter" class="remaining-counter-number"></span></div>
+                    <div id="sent-ferry-counter-wrapper" class="remaining-counter table-counter-wrapper">${_("Ferries sent to the Great Ark:")} <span id="sent-ferry-counter" class="remaining-counter-number"></span></div>
+                   
+                </div>
+            </div>`, `player_boards`, 'before');
     }
 
     public setHand(animals: Animal[]) {
@@ -508,6 +518,10 @@ class Noah implements NoahGame {
 
         document.getElementById(`sortByWeight`).addEventListener('click', () => this.sortByWeight());
         document.getElementById(`sortByGender`).addEventListener('click', () => this.sortByGender());
+
+        this.setTooltip('sortByWeight', _('Sort hand cards by weight'));        
+        this.setTooltip('sortByGender', _('Sort hand cards by gender'));
+
         this.updateHandWeights();
     }
 
@@ -551,9 +565,12 @@ class Noah implements NoahGame {
     
         if (this.sort.type === 'weight') {
             animalTypes.sort((a, b) => a.weight === b.weight ? b.gender - a.gender : this.sort.direction === 'asc' ? a.weight - b.weight : b.weight - a.weight);
+            
         } else if (this.sort.type === 'gender') {
             animalTypes.sort((a, b) => a.gender === b.gender ? a.weight - b.weight : this.sort.direction === 'asc' ? a.gender - b.gender : b.gender - a.gender);
         }
+
+        document.getElementById(this.sort.type === 'weight' ? `sortByWeight` : `sortByGender`).dataset.direction = this.sort.direction;
 
         animalTypes.forEach((animalType, index) => weights[animalType.uniqueId] = index);
 

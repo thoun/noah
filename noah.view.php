@@ -42,8 +42,6 @@
         $this->tpl['MY_HAND'] = self::_("My hand");
         $this->tpl['ROUND'] = self::_("Round");
         $this->tpl['REMAINING_ANIMALS_IN_DECK'] = self::_("Remaining animals in deck");
-        $this->tpl['REMAINING_FERRIES_LABEL'] = self::_("Remaining ferries on deck:");
-        $this->tpl['SENT_FERRIES_LABEL'] = self::_("Ferries sent to the Great Ark:");
 
         /*********** Do not change anything below this line  ************/
   	}
