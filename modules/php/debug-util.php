@@ -22,6 +22,9 @@ trait DebugUtilTrait {
 
         // Activate first player must be commented in setup if this is used
         $this->gamestate->changeActivePlayer(2343492);
+
+        //$this->animals->pickCardsForLocation(6, 'hand', 'discard', 2343492);
+        //$this->animals->pickCardsForLocation(6, 'hand', 'discard', 2343493);
     }
 
     private function debugSetPlayerPoints(int $playerId, int $score) {

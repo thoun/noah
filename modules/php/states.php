@@ -23,7 +23,7 @@ trait StateTrait {
         $this->setInitialCardsAndResources($this->getPlayersIds());
 
         // TODO TEMP
-        //$this->debugSetup();
+        // $this->debugSetup();
 
         $this->gamestate->nextState('');
     }
@@ -221,25 +221,36 @@ trait StateTrait {
             'roundNumber' => $roundNumber,
         ]);
 
+        /// Display table window with results ////
+    
+        // Header line
+        $headers = [''];
+        $handPoints = [ ['str' => clienttranslate('Hand points'), 'args' => [] ] ];
+        $totalPoints = [ ['str' => clienttranslate('Total points'), 'args' => [] ] ];
+
         // count points remaining in hands
         $playersIds = $this->getPlayersIds();
         foreach($playersIds as $playerId) {
             $animals = $this->getAnimalsFromDb($this->animals->getCardsInLocation('hand', $playerId));
-            $points = array_reduce($animals, fn($carry, $item) => $carry + $item->points, 0);
-            $this->incPlayerScore($playerId, $points);
+            $playerHandPoints = array_reduce($animals, fn($carry, $item) => $carry + $item->points, 0);
+            $this->incPlayerScore($playerId, $playerHandPoints);
+            $playerTotalPoints = -$this->getPlayerScore($playerId);
+            $playerName = $this->getPlayerName($playerId);
 
             $this->notifyAllPlayers('log', clienttranslate('${player_name} adds ${handPoints} points from remaining hand cards, going to ${totalPoints} points'), [
-                'player_name' => $this->getPlayerName($playerId),
-                'handPoints' => $points,
-                'totalPoints' => -$this->getPlayerScore($playerId),
+                'player_name' => $playerName,
+                'handPoints' => $playerHandPoints,
+                'totalPoints' => $playerTotalPoints,
             ]);
+
+            $headers[] = [
+                    'str' => '${player_name}',
+                    'args' => ['player_name' => $playerName],
+                    'type' => 'header'
+            ];
+            $handPoints[] = $playerHandPoints;
+            $totalPoints[] = $playerTotalPoints;
         }
-        
-        // player with highest score starts        
-        $sql = "SELECT player_id FROM player where player_score=(select min(player_score) from player) limit 1";
-        $minScorePlayerId = $this->getUniqueValueFromDB($sql);
-        $this->gamestate->changeActivePlayer($minScorePlayerId);
-        $this->giveExtraTime($minScorePlayerId);
 
         $endGame = null;
         if ($this->isVariant()) {
@@ -247,6 +258,21 @@ trait StateTrait {
         } else {
             $endGame = $roundNumber >= 3;
         }
+
+        
+        $table = [$headers, $handPoints, $totalPoints];
+        $this->notifyAllPlayers('tableWindow', '', [
+            "id" => 'finalScoring',
+            "title" =>  clienttranslate('Result of hand'),
+            "table" => $table,
+            "closing" => $endGame ? clienttranslate("End of game") : clienttranslate("Next hand"),
+        ]);
+        
+        // player with highest score starts        
+        $sql = "SELECT player_id FROM player where player_score=(select min(player_score) from player) limit 1";
+        $minScorePlayerId = $this->getUniqueValueFromDB($sql);
+        $this->gamestate->changeActivePlayer($minScorePlayerId);
+        $this->giveExtraTime($minScorePlayerId);
 
         if ($endGame) {
             $this->gamestate->nextState('endGame');
