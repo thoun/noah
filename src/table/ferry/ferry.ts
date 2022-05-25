@@ -1,4 +1,4 @@
-const CARD_OVERLAP = 30;
+const CARD_OVERLAP = 40;
 const FIRST_ANIMAL_SHIFT = 28;
 
 class FerrySpot {

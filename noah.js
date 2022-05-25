@@ -133,7 +133,7 @@ function formatTextIcons(rawText) {
     return rawText
         .replace(/\[tear\]/ig, '<span class="icon tear"></span>');
 }
-var CARD_OVERLAP = 30;
+var CARD_OVERLAP = 40;
 var FIRST_ANIMAL_SHIFT = 28;
 var FerrySpot = /** @class */ (function () {
     function FerrySpot(game, position, ferry, withAnimation) {
