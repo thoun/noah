@@ -583,7 +583,7 @@ var Noah = /** @class */ (function () {
         var opponent = this.getPlayer(args.opponentId);
         var giraffeAnimalsDiv = document.getElementById('giraffe-animals');
         giraffeAnimalsDiv.innerHTML = '';
-        document.getElementById('giraffe-hand-label').innerHTML = dojo.string.substitute(_(" ${player_name} cards"), { player_name: "<span style=\"color: #" + opponent.color + "\">" + opponent.name + "</span>" });
+        document.getElementById('giraffe-hand-label').innerHTML = dojo.string.substitute(_("${player_name} cards"), { player_name: "<span style=\"color: #" + opponent.color + "\">" + opponent.name + "</span>" });
         var giraffeHandWrap = document.getElementById('giraffe-hand-wrap');
         giraffeHandWrap.classList.remove('hidden');
         giraffeHandWrap.style.boxShadow = "0 0 3px 3px #" + opponent.color;
