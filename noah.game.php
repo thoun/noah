@@ -200,7 +200,7 @@ class Noah extends Table {
             $remainingAnimals = intval($this->animals->countCardInLocation('deck'));
             return 100 * ($allAnimals - $remainingAnimals) / $allAnimals;
         } else if ($this->isVariant()) {
-            return max(round($this->getMaxPlayerScore() * 3.85), 100);
+            return min(round($this->getMaxPlayerScore() * 3.85), 100);
         } else {
             return (intval($this->getGameStateValue(ROUND_NUMBER))-1) * 100 / 3;
         }

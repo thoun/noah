@@ -40,6 +40,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
+        'displaycondition' => [[
+            'type' => 'minplayers',
+            'value' => 2,
+        ]],
     ],
 
     101 => [

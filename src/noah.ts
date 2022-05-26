@@ -75,7 +75,8 @@ class Noah implements NoahGame {
         this.roundCounter = new ebg.counter();
         this.roundCounter.create('round-counter');
         this.roundCounter.setValue(gamedatas.roundNumber);
-        if (gamedatas.variant || gamedatas.solo) {
+        if (gamedatas.variant) {
+            dojo.destroy('counter-no-variant');
         }
         if (gamedatas.solo) {
             this.soloCounter = new ebg.counter();
