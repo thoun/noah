@@ -20,7 +20,7 @@ class FerrySpot {
         <div id="ferry-spot-${position}-weight-indicator" class="weight-indicator remaining-counter" data-position="${position}"></div>`;
 
         dojo.place(html, 'center-board');
-        dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry.roomates);
+        dojo.toggleClass(`ferry-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
         let tooltip = `
         <h3>${_('Ferry')}</h3>
         <div>${_('Animals are loaded into Ferries.')}</div>
@@ -34,7 +34,7 @@ As such, it’s always the second card played on an ferry which defines the sequ
 
         <h4>${_('Weight')}</h4>
         <div>${_('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).')}</div>`;
-        if (ferry.roomates) {
+        if (ferry?.roomates) {
             tooltip += `<h4>${_('Roomates')}</h4>
             <div>${_('in the Ark, it is impossible to place twice the same animal, whether male or female.')}</div>`;
         }
@@ -47,7 +47,8 @@ As such, it’s always the second card played on an ferry which defines the sequ
         if (ferry) {
             ferry.animals?.forEach(animal => this.addAnimal(animal));
         } else {
-            this.empty = true;
+            this.empty = true;            
+            dojo.addClass(`ferry-spot-${this.position}-ferry-card`, 'empty');
         }
         this.updateCounter();
     }

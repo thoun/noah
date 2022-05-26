@@ -490,7 +490,6 @@ class Noah implements NoahGame {
             //dojo.style("right-side-first-part", "zoom", newZoomFactor);
             dojo.style("page-title", "zoom", newZoomFactor);
         }
-        console.log(newZoomFactor, neededScreenWidth, availableScreenWidth);
     }
 
     private createPlayerPanels(gamedatas: NoahGamedatas) {

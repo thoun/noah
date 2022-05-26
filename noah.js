@@ -147,9 +147,9 @@ var FerrySpot = /** @class */ (function () {
         var html = "\n        <div id=\"ferry-spot-" + position + "\" class=\"ferry-spot\" " + (withAnimation ? '' : " style=\"transform: " + this.getFerryTransform() + "\"") + ">\n            <div id=\"ferry-spot-" + position + "-ferry-card\" class=\"stockitem ferry-card\"></div>      \n        ";
         html += "</div>\n        <div id=\"ferry-spot-" + position + "-weight-indicator\" class=\"weight-indicator remaining-counter\" data-position=\"" + position + "\"></div>";
         dojo.place(html, 'center-board');
-        dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry.roomates);
+        dojo.toggleClass("ferry-spot-" + position + "-ferry-card", 'roomates', ferry === null || ferry === void 0 ? void 0 : ferry.roomates);
         var tooltip = "\n        <h3>" + _('Ferry') + "</h3>\n        <div>" + _('Animals are loaded into Ferries.') + "</div>\n        <h4>" + _('Gender') + "</h4>\n        <div class=\"noah-tooltip-with-list\">" + _("In a given ferry, there must be:\n<ul>\n    <li>EITHER animals from a single gender</li>\n    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>\n</ul>\nAs such, it\u2019s always the second card played on an ferry which defines the sequence to be played!") + "</div>\n\n        <h4>" + _('Weight') + "</h4>\n        <div>" + _('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).') + "</div>";
-        if (ferry.roomates) {
+        if (ferry === null || ferry === void 0 ? void 0 : ferry.roomates) {
             tooltip += "<h4>" + _('Roomates') + "</h4>\n            <div>" + _('in the Ark, it is impossible to place twice the same animal, whether male or female.') + "</div>";
         }
         game.setTooltip("ferry-spot-" + position + "-ferry-card", tooltip);
@@ -161,6 +161,7 @@ var FerrySpot = /** @class */ (function () {
         }
         else {
             this.empty = true;
+            dojo.addClass("ferry-spot-" + this.position + "-ferry-card", 'empty');
         }
         this.updateCounter();
     }
@@ -854,7 +855,6 @@ var Noah = /** @class */ (function () {
             //dojo.style("right-side-first-part", "zoom", newZoomFactor);
             dojo.style("page-title", "zoom", newZoomFactor);
         }
-        console.log(newZoomFactor, neededScreenWidth, availableScreenWidth);
     };
     Noah.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;

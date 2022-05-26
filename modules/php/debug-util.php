@@ -52,6 +52,33 @@ trait DebugUtilTrait {
         $this->animals->moveCard($card->id, 'hand', $playerId);
     }
 
+    public function debugReplacePlayersIds() {
+        if ($this->getBgaEnvironment() != 'studio') { 
+            return;
+        } 
+
+		// These are the id's from the BGAtable I need to debug.
+		$ids = [
+            84995393
+		];
+
+		// Id of the first player in BGA Studio
+		$sid = 2343492;
+		
+		foreach ($ids as $id) {
+			// basic tables
+			$this->DbQuery("UPDATE player SET player_id=$sid WHERE player_id = $id" );
+			$this->DbQuery("UPDATE global SET global_value=$sid WHERE global_value = $id" );
+			$this->DbQuery("UPDATE stats SET stats_player_id=$sid WHERE stats_player_id = $id" );
+
+			// 'other' game specific tables. example:
+			// tables specific to your schema that use player_ids
+			$this->DbQuery("UPDATE animal SET card_location_arg=$sid WHERE card_location_arg = $id" );
+			
+			++$sid;
+		}
+	}
+
     function debug($debugData) {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;
