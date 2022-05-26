@@ -2,6 +2,8 @@ const POINTS_RADIUS = 194;
 const MAX_SCORE = 26;
 
 class Table {
+    public neededScreenWidth: number = 1;
+
     private points = new Map<number, number>();
 
     private spots: FerrySpot[] = [];
@@ -163,7 +165,10 @@ class Table {
         board.style.marginTop = `${topMargin}px`;
         board.style.marginBottom = `${bottomMargin}px`;
         board.style.marginLeft = `${leftMargin}px`;
-        board.style.marginRight = `${rightMargin}px`;        
+        board.style.marginRight = `${rightMargin}px`;
+        
+        this.neededScreenWidth = 444 + leftMargin + rightMargin;
+        this.game.setBgaZoom();
     }
 
     public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {

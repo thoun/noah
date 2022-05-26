@@ -258,6 +258,7 @@ var Table = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.noahPosition = noahPosition;
+        this.neededScreenWidth = 1;
         this.points = new Map();
         this.spots = [];
         this.noahLastPosition = 0;
@@ -378,6 +379,8 @@ var Table = /** @class */ (function () {
         board.style.marginBottom = bottomMargin + "px";
         board.style.marginLeft = leftMargin + "px";
         board.style.marginRight = rightMargin + "px";
+        this.neededScreenWidth = 444 + leftMargin + rightMargin;
+        this.game.setBgaZoom();
     };
     Table.prototype.addAnimal = function (animal, originId, xShift) {
         if (xShift === void 0) { xShift = 0; }
@@ -503,6 +506,9 @@ var Noah = /** @class */ (function () {
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
         }
+        this.onScreenWidthChange = function () {
+            _this.setBgaZoom();
+        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -835,6 +841,21 @@ var Noah = /** @class */ (function () {
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
     };
+    Noah.prototype.setBgaZoom = function () {
+        if (!this.table) {
+            return;
+        }
+        var neededScreenWidth = this.table.neededScreenWidth;
+        var availableScreenWidth = Number(window.getComputedStyle(document.getElementById('full-table')).width.replace('px', '')) * this.gameinterface_zoomFactor;
+        var newZoomFactor = availableScreenWidth >= neededScreenWidth ? 1 : availableScreenWidth / neededScreenWidth;
+        if (newZoomFactor != this.gameinterface_zoomFactor) {
+            this.gameinterface_zoomFactor = newZoomFactor;
+            dojo.style("page-content", "zoom", newZoomFactor);
+            //dojo.style("right-side-first-part", "zoom", newZoomFactor);
+            dojo.style("page-title", "zoom", newZoomFactor);
+        }
+        console.log(newZoomFactor, neededScreenWidth, availableScreenWidth);
+    };
     Noah.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
@@ -847,7 +868,7 @@ var Noah = /** @class */ (function () {
             _this.handCounters[playerId] = handCounter;
         });
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
-        dojo.place("\n            <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                    <div id=\"remaining-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Remaining ferries on deck:") + " <span id=\"remaining-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                    <div id=\"sent-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Ferries sent to the Great Ark:") + " <span id=\"sent-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                   \n                </div>\n            </div>", "player_boards", 'before');
+        dojo.place("\n            <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n                <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                    <div id=\"remaining-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Remaining ferries on deck:") + " <span id=\"remaining-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                    <div id=\"sent-ferry-counter-wrapper\" class=\"remaining-counter table-counter-wrapper\">" + _("Ferries sent to the Great Ark:") + " <span id=\"sent-ferry-counter\" class=\"remaining-counter-number\"></span></div>\n                   \n                </div>\n            </div>", "player_boards", 'first');
     };
     Noah.prototype.setHand = function (animals) {
         var _this = this;

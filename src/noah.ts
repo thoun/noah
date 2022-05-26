@@ -98,6 +98,10 @@ class Noah implements NoahGame {
             this.setZoom(this.zoom);
         }
 
+        (this as any).onScreenWidthChange = () => {
+            this.setBgaZoom();
+        }
+
         log( "Ending game setup" );
     }
 
@@ -472,6 +476,23 @@ class Noah implements NoahGame {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
 
+    public setBgaZoom() {
+        if (!this.table) {
+            return;
+        }
+
+        const neededScreenWidth = this.table.neededScreenWidth;
+        const availableScreenWidth = Number(window.getComputedStyle(document.getElementById('full-table')).width.replace('px', '')) * (this as any).gameinterface_zoomFactor;
+        const newZoomFactor = availableScreenWidth >= neededScreenWidth ? 1 : availableScreenWidth / neededScreenWidth;
+        if (newZoomFactor != (this as any).gameinterface_zoomFactor) {
+            (this as any).gameinterface_zoomFactor = newZoomFactor;
+            dojo.style("page-content", "zoom", newZoomFactor);
+            //dojo.style("right-side-first-part", "zoom", newZoomFactor);
+            dojo.style("page-title", "zoom", newZoomFactor);
+        }
+        console.log(newZoomFactor, neededScreenWidth, availableScreenWidth);
+    }
+
     private createPlayerPanels(gamedatas: NoahGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
@@ -501,7 +522,7 @@ class Noah implements NoahGame {
                     <div id="sent-ferry-counter-wrapper" class="remaining-counter table-counter-wrapper">${_("Ferries sent to the Great Ark:")} <span id="sent-ferry-counter" class="remaining-counter-number"></span></div>
                    
                 </div>
-            </div>`, `player_boards`, 'before');
+            </div>`, `player_boards`, 'first');
     }
 
     public setHand(animals: Animal[]) {
