@@ -40,10 +40,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        'displaycondition' => [[
+        /*'displaycondition' => [[
             'type' => 'minplayers',
             'value' => 2,
-        ]],
+        ]],*/
     ],
 
     101 => [
@@ -108,10 +108,10 @@ $game_options = [
             ],
         ],
         'default' => 3,
-        'displaycondition' => [[
+        /*'displaycondition' => [[
             'type' => 'maxplayers',
             'value' => 1,
-        ]]
+        ]]*/
     ],
 ];
 

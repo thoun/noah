@@ -51,4 +51,10 @@ trait DebugUtilTrait {
         $card = $this->debugGetAnimalByType($type, $subType, $index);
         $this->animals->moveCard($card->id, 'hand', $playerId);
     }
+
+    function debug($debugData) {
+        if ($this->getBgaEnvironment() != 'studio') { 
+            return;
+        }die('debug data : '.json_encode($debugData));
+    }
 }
