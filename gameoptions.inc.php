@@ -40,10 +40,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        /*'displaycondition' => [[
+        'displaycondition' => [[
             'type' => 'minplayers',
             'value' => 2,
-        ]],*/
+        ]],
     ],
 
     101 => [
@@ -59,6 +59,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
+        'displaycondition' => [[
+            'type' => 'minplayers',
+            'value' => 2,
+        ]],
     ],
 
     102 => [
@@ -74,6 +78,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
+        'displaycondition' => [[
+            'type' => 'minplayers',
+            'value' => 2,
+        ]],
     ],
 
     103 => [
@@ -89,6 +97,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
+        'displaycondition' => [[
+            'type' => 'minplayers',
+            'value' => 2,
+        ]],
     ],
 
     120 => [

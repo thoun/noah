@@ -68,15 +68,15 @@ trait UtilTrait {
     }
 
     function useFrog() {
-        return intval($this->getGameStateValue(OPTION_FROG)) === 2;
+        return intval($this->getGameStateValue(OPTION_FROG)) === 2 && !$this->isSoloMode();
     }
 
     function useCrocodile() {
-        return intval($this->getGameStateValue(OPTION_CROCODILE)) === 2;
+        return intval($this->getGameStateValue(OPTION_CROCODILE)) === 2 && !$this->isSoloMode();
     }
 
     function useRoomates() {
-        return intval($this->getGameStateValue(OPTION_ROOMATES)) === 2;
+        return intval($this->getGameStateValue(OPTION_ROOMATES)) === 2 && !$this->isSoloMode();
     }
 
     function getMaxPlayerScore() {
