@@ -588,6 +588,7 @@ var Noah = /** @class */ (function () {
         }
     };
     Noah.prototype.onEnteringStateLookCards = function (args, isActivePlayer) {
+        var _this = this;
         var opponent = this.getPlayer(args.opponentId);
         var giraffeAnimalsDiv = document.getElementById('giraffe-animals');
         giraffeAnimalsDiv.innerHTML = '';
@@ -601,6 +602,7 @@ var Noah = /** @class */ (function () {
             giraffeHand_1.create(this, $('giraffe-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
             giraffeHand_1.setSelectionMode(0);
             giraffeHand_1.centerItems = true;
+            giraffeHand_1.onItemCreate = function (cardDiv, type) { return setupAnimalCard(_this, cardDiv, type); };
             setupAnimalCards(giraffeHand_1);
             args.animals.forEach(function (animal) { return giraffeHand_1.addToStockWithId(getUniqueId(animal), '' + animal.id); });
         }

@@ -201,6 +201,7 @@ class Noah implements NoahGame {
             giraffeHand.create( this, $('giraffe-animals'), ANIMAL_WIDTH, ANIMAL_HEIGHT);
             giraffeHand.setSelectionMode(0);
             giraffeHand.centerItems = true;
+            giraffeHand.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAnimalCard(this, cardDiv, type);
             setupAnimalCards(giraffeHand);
             args.animals.forEach(animal => giraffeHand.addToStockWithId(getUniqueId(animal), ''+animal.id));
         } else {
