@@ -26,6 +26,7 @@ class Noah implements NoahGame {
     private soloCounter: Counter;
 
     public zoom: number = 1;
+    public maxZoom: number = 1;
 
     public clickAction: 'load' | 'give' | 'lion' = 'load';
     private cardsToGive: number;
@@ -96,10 +97,11 @@ class Noah implements NoahGame {
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
+            this.table.updateMargins(); 
         }
 
         (this as any).onScreenWidthChange = () => {
-            this.setBgaZoom();
+            this.setMaxZoom();
         }
 
         log( "Ending game setup" );
@@ -444,7 +446,7 @@ class Noah implements NoahGame {
         this.zoom = zoom;
         localStorage.setItem(LOCAL_STORAGE_ZOOM_KEY, ''+this.zoom);
         const newIndex = ZOOM_LEVELS.indexOf(this.zoom);
-        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.length - 1);
+        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.indexOf(this.maxZoom));
         dojo.toggleClass('zoom-out', 'disabled', newIndex === 0);
 
         const div = document.getElementById('full-table');
@@ -467,6 +469,8 @@ class Noah implements NoahGame {
         }
         const newIndex = ZOOM_LEVELS.indexOf(this.zoom) + 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
+
+        this.setMaxZoom();
     }
 
     public zoomOut() {
@@ -477,20 +481,33 @@ class Noah implements NoahGame {
         this.setZoom(ZOOM_LEVELS[newIndex]);
     }
 
-    public setBgaZoom() {
+    public getZoom(): number {
+        return this.zoom;
+    }
+
+    public setMaxZoom() {
+        dojo.style("page-content", "zoom", 'unset');
+
         if (!this.table) {
             return;
         }
 
         const neededScreenWidth = this.table.neededScreenWidth;
-        const availableScreenWidth = Number(window.getComputedStyle(document.getElementById('full-table')).width.replace('px', '')) * (this as any).gameinterface_zoomFactor;
-        const newZoomFactor = availableScreenWidth >= neededScreenWidth ? 1 : availableScreenWidth / neededScreenWidth;
-        if (newZoomFactor != (this as any).gameinterface_zoomFactor) {
-            (this as any).gameinterface_zoomFactor = newZoomFactor;
-            dojo.style("page-content", "zoom", newZoomFactor);
-            //dojo.style("right-side-first-part", "zoom", newZoomFactor);
-            dojo.style("page-title", "zoom", newZoomFactor);
+        const realAvailableScreenWidth = document.getElementById('full-table').getBoundingClientRect().width;
+        if (realAvailableScreenWidth < neededScreenWidth) {
+            let maxZoom = 1;
+            while (neededScreenWidth * maxZoom > realAvailableScreenWidth) {
+                const newIndex = ZOOM_LEVELS.indexOf(maxZoom) - 1;
+                maxZoom = ZOOM_LEVELS[newIndex];
+            }
+            this.maxZoom = maxZoom;
+            if (this.zoom > this.maxZoom) {
+                this.setZoom(this.maxZoom);
+            }
+        } else {
+            this.maxZoom = 1;
         }
+        dojo.toggleClass('zoom-in', 'disabled', ZOOM_LEVELS.indexOf(this.zoom) >= ZOOM_LEVELS.indexOf(this.maxZoom));
     }
 
     private createPlayerPanels(gamedatas: NoahGamedatas) {

@@ -131,7 +131,8 @@ class Table {
         });
     }
 
-    private updateMargins() {
+    // gameui.table.updateMargins();
+    public updateMargins() {
         const board = document.getElementById('center-board');
         const boardBR = board.getBoundingClientRect();
 
@@ -143,7 +144,7 @@ class Table {
         this.spots.forEach(spot => {
             const spotDiv = document.getElementById(`ferry-spot-${spot.position}`);
 
-            spotDiv.style.height = `${spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length-1) *30) : FERRY_HEIGHT}px`;
+            spotDiv.style.height = `${spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length-1) * CARD_OVERLAP) : FERRY_HEIGHT}px`;
             const spotBR = spotDiv.getBoundingClientRect();
 
             if (spotBR.y < boardBR.y - topMargin) {
@@ -162,13 +163,18 @@ class Table {
             }
         });
 
+        topMargin = topMargin / this.game.getZoom();
+        bottomMargin = bottomMargin / this.game.getZoom();
+        leftMargin = leftMargin / this.game.getZoom();
+        rightMargin = rightMargin / this.game.getZoom();
+
         board.style.marginTop = `${topMargin}px`;
         board.style.marginBottom = `${bottomMargin}px`;
         board.style.marginLeft = `${leftMargin}px`;
         board.style.marginRight = `${rightMargin}px`;
         
         this.neededScreenWidth = 444 + leftMargin + rightMargin;
-        this.game.setBgaZoom();
+        this.game.setMaxZoom();
     }
 
     public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {

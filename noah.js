@@ -352,6 +352,7 @@ var Table = /** @class */ (function () {
             markerDiv.style.transform = "translateX(" + (left + leftShift) + "px) translateY(" + (top + topShift) + "px)";
         });
     };
+    // gameui.table.updateMargins();
     Table.prototype.updateMargins = function () {
         var board = document.getElementById('center-board');
         var boardBR = board.getBoundingClientRect();
@@ -361,7 +362,7 @@ var Table = /** @class */ (function () {
         var rightMargin = 0;
         this.spots.forEach(function (spot) {
             var spotDiv = document.getElementById("ferry-spot-" + spot.position);
-            spotDiv.style.height = (spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length - 1) * 30) : FERRY_HEIGHT) + "px";
+            spotDiv.style.height = (spot.animals.length ? FIRST_ANIMAL_SHIFT + ANIMAL_HEIGHT + ((spot.animals.length - 1) * CARD_OVERLAP) : FERRY_HEIGHT) + "px";
             var spotBR = spotDiv.getBoundingClientRect();
             if (spotBR.y < boardBR.y - topMargin) {
                 topMargin = boardBR.y - spotBR.y;
@@ -376,12 +377,16 @@ var Table = /** @class */ (function () {
                 rightMargin = (spotBR.x + spotBR.width) - (boardBR.x + boardBR.width);
             }
         });
+        topMargin = topMargin / this.game.getZoom();
+        bottomMargin = bottomMargin / this.game.getZoom();
+        leftMargin = leftMargin / this.game.getZoom();
+        rightMargin = rightMargin / this.game.getZoom();
         board.style.marginTop = topMargin + "px";
         board.style.marginBottom = bottomMargin + "px";
         board.style.marginLeft = leftMargin + "px";
         board.style.marginRight = rightMargin + "px";
         this.neededScreenWidth = 444 + leftMargin + rightMargin;
-        this.game.setBgaZoom();
+        this.game.setMaxZoom();
     };
     Table.prototype.addAnimal = function (animal, originId, xShift) {
         if (xShift === void 0) { xShift = 0; }
@@ -451,6 +456,7 @@ var Noah = /** @class */ (function () {
     function Noah() {
         this.handCounters = [];
         this.zoom = 1;
+        this.maxZoom = 1;
         this.clickAction = 'load';
         this.topDeckOrder = {};
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
@@ -506,9 +512,10 @@ var Noah = /** @class */ (function () {
         document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
+            this.table.updateMargins();
         }
         this.onScreenWidthChange = function () {
-            _this.setBgaZoom();
+            _this.setMaxZoom();
         };
         log("Ending game setup");
     };
@@ -816,7 +823,7 @@ var Noah = /** @class */ (function () {
         this.zoom = zoom;
         localStorage.setItem(LOCAL_STORAGE_ZOOM_KEY, '' + this.zoom);
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom);
-        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.length - 1);
+        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.indexOf(this.maxZoom));
         dojo.toggleClass('zoom-out', 'disabled', newIndex === 0);
         var div = document.getElementById('full-table');
         if (zoom === 1) {
@@ -836,6 +843,7 @@ var Noah = /** @class */ (function () {
         }
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) + 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
+        this.setMaxZoom();
     };
     Noah.prototype.zoomOut = function () {
         if (this.zoom === ZOOM_LEVELS[0]) {
@@ -844,19 +852,31 @@ var Noah = /** @class */ (function () {
         var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
         this.setZoom(ZOOM_LEVELS[newIndex]);
     };
-    Noah.prototype.setBgaZoom = function () {
+    Noah.prototype.getZoom = function () {
+        return this.zoom;
+    };
+    Noah.prototype.setMaxZoom = function () {
+        dojo.style("page-content", "zoom", 'unset');
         if (!this.table) {
             return;
         }
         var neededScreenWidth = this.table.neededScreenWidth;
-        var availableScreenWidth = Number(window.getComputedStyle(document.getElementById('full-table')).width.replace('px', '')) * this.gameinterface_zoomFactor;
-        var newZoomFactor = availableScreenWidth >= neededScreenWidth ? 1 : availableScreenWidth / neededScreenWidth;
-        if (newZoomFactor != this.gameinterface_zoomFactor) {
-            this.gameinterface_zoomFactor = newZoomFactor;
-            dojo.style("page-content", "zoom", newZoomFactor);
-            //dojo.style("right-side-first-part", "zoom", newZoomFactor);
-            dojo.style("page-title", "zoom", newZoomFactor);
+        var realAvailableScreenWidth = document.getElementById('full-table').getBoundingClientRect().width;
+        if (realAvailableScreenWidth < neededScreenWidth) {
+            var maxZoom = 1;
+            while (neededScreenWidth * maxZoom > realAvailableScreenWidth) {
+                var newIndex = ZOOM_LEVELS.indexOf(maxZoom) - 1;
+                maxZoom = ZOOM_LEVELS[newIndex];
+            }
+            this.maxZoom = maxZoom;
+            if (this.zoom > this.maxZoom) {
+                this.setZoom(this.maxZoom);
+            }
         }
+        else {
+            this.maxZoom = 1;
+        }
+        dojo.toggleClass('zoom-in', 'disabled', ZOOM_LEVELS.indexOf(this.zoom) >= ZOOM_LEVELS.indexOf(this.maxZoom));
     };
     Noah.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
