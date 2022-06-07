@@ -12,6 +12,10 @@ html {
   background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
 }
 
+#globalaction_zoom_wrap {
+  visibility: hidden;
+}
+
 #zoom-wrapper {
   position: relative;
 

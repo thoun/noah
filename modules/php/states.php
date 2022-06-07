@@ -215,6 +215,8 @@ trait StateTrait {
     }
 
     function stEndRound() {
+        $this->setGameStateValue(PAIR_PLAY_AGAIN, 0);
+
         $roundNumber = intval($this->getGameStateValue(ROUND_NUMBER));
 
         $this->notifyAllPlayers('log', clienttranslate('End of round ${roundNumber}'), [
