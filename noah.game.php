@@ -53,6 +53,7 @@ class Noah extends Table {
             SELECTED_ANIMAL => 17,
             GIVE_CARD_FROM_FERRY => 18,
             SOLO_DRAW_CARDS => 19,
+            CHOOSE_OPPONENT_ACTION => 20,
 
             OPTION_VARIANT => 100,
             OPTION_FROG => 101,

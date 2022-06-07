@@ -40,10 +40,10 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        'displaycondition' => [[
+        /*'displaycondition' => [[
             'type' => 'minplayers',
             'value' => 2,
-        ]],
+        ]],*/
     ],
 
     101 => [
@@ -59,10 +59,13 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        'displaycondition' => [[
-            'type' => 'minplayers',
-            'value' => 2,
-        ]],
+        'startcondition' => [
+            2 => [[
+                'type' => 'minplayers',
+                'value' => 2,
+                'message' => totranslate('Bonus cards cannot be used with Solo mode.'),
+            ]]
+        ],
     ],
 
     102 => [
@@ -78,10 +81,13 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        'displaycondition' => [[
-            'type' => 'minplayers',
-            'value' => 2,
-        ]],
+        'startcondition' => [
+            2 => [[
+                'type' => 'minplayers',
+                'value' => 2,
+                'message' => totranslate('Bonus cards cannot be used with Solo mode.'),
+            ]]
+        ],
     ],
 
     103 => [
@@ -97,10 +103,13 @@ $game_options = [
             ],
         ],
         'default' => 1,
-        'displaycondition' => [[
-            'type' => 'minplayers',
-            'value' => 2,
-        ]],
+        'startcondition' => [
+            2 => [[
+                'type' => 'minplayers',
+                'value' => 2,
+                'message' => totranslate('Bonus cards cannot be used with Solo mode.'),
+            ]]
+        ],
     ],
 
     120 => [
@@ -115,7 +124,7 @@ $game_options = [
                 'description' => totranslate("Remove all animals marked 5+."),
             ],
             5 => [
-                'name' => totranslate('Advanced'),
+                'name' => totranslate('Expert'),
                 'description' => totranslate("Play with all animals."),
             ],
         ],

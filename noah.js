@@ -744,11 +744,11 @@ var Noah = /** @class */ (function () {
                     break;
                 case 'chooseOpponent':
                     var choosePlayerArgs = args;
-                    var exchange_1 = choosePlayerArgs.exchangeCard;
-                    var give_1 = choosePlayerArgs.giveCardFromFerry;
+                    var exchange = choosePlayerArgs.exchangeCard;
+                    var give = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
                         var player = _this.getPlayer(playerId);
-                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return (give_1 ? _this.giveCardFromFerry(playerId) : (exchange_1 ? _this.exchangeCard(playerId) : _this.lookCards(playerId))); });
+                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.chooseOpponent(playerId); });
                         document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
                     });
                     break;
@@ -1027,27 +1027,11 @@ var Noah = /** @class */ (function () {
             weight: weight
         });
     };
-    Noah.prototype.lookCards = function (playerId) {
-        if (!this.checkAction('lookCards')) {
+    Noah.prototype.chooseOpponent = function (playerId) {
+        if (!this.checkAction('chooseOpponent')) {
             return;
         }
-        this.takeAction('lookCards', {
-            playerId: playerId
-        });
-    };
-    Noah.prototype.exchangeCard = function (playerId) {
-        if (!this.checkAction('exchangeCard')) {
-            return;
-        }
-        this.takeAction('exchangeCard', {
-            playerId: playerId
-        });
-    };
-    Noah.prototype.giveCardFromFerry = function (playerId) {
-        if (!this.checkAction('giveCardFromFerry')) {
-            return;
-        }
-        this.takeAction('giveCardFromFerry', {
+        this.takeAction('chooseOpponent', {
             playerId: playerId
         });
     };

@@ -183,10 +183,8 @@ $playerActionsGameStates = [
         "type" => "activeplayer",   
         "action" => "stChooseOpponent",      
         "args" => "argChooseOpponent",
-        "possibleactions" => [ 
-            "lookCards",
-            "exchangeCard",
-            "giveCardFromFerry",
+        "possibleactions" => [
+            "chooseOpponent",
         ],
         "transitions" => [
             "look" => ST_PLAYER_VIEW_CARDS,

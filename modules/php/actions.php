@@ -34,6 +34,7 @@ trait ActionTrait {
         } else if ($animal->power == POWER_CROCODILE && $this->getFirstAnimalFromFerry() != null) {
             $this->setGameStateValue(SELECTED_ANIMAL, $id);            
             $this->setGameStateValue(GIVE_CARD_FROM_FERRY, 1);
+            $this->setGameStateValue(CHOOSE_OPPONENT_ACTION, POWER_CROCODILE);
             $this->gamestate->nextState('chooseOpponent');
         } else {
             if ($nbr >= 2 && $animal->power == POWER_HERMAPHRODITE) {
@@ -134,6 +135,7 @@ trait ActionTrait {
             } else {
                 $this->setGameStateValue(LOOK_OPPONENT_HAND, 1);
     
+                $this->setGameStateValue(CHOOSE_OPPONENT_ACTION, POWER_LOOK_CARDS);
                 $this->gamestate->nextState('chooseOpponent');
             }
         } else if ($animal->power == POWER_EXCHANGE_CARD) {
@@ -148,6 +150,7 @@ trait ActionTrait {
             } else {
                 $this->setGameStateValue(EXCHANGE_CARD, 1);
 
+                $this->setGameStateValue(CHOOSE_OPPONENT_ACTION, POWER_EXCHANGE_CARD);
                 $this->gamestate->nextState('chooseOpponent');
             }
         } else {
@@ -269,6 +272,27 @@ trait ActionTrait {
         $this->checkAction('giveCardFromFerry'); 
 
         $this->applyGiveCardFromFerry($playerId);
+    }
+
+    function chooseOpponent(int $playerId, bool $skipCheckAction = false) {
+        if (!$skipCheckAction) {
+            $this->checkAction('chooseOpponent'); 
+        }
+
+        $power = intval($this->getGameStateValue(CHOOSE_OPPONENT_ACTION));
+        $this->setGameStateValue(CHOOSE_OPPONENT_ACTION, 0);
+
+        switch ($power) {
+            case POWER_LOOK_CARDS:
+                $this->applyLookCards($playerId);
+                break;
+            case POWER_EXCHANGE_CARD:
+                $this->applyExchangeCard($playerId);
+                break;
+            case POWER_CROCODILE:
+                $this->applyGiveCardFromFerry($playerId);
+                break;
+        }
     }
 
     function getFirstAnimalFromFerry() {

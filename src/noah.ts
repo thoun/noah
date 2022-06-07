@@ -363,7 +363,7 @@ class Noah implements NoahGame {
                     const give = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
                         const player = this.getPlayer(playerId);
-                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => (give ? this.giveCardFromFerry(playerId) : (exchange ? this.exchangeCard(playerId) : this.lookCards(playerId))));
+                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.chooseOpponent(playerId));
                         document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
                     });
                     break;
@@ -702,32 +702,12 @@ class Noah implements NoahGame {
         });
     }
 
-    private lookCards(playerId: number) {
-        if(!(this as any).checkAction('lookCards')) {
+    private chooseOpponent(playerId: number) {
+        if(!(this as any).checkAction('chooseOpponent')) {
             return;
         }
 
-        this.takeAction('lookCards', {
-            playerId
-        });
-    }
-
-    private exchangeCard(playerId: number) {
-        if(!(this as any).checkAction('exchangeCard')) {
-            return;
-        }
-
-        this.takeAction('exchangeCard', {
-            playerId
-        });
-    }
-
-    private giveCardFromFerry(playerId: number) {
-        if(!(this as any).checkAction('giveCardFromFerry')) {
-            return;
-        }
-
-        this.takeAction('giveCardFromFerry', {
+        this.takeAction('chooseOpponent', {
             playerId
         });
     }

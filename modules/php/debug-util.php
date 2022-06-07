@@ -17,8 +17,8 @@ trait DebugUtilTrait {
             $this->debugGetAnimalByType(7, 1),
             $this->debugGetAnimalByType(7, 2),
         ]);*/
-        $this->debugSetAnimalInHand(2343492, 2, 1);
-        $this->debugSetAnimalInHand(2343492, 1, 0);
+        $this->debugSetAnimalInHand(2343492, 21, 1);
+        //$this->debugSetAnimalInHand(2343492, 1, 0);
 
         // Activate first player must be commented in setup if this is used
         $this->gamestate->changeActivePlayer(2343492);

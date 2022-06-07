@@ -72,32 +72,12 @@
         $this->ajaxResponse();
     }
   	
-    public function lookCards() {
+    public function chooseOpponent() {
         $this->setAjaxMode();
 
         $playerId = $this->getArg("playerId", AT_posint, true);
 
-        $this->game->lookCards($playerId);
-
-        $this->ajaxResponse();
-    }
-  	
-    public function exchangeCard() {
-        $this->setAjaxMode();
-
-        $playerId = $this->getArg("playerId", AT_posint, true);
-
-        $this->game->exchangeCard($playerId);
-
-        $this->ajaxResponse();
-    }
-  	
-    public function giveCardFromFerry() {
-        $this->setAjaxMode();
-
-        $playerId = $this->getArg("playerId", AT_posint, true);
-
-        $this->game->giveCardFromFerry($playerId);
+        $this->game->chooseOpponent($playerId);
 
         $this->ajaxResponse();
     }
