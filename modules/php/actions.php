@@ -382,6 +382,11 @@ trait ActionTrait {
     public function replaceOnTopDeck(int $cardId) {
         $this->checkAction('replaceOnTopDeck');
 
+        $possibleAnimals = $this->argReplaceOnTopDeck()['animals'];
+        if (!$this->array_some($possibleAnimals, fn($animal) => $animal->id == $cardId)) {
+            throw new Error("You can't replace this card on top deck");
+        }
+
         $animal = $this->getAnimalFromDb($this->animals->getCard($cardId));
         $position = intval(str_replace('table', '', $animal->location));
         $locationArg = $animal->location_arg;
