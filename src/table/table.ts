@@ -47,7 +47,7 @@ class Table {
 
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
-        this.setRemainingFerries(remainingFerries);
+        this.ferriesCounter.setValue(remainingFerries);
         this.sentFerriesCounter = new ebg.counter();
         this.sentFerriesCounter.create('sent-ferry-counter');
         this.sentFerriesCounter.setValue(sentFerries);
@@ -194,19 +194,12 @@ class Table {
         this.updateMargins();
     }
 
-    private setRemainingFerries(remainingFerries: number) {
-        this.ferriesCounter.setValue(remainingFerries);
-        const visibility = remainingFerries > 0 ? 'visible' : 'hidden';
-        document.getElementById('ferry-deck').style.visibility = visibility;
-        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
-    }
-
     public departure(position: number, topFerry: Ferry, newFerry: Ferry, remainingFerries: number, sentFerries: number) {
         if (topFerry) {
             dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
         }
 
-        this.setRemainingFerries(remainingFerries);
+        this.ferriesCounter.setValue(remainingFerries);
         this.sentFerriesCounter.setValue(sentFerries);
 
         this.spots[position].departure();
@@ -218,7 +211,7 @@ class Table {
     }
     
     public newRound(ferries: Ferry[]) {
-        this.setRemainingFerries(3);
+        this.ferriesCounter.setValue(3);
         for (let i=0;i<5;i++) {
             this.spots[i].newRound(ferries[i]);
         }

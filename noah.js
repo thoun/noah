@@ -286,7 +286,7 @@ var Table = /** @class */ (function () {
         }
         this.ferriesCounter = new ebg.counter();
         this.ferriesCounter.create('remaining-ferry-counter');
-        this.setRemainingFerries(remainingFerries);
+        this.ferriesCounter.setValue(remainingFerries);
         this.sentFerriesCounter = new ebg.counter();
         this.sentFerriesCounter.create('sent-ferry-counter');
         this.sentFerriesCounter.setValue(sentFerries);
@@ -401,17 +401,11 @@ var Table = /** @class */ (function () {
         this.spots[this.noahPosition].removeFirstAnimalFromFerry();
         this.updateMargins();
     };
-    Table.prototype.setRemainingFerries = function (remainingFerries) {
-        this.ferriesCounter.setValue(remainingFerries);
-        var visibility = remainingFerries > 0 ? 'visible' : 'hidden';
-        document.getElementById('ferry-deck').style.visibility = visibility;
-        document.getElementById('remaining-ferry-counter').style.visibility = visibility;
-    };
     Table.prototype.departure = function (position, topFerry, newFerry, remainingFerries, sentFerries) {
         if (topFerry) {
             dojo.toggleClass("ferry-deck", 'roomates', topFerry.roomates);
         }
-        this.setRemainingFerries(remainingFerries);
+        this.ferriesCounter.setValue(remainingFerries);
         this.sentFerriesCounter.setValue(sentFerries);
         this.spots[position].departure();
         // ferry is destroy, we build a new one
@@ -419,7 +413,7 @@ var Table = /** @class */ (function () {
         this.updateMargins();
     };
     Table.prototype.newRound = function (ferries) {
-        this.setRemainingFerries(3);
+        this.ferriesCounter.setValue(3);
         for (var i = 0; i < 5; i++) {
             this.spots[i].newRound(ferries[i]);
         }
