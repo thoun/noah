@@ -120,9 +120,10 @@ function setupAnimalCard(game, cardDiv, uniqueId) {
     game.setTooltip(cardDiv.id, tooltip);
 }
 function getBackgroundPosition(animal) {
+    var gender = animal.gender || 1;
     var imagePosition = animal.type >= 20 ?
-        24 + (animal.type - 20) * 2 + animal.gender :
-        (animal.type - 1) * 2 + animal.gender;
+        24 + (animal.type - 20) * 2 + gender :
+        (animal.type - 1) * 2 + gender;
     var image_items_per_row = 10;
     var row = Math.floor(imagePosition / image_items_per_row);
     var xBackgroundPercent = (imagePosition - (row * image_items_per_row)) * 100;

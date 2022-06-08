@@ -11,14 +11,14 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 2");
+        //$this->DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 1");
         //$this->debugSetPoints(19);
-        $this->debugSetAnimalsInFerry(0, [
+        /*$this->debugSetAnimalsInFerry(0, [
             $this->debugGetAnimalByType(1, 1),
             $this->debugGetAnimalByType(10, 2),
             $this->debugGetAnimalByType(1, 1),
-        ]);
-        $this->debugSetAnimalInHand(2343492, 4, 2);
+        ]);*/
+        $this->debugSetAnimalInHand(2343492, 2, 2);
         //$this->debugSetAnimalInHand(2343492, 1, 0);
 
         // Activate first player must be commented in setup if this is used
