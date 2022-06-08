@@ -213,6 +213,8 @@ var FerrySpot = /** @class */ (function () {
     FerrySpot.prototype.removeFirstAnimalFromFerry = function () {
         var _this = this;
         if (this.animals.length) {
+            this.animals.splice(0, 1);
+            this.updateCounter();
             dojo.destroy("ferry-spot-" + this.position + "-animal" + this.animals.shift().id);
             this.animals.forEach(function (animal, index) { return document.getElementById("ferry-spot-" + _this.position + "-animal" + animal.id).style.top = FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP + "px"; });
         }
@@ -247,6 +249,7 @@ var FerrySpot = /** @class */ (function () {
     FerrySpot.prototype.removeAnimalToDeck = function (animal) {
         var _this = this;
         this.animals.splice(this.animals.findIndex(function (a) { return a.id == animal.id; }), 1);
+        this.updateCounter();
         dojo.destroy("ferry-spot-" + this.position + "-animal" + animal.id);
         this.animals.forEach(function (animal, index) { return document.getElementById("ferry-spot-" + _this.position + "-animal" + animal.id).style.top = FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP + "px"; });
     };

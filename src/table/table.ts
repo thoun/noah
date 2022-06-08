@@ -188,7 +188,8 @@ class Table {
 
         this.updateMargins();
     }
-    removeFirstAnimalFromFerry() {
+    
+    public removeFirstAnimalFromFerry() {
         this.spots[this.noahPosition].removeFirstAnimalFromFerry();
 
         this.updateMargins();
