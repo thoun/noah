@@ -510,6 +510,10 @@ class Noah implements NoahGame {
         dojo.toggleClass('zoom-in', 'disabled', ZOOM_LEVELS.indexOf(this.zoom) >= ZOOM_LEVELS.indexOf(this.maxZoom));
     }
 
+    public isSoloMode(): boolean {
+        return this.gamedatas.solo;
+    }
+
     private createPlayerPanels(gamedatas: NoahGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
@@ -807,13 +811,13 @@ class Noah implements NoahGame {
             <h1>${_("Animal traits")}</h1>
             <div class="help-section help-animals">
                 <table>`;
-            ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+            ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number, this.isSoloMode())}</td></tr>`);
             html += `</table>
             </div>
             <h1>${_("Bonus animal traits")}</h1>
             <div class="help-section help-animals">
                 <table>`;
-            BONUS_ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number)}</td></tr>`);
+            BONUS_ANIMALS_WITH_TRAITS.forEach(number => html += `<tr><td><div id="animal${number}" class="animal"></div></td><td>${getAnimalTooltip(number, this.isSoloMode())}</td></tr>`);
             html += `</table>
             </div>
         </div>`;

@@ -75,6 +75,7 @@ interface NoahGame extends Game {
     setTooltip(id: string, html: string): void;
     setMaxZoom(): void;
     getZoom(): number;
+    isSoloMode(): boolean;
 }
 
 interface EnteringLoadAnimalArgs {

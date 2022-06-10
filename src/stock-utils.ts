@@ -85,12 +85,16 @@ function getAnimalGender(type: number) {
     return null;
 }
 
-function getAnimalTooltip(type: number) {
+function getAnimalTooltip(type: number, solo: boolean) {
     switch (type) {
         case 1: return _("<strong>The Snail:</strong> its small mass makes it a highly sought-after animal. Moreover, since the snail is an hermaphrodite, <strong>you choose whether it’s a male or female</strong> when you play it on a ferry. On the example to the left, you can see a male snail, as the blue side is upwards.");
-        case 2: return _("<strong>The Giraffe:</strong> thanks to its long neck, the giraffe is horribly indiscrete. When you play a giraffe, <strong>look at the cards of the opponent of your choice</strong> (generally you’ll choose the opponent to your left).");
+        case 2: return solo ?
+            _("<strong>The Giraffe:</strong> The giraffe has adapted to the game mode, thanks to its long neck it is able to see far, which allows you to look at the next 3 cards in the deck and replace each of them either on or under the deck, in the order of your choice.") :
+            _("<strong>The Giraffe:</strong> thanks to its long neck, the giraffe is horribly indiscrete. When you play a giraffe, <strong>look at the cards of the opponent of your choice</strong> (generally you’ll choose the opponent to your left).");
         case 3: return _("<strong>The Mule:</strong> always hard-headed, it refuses to move! When you play a mule, <strong>you will not move Noah!</strong> The next player will have to play again on this ferry.");
-        case 4: return _("<strong>The Lion:</strong> how can we refuse anything to the king of animals? When you play a lion, <strong>draw a card from the hand of the opponent of your choice.</strong> Then, give that opponent a card from your hand (you can return the card you have just taken, if you want).");
+        case 4: return solo ?
+            _("<strong>The Lion:</strong> The lion is irritated by all the commotion and his influence on the other animals can be useful to you. When you play him, you may choose any animal on a ferry and replace it on top of the deck (note that you may not remove an animal if doing so would violate the golden rule about animal genders).") :
+            _("<strong>The Lion:</strong> how can we refuse anything to the king of animals? When you play a lion, <strong>draw a card from the hand of the opponent of your choice.</strong> Then, give that opponent a card from your hand (you can return the card you have just taken, if you want).");
         case 5: return _("<strong>The Woodpecker:</strong> this bird has got to be the stupidest animal in all Creation. While its very life is being saved, that idiot cannot help but give in to its vice: drilling holes in the ferry’s wooden hull! On that ferry, <strong>the total maximum weight goes from 21 to 13!</strong> It’s thus not possible to load a woodpecker on a ferry whose weight is already over 13. When a woodpecker is present, reaching 13 makes the ferry leave and grants the same advantages as a regular departure.");
 
         case 20: return _("<strong>The Frog:</strong> if you choose to play the frogs, a couple of snails is removed.") + 
@@ -111,7 +115,7 @@ function setupAnimalCard(game: NoahGame, cardDiv: HTMLDivElement, uniqueId: numb
     let tooltip = `<h3>${getAnimalName(type)}</h3>
     <div>${_('Gender')} : ${getAnimalGender(gender)}</div>
     `;
-    const power = getAnimalTooltip(type);
+    const power = getAnimalTooltip(type, game.isSoloMode());
     if (power) {
         tooltip += `<div>${power}</div>`;
     }
