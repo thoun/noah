@@ -32,7 +32,7 @@ class Noah implements NoahGame {
     private cardsToGive: number;
     private giveCardsTo: Map<number, number>; // key = card id, value = toPlayerId
     private opponentsIds: number[];
-    private topDeckOrder = {};
+    private topDeckOrder: {[id: number]: number};
 
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -220,6 +220,8 @@ class Noah implements NoahGame {
     }
 
     private onEnteringStateReorderTopDeck(args: EnteringReorderTopDeckArgs) {
+        this.topDeckOrder = {};
+        
         let html = `<div id="order-selector">`;
         args.topCards.forEach((animal, index) => {
             html += `

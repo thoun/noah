@@ -460,7 +460,6 @@ var Noah = /** @class */ (function () {
         this.zoom = 1;
         this.maxZoom = 1;
         this.clickAction = 'load';
-        this.topDeckOrder = {};
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         this.sort = {
             type: 'weight',
@@ -628,6 +627,7 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.onEnteringStateReorderTopDeck = function (args) {
         var _this = this;
+        this.topDeckOrder = {};
         var html = "<div id=\"order-selector\">";
         args.topCards.forEach(function (animal, index) {
             html += "\n            <div class=\"order-card-zone\">\n                <div id=\"order-card-zone-" + animal.id + "\" class=\"animal-card\" style=\"background-position: " + getBackgroundPosition(animal) + "\"></div>\n                <div id=\"order-card-zone-" + animal.id + "-selector\" class=\"selector\">";

@@ -20,6 +20,9 @@ trait StateTrait {
         $this->ferries->moveAllCardsInLocation(null, 'deck');
         $this->ferries->shuffle('deck');
 
+        // TODO TEMP
+        // $this->debugSetup();
+
         $this->setInitialCardsAndResources($this->getPlayersIds());
 
         // TODO TEMP
