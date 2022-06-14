@@ -440,7 +440,7 @@ class Noah implements NoahGame {
     }
 
     private getGiveCardsButtonText() {
-        return dojo.string.substitute(_('Give ${selecardCardsCount} selected cards'), { selecardCardsCount: this.giveCardsTo.size != this.cardsToGive ? `<span style="color: orange;">${this.giveCardsTo.size}</span>` : this.giveCardsTo.size });
+        return dojo.string.substitute(_('Give ${selectedCardsCount} selected cards'), { selectedCardsCount: this.giveCardsTo.size != this.cardsToGive ? `<span style="color: orange;">${this.giveCardsTo.size}</span>` : this.giveCardsTo.size });
     }
     
 
@@ -459,6 +459,7 @@ class Noah implements NoahGame {
             div.style.transform = `scale(${zoom})`;
             div.style.margin = `0 ${ZOOM_LEVELS_MARGIN[newIndex]}% ${(1-zoom)*-100}% 0`;
         }
+        div.dataset.zoom = ''+zoom;
 
         this.playerHand.updateDisplay();
 

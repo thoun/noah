@@ -67,11 +67,11 @@
   right: 383px;
 }
 #table .remaining-counter.weight-indicator[data-position="2"] {
-  top: 2px;
+  top: -2px;
   right: 79px;
 }
 #table .remaining-counter.weight-indicator[data-position="3"] {
-  top: 289px;
+  bottom: 160px;
   left: 473px;
 }
 #table .remaining-counter.weight-indicator[data-position="4"] {
@@ -386,6 +386,35 @@ html {
   top: -10px;
   bottom: unset;
   border-width: 0 15px 15px 15px;
+}
+#full-table[data-zoom="0.375"] .weight-indicator {
+  font-size: 266.6666666667%;
+}
+#full-table[data-zoom="0.5"] .weight-indicator {
+  font-size: 200%;
+}
+#full-table[data-zoom="0.625"] .weight-indicator {
+  font-size: 160%;
+}
+#full-table[data-zoom="0.75"] .weight-indicator {
+  font-size: 133.3333333333%;
+}
+#full-table[data-zoom="0.875"] .weight-indicator {
+  font-size: 114.2857142857%;
+}
+#full-table[data-zoom="1"] .weight-indicator {
+  font-size: 100%;
+}
+#full-table[data-zoom="0.25"] .weight-indicator {
+  font-size: 350%;
+}
+#full-table[data-zoom="0.25"] .weight-indicator[data-position="2"] {
+  top: -64px;
+  right: 23px;
+}
+#full-table[data-zoom="0.375"] .weight-indicator[data-position="2"] {
+  top: -29px;
+  right: 69px;
 }
 
 #order-selector {

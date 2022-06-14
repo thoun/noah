@@ -178,6 +178,39 @@ html {
       }
     }
   }
+
+  $zoomLevels: 0.375, 0.5, 0.625, 0.75, 0.875, 1;
+
+  @each $zoomLevel in $zoomLevels {
+    &[data-zoom="#{$zoomLevel}"] {
+      .weight-indicator {
+        font-size: #{100% / $zoomLevel};
+      }
+    }
+  }
+  &[data-zoom="0.25"] {
+    .weight-indicator {
+      font-size: 350%;
+    }
+  }
+
+  &[data-zoom="0.25"] {
+    .weight-indicator {
+      &[data-position="2"] {
+        top: -64px;
+        right: 23px;
+      }
+    }
+  }
+  &[data-zoom="0.375"] {
+    .weight-indicator {
+      &[data-position="2"] {
+        top: -29px;
+        right: 69px;
+      }
+    }
+  }
+
 }
 
 #order-selector {
