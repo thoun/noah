@@ -230,6 +230,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "checkOptimalLoading" => ST_OPTIMAL_LOADING,
+            "endGame" => ST_END_GAME,
             "zombiePass" => ST_NEXT_PLAYER,
         ],
         "updateGameProgression" => true,

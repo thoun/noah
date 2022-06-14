@@ -72,6 +72,10 @@ trait StateTrait {
     function stMoveNoah() {
         if (intval($this->getGameStateValue(NOAH_NEXT_MOVE)) == 0) {
             $this->gamestate->nextState('checkOptimalLoading');
+        } else if ($this->isSoloMode() && count($this->getPossiblePositions()) == 0) {
+            $playerId = $this->getActivePlayerId();
+            $this->setPlayerScore($playerId, 0);
+            $this->gamestate->nextState('endGame');
         }
     }
 

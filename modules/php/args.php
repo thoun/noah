@@ -14,6 +14,9 @@ trait ArgsTrait {
 
     function canLoadAnimal(object $newAnimal) {
         $ferry = $this->getFerry($this->getNoahPosition());
+        if ($ferry == null) {
+            return false;
+        }
 
         $currentWeight = $ferry->getCurrentWeight($newAnimal->power == POWER_CROCODILE);
         $maxWeight = $ferry->getMaxWeight($newAnimal->power == POWER_REDUCE_MAX_WEIGHT);

@@ -100,6 +100,10 @@ trait DebugUtilTrait {
         }
     }
 
+    public function debugRemoveFerries(int $except = 0) {
+        $this->DbQuery("UPDATE `ferry` SET `card_location` = 'discard' where `card_location_arg` <> $except");
+    }
+
     public function debugReplacePlayersIds() {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;
