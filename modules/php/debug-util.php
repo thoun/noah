@@ -13,15 +13,15 @@ trait DebugUtilTrait {
 
         //$this->DbQuery("UPDATE animal SET `card_location_arg` = card_location_arg + 200 where `card_type` = 1");
         //$this->debugSetPoints(19);
-        /*$this->debugSetAnimalsInFerry(0, [
-            $this->debugGetAnimalByType(1, 1),
-            $this->debugGetAnimalByType(10, 2),
-            $this->debugGetAnimalByType(1, 1),
-        ]);*/
-        //$this->debugSetAnimalInHand(2343492, 2, 2);
+        $this->debugSetAnimalsInFerry(0, [
+            $this->debugGetAnimalByType(4, 2),
+            $this->debugGetAnimalByType(4, 1),
+            $this->debugGetAnimalByType(4, 2, 1),
+        ]);
+        $this->debugSetAnimalInHand(2343492, 3, 1);
         //$this->debugSetAnimalInHand(2343492, 1, 0);
 
-        $this->setTopDeckAnimals([
+        /*$this->setTopDeckAnimals([
             [11, 2], [11, 1],
             [2, 2],
             // plays giraffe : kangaroo Female, Bear Female, kangaroo male (default order)
@@ -38,7 +38,7 @@ trait DebugUtilTrait {
             [9, 1],
             // bug here !
             [9, 2],
-        ]);
+        ]);*/
         /*
     1 => new AnimalCard([2 => 3, 3 => 3, 4 => 3, 5 => 5], 1, 2, POWER_HERMAPHRODITE), // The Snail
     2 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 8, 0, POWER_LOOK_CARDS), // The Giraffe

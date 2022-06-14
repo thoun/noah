@@ -428,7 +428,7 @@ class Noah implements NoahGame {
         switch (prefId) {
             case 201: 
                 const hand = document.getElementById('hands');
-                const table = document.getElementById('table');
+                const table = document.getElementById('zoom-wrapper');
                 if (prefValue == 2) {
                     table.after(hand);
                 } else {

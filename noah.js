@@ -806,7 +806,7 @@ var Noah = /** @class */ (function () {
         switch (prefId) {
             case 201:
                 var hand = document.getElementById('hands');
-                var table = document.getElementById('table');
+                var table = document.getElementById('zoom-wrapper');
                 if (prefValue == 2) {
                     table.after(hand);
                 }
