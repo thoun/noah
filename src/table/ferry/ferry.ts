@@ -112,11 +112,10 @@ As such, it’s always the second card played on an ferry which defines the sequ
     
     public removeFirstAnimalFromFerry() {
         if (this.animals.length) {
-            this.animals.splice(0, 1);
-            this.updateCounter();
-
-            dojo.destroy(`ferry-spot-${this.position}-animal${this.animals.shift().id}`);
+            const removedAnimalId = this.animals.shift().id;
+            dojo.destroy(`ferry-spot-${this.position}-animal${removedAnimalId}`);
             this.animals.forEach((animal, index) => document.getElementById(`ferry-spot-${this.position}-animal${animal.id}`).style.top = `${FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP}px`);
+            this.updateCounter();
         }
     }
 
