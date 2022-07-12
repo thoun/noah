@@ -213,6 +213,8 @@ class Noah implements NoahGame {
                 player_name: `<span style="color: #${opponent.color}">${opponent.name}</span>` 
             }) + '</div>';
         }
+
+        this.updateTableHeight();
     }
 
     private onEnteringStateReplaceOnTopDeck(args: EnteringReplaceOnTopDeckArgs) {
@@ -305,6 +307,8 @@ class Noah implements NoahGame {
         giraffeHandWrap.classList.add('hidden');
         giraffeHandWrap.style.boxShadow = '';
         document.getElementById('giraffe-animals').innerHTML = '';
+
+        this.updateTableHeight();
     }
 
     onLeavingStateMoveNoah() {
@@ -462,8 +466,12 @@ class Noah implements NoahGame {
         div.dataset.zoom = ''+zoom;
 
         this.playerHand.updateDisplay();
+        this.updateTableHeight();
 
-        document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
+    }
+
+    private updateTableHeight() {
+        document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
     }
 
     public zoomIn() {

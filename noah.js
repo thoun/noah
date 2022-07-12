@@ -621,6 +621,7 @@ var Noah = /** @class */ (function () {
                 player_name: "<span style=\"color: #" + opponent.color + "\">" + opponent.name + "</span>"
             }) + '</div>';
         }
+        this.updateTableHeight();
     };
     Noah.prototype.onEnteringStateReplaceOnTopDeck = function (args) {
         this.table.makeCardsSelectable(args.animals);
@@ -703,6 +704,7 @@ var Noah = /** @class */ (function () {
         giraffeHandWrap.classList.add('hidden');
         giraffeHandWrap.style.boxShadow = '';
         document.getElementById('giraffe-animals').innerHTML = '';
+        this.updateTableHeight();
     };
     Noah.prototype.onLeavingStateMoveNoah = function () {
         dojo.query('.noah-spot').removeClass('selectable');
@@ -838,7 +840,10 @@ var Noah = /** @class */ (function () {
         }
         div.dataset.zoom = '' + zoom;
         this.playerHand.updateDisplay();
-        document.getElementById('zoom-wrapper').style.height = div.getBoundingClientRect().height + "px";
+        this.updateTableHeight();
+    };
+    Noah.prototype.updateTableHeight = function () {
+        document.getElementById('zoom-wrapper').style.height = document.getElementById('full-table').getBoundingClientRect().height + "px";
     };
     Noah.prototype.zoomIn = function () {
         if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
