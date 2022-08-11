@@ -985,7 +985,7 @@ class Noah implements NoahGame {
     }
 
     notif_newRound(notif: Notif<NotifNewRoundArgs>) {
-        this.table.newRound(notif.args.ferries);
+        this.table.newRound(notif.args.ferries, notif.args.remainingFerries, notif.args.sentFerries);
         this.roundCounter.incValue(1);
     }
 

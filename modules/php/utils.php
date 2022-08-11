@@ -249,6 +249,8 @@ trait UtilTrait {
         }
         $this->notifyAllPlayers('newRound', '', [
             'ferries' => $ferries,
+            'remainingFerries' => intval($this->ferries->countCardInLocation('deck')),
+            'sentFerries' => intval($this->ferries->countCardInLocation('discard')),
         ]);
 
         // set players animals

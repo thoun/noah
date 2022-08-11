@@ -211,11 +211,14 @@ class Table {
         this.updateMargins();
     }
     
-    public newRound(ferries: Ferry[]) {
+    public newRound(ferries: Ferry[], remainingFerries: number, sentFerries: number) {
         this.ferriesCounter.setValue(3);
         for (let i=0;i<5;i++) {
             this.spots[i].newRound(ferries[i]);
         }
+
+        this.ferriesCounter.setValue(remainingFerries);
+        this.sentFerriesCounter.setValue(sentFerries);
     }
 
     public removeAnimalToDeck(animal: Animal) {

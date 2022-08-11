@@ -142,6 +142,8 @@ interface NotifNoahMovedArgs {
 
 interface NotifNewRoundArgs {
     ferries: Ferry[];
+    remainingFerries: number;
+    sentFerries: number;
 }
 
 interface NotifNewHandArgs {

@@ -420,11 +420,13 @@ var Table = /** @class */ (function () {
         this.spots[position] = new FerrySpot(this.game, position, newFerry, true);
         this.updateMargins();
     };
-    Table.prototype.newRound = function (ferries) {
+    Table.prototype.newRound = function (ferries, remainingFerries, sentFerries) {
         this.ferriesCounter.setValue(3);
         for (var i = 0; i < 5; i++) {
             this.spots[i].newRound(ferries[i]);
         }
+        this.ferriesCounter.setValue(remainingFerries);
+        this.sentFerriesCounter.setValue(sentFerries);
     };
     Table.prototype.removeAnimalToDeck = function (animal) {
         this.spots[Number(animal.location.replace('table', ''))].removeAnimalToDeck(animal);
@@ -1259,7 +1261,7 @@ var Noah = /** @class */ (function () {
         this.table.noahMoved(notif.args.position);
     };
     Noah.prototype.notif_newRound = function (notif) {
-        this.table.newRound(notif.args.ferries);
+        this.table.newRound(notif.args.ferries, notif.args.remainingFerries, notif.args.sentFerries);
         this.roundCounter.incValue(1);
     };
     Noah.prototype.notif_newHand = function (notif) {
