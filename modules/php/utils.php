@@ -193,11 +193,10 @@ trait UtilTrait {
         foreach($this->ANIMALS as $type => $animal) {
             if (!$useFrog && $type == 20) { continue; } // frog not used
             if (!$useCrocodile && $type == 21) { continue; } // crocodile not used
+            if ($useFrog && $type == 1) { continue; } // frog replaces snail
+            if ($useCrocodile && $type == 3) { continue; } // crocodile replaces donkeys
 
             $number = $animal->cardsByGender[$playerCount];
-
-            if ($useFrog && $type == 1) { $number -= 2; } // frog remove a couple of snails
-            if ($useCrocodile && $type == 3) { $number -= 2; } // crocodile remove a couple of donkeys
 
             $animalCard = [ 'type' => $type, 'nbr' => $number ];
             if ($animal->power == POWER_HERMAPHRODITE) {
