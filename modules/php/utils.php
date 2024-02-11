@@ -191,10 +191,10 @@ trait UtilTrait {
         $useFrog = $this->useFrog();
         $useCrocodile = $this->useCrocodile();
         foreach($this->ANIMALS as $type => $animal) {
-            if (!$useFrog && $type == 20) { continue; } // frog not used
-            if (!$useCrocodile && $type == 21) { continue; } // crocodile not used
-            if ($useFrog && $type == 1) { continue; } // frog replaces snail
-            if ($useCrocodile && $type == 3) { continue; } // crocodile replaces donkeys
+            if (!$useFrog && $type == FROG) { continue; } // frog not used
+            if (!$useCrocodile && $type == CROCODILE) { continue; } // crocodile not used
+            if ($useFrog && $type == SNAIL) { continue; } // frog replaces snail
+            if ($useCrocodile && $type == DONKEY) { continue; } // crocodile replaces donkeys
 
             $number = $animal->cardsByGender[$playerCount];
 
@@ -228,7 +228,7 @@ trait UtilTrait {
 
     function setInitialCardsAndResources(array $playersIds) {
         // reset frog weights
-        $this->DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = 20"); 
+        $this->DbQuery("UPDATE animal SET `card_weight` = 1 where `card_type` = ".FROG);
         $soloMode = $this->isSoloMode(); 
 
         // set table ferries and first animal on it
@@ -306,21 +306,21 @@ trait UtilTrait {
 
     function getAnimalName(int $type) {
         switch ($type) {
-            case 1: return _('Snail');
-            case 2: return _('Giraffe');
-            case 3: return _('Mule');
-            case 4: return _('Lion');
-            case 5: return _('Woodpecker');
-            case 6: return _('Cat');
-            case 7: return _('Elephant');
-            case 8: return _('Panda');
-            case 9: return _('Parrot');
-            case 10: return _('Kangaroo');
-            case 11: return _('Rhinoceros');
-            case 12: return _('Bear');
+            case SNAIL: return _('Snail');
+            case GIRAFFE: return _('Giraffe');
+            case DONKEY: return _('Mule');
+            case LION: return _('Lion');
+            case WOODPECKER: return _('Woodpecker');
+            case CAT: return _('Cat');
+            case ELEPHANT: return _('Elephant');
+            case PANDA: return _('Panda');
+            case PARROT: return _('Parrot');
+            case KANGAROO: return _('Kangaroo');
+            case RHINOCEROS: return _('Rhinoceros');
+            case BEAR: return _('Bear');
 
-            case 20: return _('Frog');
-            case 21: return _('Crocodile');
+            case FROG: return _('Frog');
+            case CROCODILE: return _('Crocodile');
         }
         return null;
     }
