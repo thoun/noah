@@ -67,4 +67,23 @@ define('POWER_EXCHANGE_CARD', 4);
 define('POWER_REDUCE_MAX_WEIGHT', 5);
 define('POWER_ADJUSTABLE_WEIGHT', 20);
 define('POWER_CROCODILE', 21);
+
+/*
+ * Animals
+ */
+define('SNAIL', 1);
+define('GIRAFFE', 2);
+define('DONKEY', 3);
+define('LION', 4);
+define('WOODPECKER', 5);
+define('CAT', 6);
+define('ELEPHANT', 7);
+define('PANDA', 8);
+define('PARROT', 9);
+define('KANGAROO', 10);
+define('RHINOCEROS', 11);
+define('BEAR', 12);
+define('FROG', 20);
+define('CROCODILE', 21);
+
 ?>

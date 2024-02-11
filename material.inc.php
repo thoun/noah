@@ -22,20 +22,20 @@
 require_once('modules/php/objects/animal.php');
 
 $this->ANIMALS = [ // (int $cardsByGender, int $weight, int $points, int $power = 0)
-    1 => new AnimalCard([2 => 3, 3 => 3, 4 => 3, 5 => 5], 1, 2, POWER_HERMAPHRODITE), // The Snail
-    2 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 8, 0, POWER_LOOK_CARDS), // The Giraffe
-    3 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 2], 6, 1, POWER_DONT_MOVE_NOAH), // The Mule / donkey?
-    4 => new AnimalCard([2 => 1, 3 => 1, 4 => 2, 5 => 2], 5, 1, POWER_EXCHANGE_CARD), // The Lion 
-    5 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 0, 2, POWER_REDUCE_MAX_WEIGHT), // The Woodpecker
-    6 => new AnimalCard([2 => 2, 3 => 2, 4 => 3, 5 => 3], 2, 1), // Cat
-    7 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 10, 0), // Elephant
-    8 => new AnimalCard([2 => 1, 3 => 1, 4 => 2, 5 => 3], 4, 4), // Panda
-    9 => new AnimalCard([2 => 2, 3 => 2, 4 => 2, 5 => 3], 0, 2), // Perrot
-    10 => new AnimalCard([2 => 2, 3 => 2, 4 => 3, 5 => 3], 3, 1), // Kangaroo
-    11 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 9, 0), // Rhinoceros
-    12 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 7, 0), // Bear
+    SNAIL => new AnimalCard([2 => 3, 3 => 3, 4 => 3, 5 => 5], 1, 2, POWER_HERMAPHRODITE),
+    GIRAFFE => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 8, 0, POWER_LOOK_CARDS),
+    DONKEY => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 2], 6, 1, POWER_DONT_MOVE_NOAH),
+    LION => new AnimalCard([2 => 1, 3 => 1, 4 => 2, 5 => 2], 5, 1, POWER_EXCHANGE_CARD),
+    WOODPECKER => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 0, 2, POWER_REDUCE_MAX_WEIGHT),
+    CAT => new AnimalCard([2 => 2, 3 => 2, 4 => 3, 5 => 3], 2, 1),
+    ELEPHANT => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 10, 0),
+    PANDA => new AnimalCard([2 => 1, 3 => 1, 4 => 2, 5 => 3], 4, 4),
+    PARROT => new AnimalCard([2 => 2, 3 => 2, 4 => 2, 5 => 3], 0, 2),
+    KANGAROO => new AnimalCard([2 => 2, 3 => 2, 4 => 3, 5 => 3], 3, 1),
+    RHINOCEROS => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 9, 0),
+    BEAR => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 7, 0),
 
     // Bonus cards
-    20 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 1, 5, POWER_ADJUSTABLE_WEIGHT), // Frog
-    21 => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 6, 0, POWER_CROCODILE), // Crocodile
+    FROG => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 1, 5, POWER_ADJUSTABLE_WEIGHT),
+    CROCODILE => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 6, 0, POWER_CROCODILE),
 ];
