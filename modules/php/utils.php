@@ -197,7 +197,7 @@ trait UtilTrait {
             $number = $animal->cardsByGender[$playerCount];
 
             if ($useFrog && $type == 1) { $number -= 2; } // frog remove a couple of snails
-            if ($useCrocodile && $type == 3) { $number -= 1; } // crocodile remove a couple of donkeys
+            if ($useCrocodile && $type == 3) { $number -= 2; } // crocodile remove a couple of donkeys
 
             $animalCard = [ 'type' => $type, 'nbr' => $number ];
             if ($animal->power == POWER_HERMAPHRODITE) {
