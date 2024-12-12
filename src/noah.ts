@@ -191,9 +191,7 @@ class Noah implements NoahGame {
     
     private setGamestateDescription(property: string = '') {
         const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
-        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`; 
-        (this as any).updatePageTitle();        
+        (this as any).statusBar.setTitle(originalState[((this as any).isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);        
     }
     
     private onEnteringStateLoadAnimal(args: EnteringLoadAnimalArgs) {
@@ -385,47 +383,48 @@ class Noah implements NoahGame {
                 case 'loadAnimal':
                     const loadAnimalArgs = args as EnteringLoadAnimalArgs;
                     if (!loadAnimalArgs.selectableAnimals.length) {
-                        (this as any).addActionButton('takeAllAnimals-button', _('Take all animals'), () => this.takeAllAnimals(), null, null, 'red');
+                        (this as any).statusBar.addActionButton(_('Take all animals'), () => (this as any).bgaPerformAction('actTakeAllAnimals'), { color: 'alert' });
                     }
                     break;
                 case 'viewCards':
-                    (this as any).addActionButton('seen-button', _('Seen'), () => this.seen());
+                    (this as any).statusBar.addActionButton(_('Seen'), () => (this as any).bgaPerformAction('actSeen'));
                     break;
                 case 'chooseGender':
-                    (this as any).addActionButton('chooseGender-male-button', _('Male'), () => this.setGender(1));
-                    (this as any).addActionButton('chooseGender-female-button', _('Female'), () => this.setGender(2));
+                    (this as any).statusBar.addActionButton(_('Male'), () => this.setGender(1));
+                    (this as any).statusBar.addActionButton(_('Female'), () => this.setGender(2));
                     break;
 
                 case 'chooseWeight':
                     const chooseWeightArgs = args as EnteringChooseWeightArgs;
-                    (this as any).addActionButton('min-weight-button', '1', () => this.setWeight(1));
-                    (this as any).addActionButton('adjust-weight-button', ''+chooseWeightArgs.weightForDeparture, () => this.setWeight(chooseWeightArgs.weightForDeparture));
+                    (this as any).statusBar.addActionButton('1', () => this.setWeight(1));
+                    (this as any).statusBar.addActionButton(`${chooseWeightArgs.weightForDeparture}`, () => this.setWeight(chooseWeightArgs.weightForDeparture));
                     break;
 
                 case 'chooseOpponent':
                     const choosePlayerArgs = args as EnteringChooseOpponentArgs;
-                    const exchange = choosePlayerArgs.exchangeCard;
-                    const give = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
                         const player = this.getPlayer(playerId);
-                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.chooseOpponent(playerId));
-                        document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
+                        const button = (this as any).statusBar.addActionButton(player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.chooseOpponent(playerId));
+                        button.style.border = `3px solid #${player.color}`;
                     });
                     break;
 
                 case 'optimalLoadingGiveCards':                    
                     this.clickAction = 'give';
                     this.onEnteringStateOptimalLoadingGiveCards(args as EnteringOptimalLoadingGiveCardsArgs);
-                    (this as any).addActionButton('giveCards-button', this.getGiveCardsButtonText(), () => this.giveCards());
-                    dojo.addClass('giveCards-button', 'disabled');
+                    (this as any).statusBar.addActionButton(
+                        this.getGiveCardsButtonText(), 
+                        () => this.giveCards(), 
+                        { id: 'giveCards-button', classes: 'disabled' }
+                    );
                     break;
 
                 case 'reorderTopDeck':
-                    (this as any).addActionButton('reorderTopDeck-button', _('Replace on top deck'), () => this.reorderTopDeck());
+                    (this as any).statusBar.addActionButton(_('Replace on top deck'), () => this.reorderTopDeck(), { id: 'reorderTopDeck-button' });
                     break;
 
                 case 'replaceOnTopDeck':
-                    (this as any).addActionButton('skipReplaceOnTopDeck-button', _('Skip'), () => this.skipReplaceOnTopDeck());
+                    (this as any).statusBar.addActionButton(_('Skip'), () => (this as any).bgaPerformAction('actSkipReplaceOnTopDeck'));
                     break;
             }
         }
@@ -716,14 +715,6 @@ class Noah implements NoahGame {
         });
     }
 
-    private seen() {
-        (this as any).bgaPerformAction('actSeen');
-    }
-
-    private takeAllAnimals() {
-        (this as any).bgaPerformAction('actTakeAllAnimals');
-    }
-
     private setGender(gender: number) {
         (this as any).bgaPerformAction('actSetGender', {
             gender
@@ -777,10 +768,6 @@ class Noah implements NoahGame {
         (this as any).bgaPerformAction('actReplaceOnTopDeck', {
             id
         });
-    }
-
-    private skipReplaceOnTopDeck() {
-        (this as any).bgaPerformAction('actSkipReplaceOnTopDeck');
     }
     
     private setPoints(playerId: number, points: number) {

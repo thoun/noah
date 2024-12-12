@@ -22,12 +22,14 @@ class Ferry {
         return $currentWeight;
     }
 
-    public function getMaxWeight($forceToThirteen = false) {
+    public function getMaxWeight($forceToThirteen = false, $ignoreFirst = false) {
         if ($forceToThirteen) {
             return 13;
         }
 
-        foreach($this->animals as $animal) {
+        $animals = $ignoreFirst ? array_slice($this->animals, 1) : $this->animals;
+
+        foreach($animals as $animal) {
             if ($animal->power == POWER_REDUCE_MAX_WEIGHT) {
                 return 13;
             }

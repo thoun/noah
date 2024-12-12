@@ -567,9 +567,7 @@ var Noah = /** @class */ (function () {
     Noah.prototype.setGamestateDescription = function (property) {
         if (property === void 0) { property = ''; }
         var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = "" + originalState['description' + property];
-        this.gamedatas.gamestate.descriptionmyturn = "" + originalState['descriptionmyturn' + property];
-        this.updatePageTitle();
+        this.statusBar.setTitle(originalState[(this.isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);
     };
     Noah.prototype.onEnteringStateLoadAnimal = function (args) {
         var _this = this;
@@ -740,42 +738,39 @@ var Noah = /** @class */ (function () {
                 case 'loadAnimal':
                     var loadAnimalArgs = args;
                     if (!loadAnimalArgs.selectableAnimals.length) {
-                        this.addActionButton('takeAllAnimals-button', _('Take all animals'), function () { return _this.takeAllAnimals(); }, null, null, 'red');
+                        this.statusBar.addActionButton(_('Take all animals'), function () { return _this.bgaPerformAction('actTakeAllAnimals'); }, { color: 'alert' });
                     }
                     break;
                 case 'viewCards':
-                    this.addActionButton('seen-button', _('Seen'), function () { return _this.seen(); });
+                    this.statusBar.addActionButton(_('Seen'), function () { return _this.bgaPerformAction('actSeen'); });
                     break;
                 case 'chooseGender':
-                    this.addActionButton('chooseGender-male-button', _('Male'), function () { return _this.setGender(1); });
-                    this.addActionButton('chooseGender-female-button', _('Female'), function () { return _this.setGender(2); });
+                    this.statusBar.addActionButton(_('Male'), function () { return _this.setGender(1); });
+                    this.statusBar.addActionButton(_('Female'), function () { return _this.setGender(2); });
                     break;
                 case 'chooseWeight':
                     var chooseWeightArgs_1 = args;
-                    this.addActionButton('min-weight-button', '1', function () { return _this.setWeight(1); });
-                    this.addActionButton('adjust-weight-button', '' + chooseWeightArgs_1.weightForDeparture, function () { return _this.setWeight(chooseWeightArgs_1.weightForDeparture); });
+                    this.statusBar.addActionButton('1', function () { return _this.setWeight(1); });
+                    this.statusBar.addActionButton("" + chooseWeightArgs_1.weightForDeparture, function () { return _this.setWeight(chooseWeightArgs_1.weightForDeparture); });
                     break;
                 case 'chooseOpponent':
                     var choosePlayerArgs = args;
-                    var exchange = choosePlayerArgs.exchangeCard;
-                    var give = choosePlayerArgs.giveCardFromFerry;
                     choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
                         var player = _this.getPlayer(playerId);
-                        _this.addActionButton("choosePlayer" + playerId + "-button", player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.chooseOpponent(playerId); });
-                        document.getElementById("choosePlayer" + playerId + "-button").style.border = "3px solid #" + player.color;
+                        var button = _this.statusBar.addActionButton(player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.chooseOpponent(playerId); });
+                        button.style.border = "3px solid #" + player.color;
                     });
                     break;
                 case 'optimalLoadingGiveCards':
                     this.clickAction = 'give';
                     this.onEnteringStateOptimalLoadingGiveCards(args);
-                    this.addActionButton('giveCards-button', this.getGiveCardsButtonText(), function () { return _this.giveCards(); });
-                    dojo.addClass('giveCards-button', 'disabled');
+                    this.statusBar.addActionButton(this.getGiveCardsButtonText(), function () { return _this.giveCards(); }, { id: 'giveCards-button', classes: 'disabled' });
                     break;
                 case 'reorderTopDeck':
-                    this.addActionButton('reorderTopDeck-button', _('Replace on top deck'), function () { return _this.reorderTopDeck(); });
+                    this.statusBar.addActionButton(_('Replace on top deck'), function () { return _this.reorderTopDeck(); }, { id: 'reorderTopDeck-button' });
                     break;
                 case 'replaceOnTopDeck':
-                    this.addActionButton('skipReplaceOnTopDeck-button', _('Skip'), function () { return _this.skipReplaceOnTopDeck(); });
+                    this.statusBar.addActionButton(_('Skip'), function () { return _this.bgaPerformAction('actSkipReplaceOnTopDeck'); });
                     break;
             }
         }
@@ -1016,12 +1011,6 @@ var Noah = /** @class */ (function () {
             id: id
         });
     };
-    Noah.prototype.seen = function () {
-        this.bgaPerformAction('actSeen');
-    };
-    Noah.prototype.takeAllAnimals = function () {
-        this.bgaPerformAction('actTakeAllAnimals');
-    };
     Noah.prototype.setGender = function (gender) {
         this.bgaPerformAction('actSetGender', {
             gender: gender
@@ -1066,9 +1055,6 @@ var Noah = /** @class */ (function () {
         this.bgaPerformAction('actReplaceOnTopDeck', {
             id: id
         });
-    };
-    Noah.prototype.skipReplaceOnTopDeck = function () {
-        this.bgaPerformAction('actSkipReplaceOnTopDeck');
     };
     Noah.prototype.setPoints = function (playerId, points) {
         var _a;

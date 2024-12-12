@@ -19,7 +19,7 @@ trait ArgsTrait {
         }
 
         $currentWeight = $ferry->getCurrentWeight($newAnimal->power == POWER_CROCODILE);
-        $maxWeight = $ferry->getMaxWeight($newAnimal->power == POWER_REDUCE_MAX_WEIGHT);
+        $maxWeight = $ferry->getMaxWeight($newAnimal->power == POWER_REDUCE_MAX_WEIGHT, $newAnimal->power == POWER_CROCODILE);
 
         if ($currentWeight + $newAnimal->weight > $maxWeight) {
             return false;

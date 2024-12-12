@@ -21,7 +21,7 @@ trait DebugUtilTrait {
         //$this->debugSetAnimalInHand(2343492, 2, 2);
         //$this->debugSetAnimalInHand(2343492, 1, 0);
 
-        $this->setTopDeckAnimals([
+        $this->debug_setTopDeckAnimals([
             [11, 2], [11, 1],
             [2, 2],
             // plays giraffe : kangaroo Female, Bear Female, kangaroo male (default order)
@@ -60,15 +60,15 @@ trait DebugUtilTrait {
         //$this->animals->pickCardsForLocation(6, 'hand', 'discard', 2343493);
     }
 
-    private function debugSetPlayerPoints(int $playerId, int $score) {
+    public function debug_SetPlayerPoints(int $playerId, int $score) {
         $this->DbQuery("UPDATE player SET `player_score` = $score where `player_id` = $playerId");
     }
 
-    private function debugSetPoints(int $score) {
+    public function debug_SetPoints(int $score) {
         $this->DbQuery("UPDATE player SET `player_score` = $score");
     }
 
-    private function debugGetAnimalByType($type, $subType, $index = 0) {
+    public function debug_GetAnimalByType($type, $subType, $index = 0) {
         if ($type == 1) {
             $snail = $this->getAnimalsFromDb($this->animals->getCardsOfType($type, 0))[$index];
             $this->applySetGender($snail->id, $subType);
@@ -77,7 +77,7 @@ trait DebugUtilTrait {
         return $this->getAnimalsFromDb($this->animals->getCardsOfType($type, $subType))[$index];
     }
 
-    private function debugSetAnimalsInFerry(int $position, array $animals) {
+    public function debug_SetAnimalsInFerry(int $position, array $animals) {
         $this->animals->moveAllCardsInLocation('table'.$position, 'discard');
         $index = 0;
         foreach($animals as $animal) {
@@ -85,12 +85,12 @@ trait DebugUtilTrait {
         }
     }
 
-    private function debugSetAnimalInHand($playerId, $type, $subType, $index = 0) {
+    public function debug_SetAnimalInHand(int $playerId, int $type, int $subType, $index = 0) {
         $card = $this->debugGetAnimalByType($type, $subType, $index);
         $this->animals->moveCard($card->id, 'hand', $playerId);
     }
 
-    private function setTopDeckAnimals(array $animals) {
+    public function debug_setTopDeckAnimals(array $animals) {
         foreach($animals as $index => $animal) {
             $type = $animal[0];
             $gender = $animal[1];
@@ -100,36 +100,9 @@ trait DebugUtilTrait {
         }
     }
 
-    public function debugRemoveFerries(int $except = 0) {
+    public function debug_RemoveFerries(int $except = 0) {
         $this->DbQuery("UPDATE `ferry` SET `card_location` = 'discard' where `card_location_arg` <> $except");
     }
-
-    public function debugReplacePlayersIds() {
-        if ($this->getBgaEnvironment() != 'studio') { 
-            return;
-        } 
-
-		// These are the id's from the BGAtable I need to debug.
-		$ids = [
-            84995393
-		];
-
-		// Id of the first player in BGA Studio
-		$sid = 2343492;
-		
-		foreach ($ids as $id) {
-			// basic tables
-			$this->DbQuery("UPDATE player SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE global SET global_value=$sid WHERE global_value = $id" );
-			$this->DbQuery("UPDATE stats SET stats_player_id=$sid WHERE stats_player_id = $id" );
-
-			// 'other' game specific tables. example:
-			// tables specific to your schema that use player_ids
-			$this->DbQuery("UPDATE animal SET card_location_arg=$sid WHERE card_location_arg = $id" );
-			
-			++$sid;
-		}
-	}
 
     function debug($debugData) {
         if ($this->getBgaEnvironment() != 'studio') { 
