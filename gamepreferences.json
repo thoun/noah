@@ -1,0 +1,15 @@
+{
+    "201": {
+        "name": "Hand position",
+        "needReload": false,
+        "values": {
+            "1": {
+                "name": "Above table"
+            },
+            "2": {
+                "name": "Under table"
+            }
+        },
+        "default": 1
+    }
+}

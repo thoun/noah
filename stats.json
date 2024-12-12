@@ -1,0 +1,66 @@
+{
+    "table": {
+        "turnsNumber": {
+            "id": 10,
+            "name": "Number of turns",
+            "type": "int"
+        },
+        "playedCards": {
+            "id": 11,
+            "name": "Number played cards",
+            "type": "int"
+        },
+        "takeAllAnimals": {
+            "id": 12,
+            "name": "Number of times player must take all animals",
+            "type": "int"
+        },
+        "optimalLoading": {
+            "id": 13,
+            "name": "Number of optimal loadings",
+            "type": "int"
+        },
+        "alternateGender": {
+            "id": 14,
+            "name": "Ferries with alternate gender",
+            "type": "int"
+        },
+        "sameGender": {
+            "id": 15,
+            "name": "Ferries with same gender",
+            "type": "int"
+        }
+    },
+    "player": {
+        "turnsNumber": {
+            "id": 10,
+            "name": "Number of turns",
+            "type": "int"
+        },
+        "playedCards": {
+            "id": 11,
+            "name": "Number played cards",
+            "type": "int"
+        },
+        "takeAllAnimals": {
+            "id": 12,
+            "name": "Number of times player must take all animals",
+            "type": "int"
+        },
+        "optimalLoading": {
+            "id": 13,
+            "name": "Number of optimal loadings",
+            "type": "int"
+        },
+        "alternateGender": {
+            "id": 14,
+            "name": "Ferries with alternate gender",
+            "type": "int"
+        },
+        "sameGender": {
+            "id": 15,
+            "name": "Ferries with same gender",
+            "type": "int"
+        }
+    }
+}
