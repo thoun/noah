@@ -1,5 +1,8 @@
 <?php
 
+use Bga\GameFramework\Actions\Types\IntParam;
+use Bga\GameFramework\Actions\Types\JsonParam;
+
 trait ActionTrait {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -11,9 +14,7 @@ trait ActionTrait {
         (note: each method below must match an input method in noah.action.php)
     */
 
-    public function loadAnimal(int $id) {
-        $this->checkAction('loadAnimal');
-        
+    public function actLoadAnimal(int $id) {
         $animal = $this->getAnimalFromDb($this->animals->getCard($id));
 
         if (!$this->canLoadAnimal($animal)) {
@@ -46,9 +47,7 @@ trait ActionTrait {
         }
     }
 
-    function setGender(int $gender) {
-        $this->checkAction('setGender'); 
-        
+    function actSetGender(int $gender) {        
         $position = $this->getNoahPosition();
         $location = 'table'.$position;
         $animalsInFerry = $this->getAnimalsFromDb($this->animals->getCardsInLocation($location));
@@ -64,9 +63,7 @@ trait ActionTrait {
         $this->applyLoadAnimal($animal->id);
     }
 
-    function setWeight(int $weight) {
-        $this->checkAction('setWeight');
-
+    function actSetWeight(int $weight) {
         $animal = $this->getAnimalFromDb($this->animals->getCard(intval($this->getGameStateValue(SELECTED_ANIMAL))));
         if ($animal->power != POWER_ADJUSTABLE_WEIGHT) {
             throw new Error("No animal need to set weight");
@@ -158,9 +155,7 @@ trait ActionTrait {
         }
     }
 
-    public function takeAllAnimals() {
-        $this->checkAction('takeAllAnimals');
-        
+    public function actTakeAllAnimals() {
         $playerId = $this->getActivePlayerId();
         
         $position = $this->getNoahPosition();
@@ -183,9 +178,7 @@ trait ActionTrait {
         $this->gamestate->nextState('loadAnimal');
     }
 
-    public function moveNoah(int $destination) {
-        $this->checkAction('moveNoah'); 
-
+    public function actMoveNoah(int $destination) {
         $possiblePositions = $this->getPossiblePositions();
         if (array_search($destination,  $possiblePositions) === false) {
             throw new Error("Invalid destination for Noah");
@@ -200,9 +193,7 @@ trait ActionTrait {
         $this->gamestate->nextState('checkOptimalLoading');
     }
 
-    public function giveCards(array $giveCardsTo) {
-        $this->checkAction('giveCards'); 
-
+    public function actGiveCards(#[JsonParam(associative: true)] array $giveCardsTo) {
         $playerId = intval($this->getActivePlayerId());
 
         $numberSelected = count($giveCardsTo);
@@ -244,9 +235,7 @@ trait ActionTrait {
         $this->gamestate->nextState('nextPlayer');
     }
 
-    public function lookCards(int $playerId) {
-        $this->checkAction('lookCards'); 
-
+    public function actLookCards(int $playerId) {
         $this->applyLookCards($playerId);
     }
 
@@ -256,9 +245,7 @@ trait ActionTrait {
         $this->gamestate->nextState('look');
     }
 
-    public function exchangeCard(int $playerId) {
-        $this->checkAction('exchangeCard'); 
-
+    public function actExchangeCard(int $playerId) {
         $this->applyExchangeCard($playerId);
     }
 
@@ -268,17 +255,11 @@ trait ActionTrait {
         $this->gamestate->nextState('exchange');
     }
 
-    public function giveCardFromFerry(int $playerId) {
-        $this->checkAction('giveCardFromFerry'); 
-
+    public function actGiveCardFromFerry(int $playerId) {
         $this->applyGiveCardFromFerry($playerId);
     }
 
-    function chooseOpponent(int $playerId, bool $skipCheckAction = false) {
-        if (!$skipCheckAction) {
-            $this->checkAction('chooseOpponent'); 
-        }
-
+    function actChooseOpponent(int $playerId) {
         $power = intval($this->getGameStateValue(CHOOSE_OPPONENT_ACTION));
         $this->setGameStateValue(CHOOSE_OPPONENT_ACTION, 0);
 
@@ -335,7 +316,7 @@ trait ActionTrait {
         $this->applyLoadAnimal(intval($this->getGameStateValue(SELECTED_ANIMAL)));
     }
 
-    function giveCard(int $cardId) {
+    function actGiveCard(#[IntParam(name: 'id')] int $cardId) {
         $playerId = $this->getActivePlayerId();
         $opponentId = intval($this->getGameStateValue(EXCHANGE_CARD));
 
@@ -362,15 +343,11 @@ trait ActionTrait {
         $this->gamestate->nextState('giveCard');
     }
 
-    public function seen() {
-        $this->checkAction('seen');
-
+    public function actSeen() {
         $this->gamestate->nextState('seen');
     }
 
-    public function reorderTopDeck(array $reorderTopDeck) {
-        $this->checkAction('reorderTopDeck');
-
+    public function actReorderTopDeck(#[JsonParam(associative: true)] array $reorderTopDeck) {
         foreach($reorderTopDeck as $id => $position) {
             $locationArg = 1000 - $position;
             $this->DbQuery("UPDATE animal SET `card_location_arg` = $locationArg where `card_id` = $id");
@@ -379,9 +356,7 @@ trait ActionTrait {
         $this->gamestate->nextState('moveNoah');
     }
         
-    public function replaceOnTopDeck(int $cardId) {
-        $this->checkAction('replaceOnTopDeck');
-
+    public function actReplaceOnTopDeck(#[IntParam(name: 'id')] int $cardId) {
         $possibleAnimals = $this->argReplaceOnTopDeck()['animals'];
         if (!$this->array_some($possibleAnimals, fn($animal) => $animal->id == $cardId)) {
             throw new Error("You can't replace this card on top deck");
@@ -401,9 +376,7 @@ trait ActionTrait {
         $this->gamestate->nextState('moveNoah');
     }
         
-    public function skipReplaceOnTopDeck() {
-        $this->checkAction('skipReplaceOnTopDeck');
-
+    public function actSkipReplaceOnTopDeck() {
         $this->gamestate->nextState('moveNoah');
     }
 }

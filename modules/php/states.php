@@ -34,7 +34,7 @@ trait StateTrait {
     function stChooseOpponent() {
         if (count($this->getPlayersIds()) == 2) {
             $opponentId = $this->getOpponentId($this->getActivePlayerId());
-            $this->chooseOpponent($opponentId, true);
+            $this->actChooseOpponent($opponentId);
         }
     }
 

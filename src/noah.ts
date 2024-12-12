@@ -711,105 +711,61 @@ class Noah implements NoahGame {
     }
 
     private loadAnimal(id: number) {
-        if(!(this as any).checkAction('loadAnimal')) {
-            return;
-        }
-
-        this.takeAction('loadAnimal', {
+        (this as any).bgaPerformAction('actLoadAnimal', {
             id
         });
     }
 
     private seen() {
-        if(!(this as any).checkAction('seen')) {
-            return;
-        }
-
-        this.takeAction('seen');
+        (this as any).bgaPerformAction('actSeen');
     }
 
     private takeAllAnimals() {
-        if(!(this as any).checkAction('takeAllAnimals')) {
-            return;
-        }
-
-        this.takeAction('takeAllAnimals');
+        (this as any).bgaPerformAction('actTakeAllAnimals');
     }
 
     private setGender(gender: number) {
-        if(!(this as any).checkAction('setGender')) {
-            return;
-        }
-
-        this.takeAction('setGender', {
+        (this as any).bgaPerformAction('actSetGender', {
             gender
         });
     }
 
     private setWeight(weight: number) {
-        if(!(this as any).checkAction('setWeight')) {
-            return;
-        }
-
-        this.takeAction('setWeight', {
+        (this as any).bgaPerformAction('actSetWeight', {
             weight
         });
     }
 
     private chooseOpponent(playerId: number) {
-        if(!(this as any).checkAction('chooseOpponent')) {
-            return;
-        }
-
-        this.takeAction('chooseOpponent', {
+        (this as any).bgaPerformAction('actChooseOpponent', {
             playerId
         });
     }
 
     private giveCard(id: number) {
-        if(!(this as any).checkAction('giveCard')) {
-            return;
-        }
-
-        this.takeAction('giveCard', {
+        (this as any).bgaPerformAction('actGiveCard', {
             id
         });
     }
 
     public moveNoah(destination: number) {
-        if(!(this as any).checkAction('moveNoah')) {
-            return;
-        }
-
-        this.takeAction('moveNoah', {
+        (this as any).bgaPerformAction('actMoveNoah', {
             destination
         });
     }
 
     private giveCards() {
-        if(!(this as any).checkAction('giveCards')) {
-            return;
-        }
-
-        const giveCardsTo = []; 
+        const giveCardsTo = {}; 
         this.giveCardsTo.forEach((value, key) => giveCardsTo[key] = value);
 
-        const base64 = btoa(JSON.stringify(giveCardsTo));
-
-        this.takeAction('giveCards', {
-            giveCardsTo: base64
+        (this as any).bgaPerformAction('actGiveCards', {
+            giveCardsTo: JSON.stringify(giveCardsTo)
         });
     }
 
     private reorderTopDeck() {
-        if(!(this as any).checkAction('reorderTopDeck')) {
-            return;
-        }
-
-        const base64 = btoa(JSON.stringify(this.topDeckOrder));
-
-        this.takeAction('reorderTopDeck', {
-            reorderTopDeck: base64
+        (this as any).bgaPerformAction('actReorderTopDeck', {
+            reorderTopDeck: JSON.stringify(this.topDeckOrder)
         });
     }
     
@@ -818,27 +774,13 @@ class Noah implements NoahGame {
     }
 
     private replaceOnTopDeck(id: number) {
-        if(!(this as any).checkAction('replaceOnTopDeck')) {
-            return;
-        }
-        
-        this.takeAction('replaceOnTopDeck', {
+        (this as any).bgaPerformAction('actReplaceOnTopDeck', {
             id
         });
     }
 
     private skipReplaceOnTopDeck() {
-        if(!(this as any).checkAction('skipReplaceOnTopDeck')) {
-            return;
-        }
-
-        this.takeAction('skipReplaceOnTopDeck');
-    }
-
-    public takeAction(action: string, data?: any) {
-        data = data || {};
-        data.lock = true;
-        (this as any).ajaxcall(`/noah/noah/${action}.html`, data, this, () => {});
+        (this as any).bgaPerformAction('actSkipReplaceOnTopDeck');
     }
     
     private setPoints(playerId: number, points: number) {

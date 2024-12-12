@@ -97,8 +97,8 @@ $playerActionsGameStates = [
         "type" => "activeplayer",
         "args" => "argLoadAnimal",
         "possibleactions" => [ 
-            "loadAnimal",
-            "takeAllAnimals",
+            "actLoadAnimal",
+            "actTakeAllAnimals",
         ],
         "transitions" => [
             "loadAnimal" => ST_PLAYER_LOAD_ANIMAL,
@@ -118,7 +118,7 @@ $playerActionsGameStates = [
         "descriptionmyturn" => clienttranslate('${you} must choose gender'),
         "type" => "activeplayer",  
         "possibleactions" => [ 
-            "setGender",
+            "actSetGender",
         ],
         "transitions" => [
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
@@ -133,7 +133,7 @@ $playerActionsGameStates = [
         "type" => "activeplayer",    
         "args" => "argChooseWeight",  
         "possibleactions" => [ 
-            "setWeight",
+            "actSetWeight",
         ],
         "transitions" => [
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
@@ -148,7 +148,7 @@ $playerActionsGameStates = [
         "type" => "activeplayer",    
         "args" => "argReorderTopDeck",  
         "possibleactions" => [ 
-            "reorderTopDeck",
+            "actReorderTopDeck",
         ],
         "transitions" => [
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
@@ -163,8 +163,8 @@ $playerActionsGameStates = [
         "type" => "activeplayer",  
         "args" => "argReplaceOnTopDeck",  
         "possibleactions" => [ 
-            "replaceOnTopDeck",
-            "skipReplaceOnTopDeck",
+            "actReplaceOnTopDeck",
+            "actSkipReplaceOnTopDeck",
         ],
         "transitions" => [
             "moveNoah" => ST_PLAYER_MOVE_NOAH,
@@ -184,7 +184,7 @@ $playerActionsGameStates = [
         "action" => "stChooseOpponent",      
         "args" => "argChooseOpponent",
         "possibleactions" => [
-            "chooseOpponent",
+            "actChooseOpponent",
         ],
         "transitions" => [
             "look" => ST_PLAYER_VIEW_CARDS,
@@ -200,7 +200,7 @@ $playerActionsGameStates = [
     	"descriptionmyturn" => clienttranslate('${you} look to chosen opponent cards'),
     	"type" => "activeplayer",
         "args" => "argViewCards",
-    	"possibleactions" => [ "seen" ],
+    	"possibleactions" => [ "actSeen" ],
     	"transitions" => [ 
             "seen" => ST_PLAYER_MOVE_NOAH,
         ]
@@ -212,7 +212,7 @@ $playerActionsGameStates = [
     	"descriptionmyturn" => clienttranslate('${you} must give back a card to chosen opponent'),
     	"type" => "activeplayer",
         "action" => "stGiveCard",
-    	"possibleactions" => [ "giveCard" ],
+    	"possibleactions" => [ "actGiveCard" ],
     	"transitions" => [ 
             "giveCard" => ST_PLAYER_MOVE_NOAH,
         ]
@@ -226,7 +226,7 @@ $playerActionsGameStates = [
         "action" => "stMoveNoah",      
         "args" => "argMoveNoah",
         "possibleactions" => [ 
-            "moveNoah",
+            "actMoveNoah",
         ],
         "transitions" => [
             "checkOptimalLoading" => ST_OPTIMAL_LOADING,
@@ -243,7 +243,7 @@ $playerActionsGameStates = [
         "type" => "activeplayer",      
         "args" => "argOptimalLoadingGiveCards",
         "possibleactions" => [ 
-            "giveCards",
+            "actGiveCards",
         ],
         "transitions" => [
             "drawCards" => ST_DRAW_CARDS,

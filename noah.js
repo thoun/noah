@@ -1012,106 +1012,63 @@ var Noah = /** @class */ (function () {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
     };
     Noah.prototype.loadAnimal = function (id) {
-        if (!this.checkAction('loadAnimal')) {
-            return;
-        }
-        this.takeAction('loadAnimal', {
+        this.bgaPerformAction('actLoadAnimal', {
             id: id
         });
     };
     Noah.prototype.seen = function () {
-        if (!this.checkAction('seen')) {
-            return;
-        }
-        this.takeAction('seen');
+        this.bgaPerformAction('actSeen');
     };
     Noah.prototype.takeAllAnimals = function () {
-        if (!this.checkAction('takeAllAnimals')) {
-            return;
-        }
-        this.takeAction('takeAllAnimals');
+        this.bgaPerformAction('actTakeAllAnimals');
     };
     Noah.prototype.setGender = function (gender) {
-        if (!this.checkAction('setGender')) {
-            return;
-        }
-        this.takeAction('setGender', {
+        this.bgaPerformAction('actSetGender', {
             gender: gender
         });
     };
     Noah.prototype.setWeight = function (weight) {
-        if (!this.checkAction('setWeight')) {
-            return;
-        }
-        this.takeAction('setWeight', {
+        this.bgaPerformAction('actSetWeight', {
             weight: weight
         });
     };
     Noah.prototype.chooseOpponent = function (playerId) {
-        if (!this.checkAction('chooseOpponent')) {
-            return;
-        }
-        this.takeAction('chooseOpponent', {
+        this.bgaPerformAction('actChooseOpponent', {
             playerId: playerId
         });
     };
     Noah.prototype.giveCard = function (id) {
-        if (!this.checkAction('giveCard')) {
-            return;
-        }
-        this.takeAction('giveCard', {
+        this.bgaPerformAction('actGiveCard', {
             id: id
         });
     };
     Noah.prototype.moveNoah = function (destination) {
-        if (!this.checkAction('moveNoah')) {
-            return;
-        }
-        this.takeAction('moveNoah', {
+        this.bgaPerformAction('actMoveNoah', {
             destination: destination
         });
     };
     Noah.prototype.giveCards = function () {
-        if (!this.checkAction('giveCards')) {
-            return;
-        }
-        var giveCardsTo = [];
+        var giveCardsTo = {};
         this.giveCardsTo.forEach(function (value, key) { return giveCardsTo[key] = value; });
-        var base64 = btoa(JSON.stringify(giveCardsTo));
-        this.takeAction('giveCards', {
-            giveCardsTo: base64
+        this.bgaPerformAction('actGiveCards', {
+            giveCardsTo: JSON.stringify(giveCardsTo)
         });
     };
     Noah.prototype.reorderTopDeck = function () {
-        if (!this.checkAction('reorderTopDeck')) {
-            return;
-        }
-        var base64 = btoa(JSON.stringify(this.topDeckOrder));
-        this.takeAction('reorderTopDeck', {
-            reorderTopDeck: base64
+        this.bgaPerformAction('actReorderTopDeck', {
+            reorderTopDeck: JSON.stringify(this.topDeckOrder)
         });
     };
     Noah.prototype.tableCardSelected = function (id) {
         this.replaceOnTopDeck(id);
     };
     Noah.prototype.replaceOnTopDeck = function (id) {
-        if (!this.checkAction('replaceOnTopDeck')) {
-            return;
-        }
-        this.takeAction('replaceOnTopDeck', {
+        this.bgaPerformAction('actReplaceOnTopDeck', {
             id: id
         });
     };
     Noah.prototype.skipReplaceOnTopDeck = function () {
-        if (!this.checkAction('skipReplaceOnTopDeck')) {
-            return;
-        }
-        this.takeAction('skipReplaceOnTopDeck');
-    };
-    Noah.prototype.takeAction = function (action, data) {
-        data = data || {};
-        data.lock = true;
-        this.ajaxcall("/noah/noah/" + action + ".html", data, this, function () { });
+        this.bgaPerformAction('actSkipReplaceOnTopDeck');
     };
     Noah.prototype.setPoints = function (playerId, points) {
         var _a;
