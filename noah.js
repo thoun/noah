@@ -487,7 +487,7 @@ var Noah = /** @class */ (function () {
     */
     Noah.prototype.setup = function (gamedatas) {
         var _this = this;
-        document.getElementById('game_play_area').insertAdjacentHTML('beforeend', "\n            <div id=\"zoom-wrapper\">\n                <div id=\"full-table\">\n                    <div id=\"table\">\n                        <div id=\"round-counter-wrapper\" class=\"whiteblock\">\n                            <div>" + _("Round") + "</div>\n                            <div class=\"counter\"><span id=\"round-counter\"></span><span id=\"counter-no-variant\">&nbsp;/&nbsp;3</span></div>\n                        </div>\n                        <div id=\"solo-counter-wrapper\" class=\"whiteblock\">\n                            <div>" + _("Remaining animals in deck") + "</div>\n                            <div class=\"counter\"><span id=\"solo-counter\"></span></div>\n                        </div>\n                        <div id=\"center-board\">\n                            <div id=\"ferry-deck\" class=\"stockitem\"></div>\n                        </div>\n                    </div>\n                    <div id=\"hands\">\n                        <div id=\"myhand-wrap\" class=\"whiteblock hand-wrap\">\n                            <div id=\"my-hand-label\" class=\"hand-label\">\n                                <button id=\"sortByWeight\" class=\"sort-button\"><div class=\"sort-icon\" data-type=\"weight\"></div></button>\n                                <button id=\"sortByGender\" class=\"sort-button\"><div class=\"sort-icon\" data-type=\"gender\"></div></button>\n                                <h3>" + _("My hand") + "</h3>\n                            </div>\n                            <div id=\"my-animals\" class=\"animals\"></div>\n                        </div>\n                        <div id=\"giraffe-hand-wrap\" class=\"whiteblock hand-wrap hidden\">\n                            <div class=\"hand-label\"><h3 id=\"giraffe-hand-label\"></h3></div>\n                            <div id=\"giraffe-animals\" class=\"animals\"></div>\n                        </div>\n                    </div>\n                </div>\n                <div id=\"zoom-controls\">\n                    <button id=\"zoom-out\"></button>\n                    <button id=\"zoom-in\" class=\"disabled\"></button>\n                </div>\n            </div>\n        ");
+        this.bga.gameArea.getElement().insertAdjacentHTML('beforeend', "\n            <div id=\"zoom-wrapper\">\n                <div id=\"full-table\">\n                    <div id=\"table\">\n                        <div id=\"round-counter-wrapper\" class=\"whiteblock\">\n                            <div>" + _("Round") + "</div>\n                            <div class=\"counter\"><span id=\"round-counter\"></span><span id=\"counter-no-variant\">&nbsp;/&nbsp;3</span></div>\n                        </div>\n                        <div id=\"solo-counter-wrapper\" class=\"whiteblock\">\n                            <div>" + _("Remaining animals in deck") + "</div>\n                            <div class=\"counter\"><span id=\"solo-counter\"></span></div>\n                        </div>\n                        <div id=\"center-board\">\n                            <div id=\"ferry-deck\" class=\"stockitem\"></div>\n                        </div>\n                    </div>\n                    <div id=\"hands\">\n                        <div id=\"myhand-wrap\" class=\"whiteblock hand-wrap\">\n                            <div id=\"my-hand-label\" class=\"hand-label\">\n                                <button id=\"sortByWeight\" class=\"sort-button\"><div class=\"sort-icon\" data-type=\"weight\"></div></button>\n                                <button id=\"sortByGender\" class=\"sort-button\"><div class=\"sort-icon\" data-type=\"gender\"></div></button>\n                                <h3>" + _("My hand") + "</h3>\n                            </div>\n                            <div id=\"my-animals\" class=\"animals\"></div>\n                        </div>\n                        <div id=\"giraffe-hand-wrap\" class=\"whiteblock hand-wrap hidden\">\n                            <div class=\"hand-label\"><h3 id=\"giraffe-hand-label\"></h3></div>\n                            <div id=\"giraffe-animals\" class=\"animals\"></div>\n                        </div>\n                    </div>\n                </div>\n                <div id=\"zoom-controls\">\n                    <button id=\"zoom-out\"></button>\n                    <button id=\"zoom-in\" class=\"disabled\"></button>\n                </div>\n            </div>\n        ");
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
@@ -511,14 +511,14 @@ var Noah = /** @class */ (function () {
         }
         this.addHelp();
         this.setupNotifications();
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = function (prefId, prefValue) { return _this.onPreferenceChange(prefId, prefValue); };
         document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
         document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
             this.table.updateMargins();
         }
-        this.onScreenWidthChange = function () {
+        this.bga.gameui.onScreenWidthChange = function () {
             _this.setMaxZoom();
         };
         log("Ending game setup");
@@ -567,7 +567,7 @@ var Noah = /** @class */ (function () {
     Noah.prototype.setGamestateDescription = function (property) {
         if (property === void 0) { property = ''; }
         var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.statusBar.setTitle(originalState[(this.isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);
+        this.bga.statusBar.setTitle(originalState[(this.isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);
     };
     Noah.prototype.onEnteringStateLoadAnimal = function (args) {
         var _this = this;
@@ -738,39 +738,39 @@ var Noah = /** @class */ (function () {
                 case 'loadAnimal':
                     var loadAnimalArgs = args;
                     if (!loadAnimalArgs.selectableAnimals.length) {
-                        this.statusBar.addActionButton(_('Take all animals'), function () { return _this.bgaPerformAction('actTakeAllAnimals'); }, { color: 'alert' });
+                        this.bga.statusBar.addActionButton(_('Take all animals'), function () { return _this.bgaPerformAction('actTakeAllAnimals'); }, { color: 'alert' });
                     }
                     break;
                 case 'viewCards':
-                    this.statusBar.addActionButton(_('Seen'), function () { return _this.bgaPerformAction('actSeen'); });
+                    this.bga.statusBar.addActionButton(_('Seen'), function () { return _this.bgaPerformAction('actSeen'); });
                     break;
                 case 'chooseGender':
-                    this.statusBar.addActionButton(_('Male'), function () { return _this.setGender(1); });
-                    this.statusBar.addActionButton(_('Female'), function () { return _this.setGender(2); });
+                    this.bga.statusBar.addActionButton(_('Male'), function () { return _this.setGender(1); });
+                    this.bga.statusBar.addActionButton(_('Female'), function () { return _this.setGender(2); });
                     break;
                 case 'chooseWeight':
                     var chooseWeightArgs_1 = args;
-                    this.statusBar.addActionButton('1', function () { return _this.setWeight(1); });
-                    this.statusBar.addActionButton("" + chooseWeightArgs_1.weightForDeparture, function () { return _this.setWeight(chooseWeightArgs_1.weightForDeparture); });
+                    this.bga.statusBar.addActionButton('1', function () { return _this.setWeight(1); });
+                    this.bga.statusBar.addActionButton("" + chooseWeightArgs_1.weightForDeparture, function () { return _this.setWeight(chooseWeightArgs_1.weightForDeparture); });
                     break;
                 case 'chooseOpponent':
                     var choosePlayerArgs = args;
                     choosePlayerArgs.opponentsIds.forEach(function (playerId, index) {
                         var player = _this.getPlayer(playerId);
-                        var button = _this.statusBar.addActionButton(player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.chooseOpponent(playerId); });
+                        var button = _this.bga.statusBar.addActionButton(player.name + (index === 0 ? " (" + _('next player') + ")" : ''), function () { return _this.chooseOpponent(playerId); });
                         button.style.border = "3px solid #" + player.color;
                     });
                     break;
                 case 'optimalLoadingGiveCards':
                     this.clickAction = 'give';
                     this.onEnteringStateOptimalLoadingGiveCards(args);
-                    this.statusBar.addActionButton(this.getGiveCardsButtonText(), function () { return _this.giveCards(); }, { id: 'giveCards-button', classes: 'disabled' });
+                    this.bga.statusBar.addActionButton(this.getGiveCardsButtonText(), function () { return _this.giveCards(); }, { id: 'giveCards-button', classes: 'disabled' });
                     break;
                 case 'reorderTopDeck':
-                    this.statusBar.addActionButton(_('Replace on top deck'), function () { return _this.reorderTopDeck(); }, { id: 'reorderTopDeck-button' });
+                    this.bga.statusBar.addActionButton(_('Replace on top deck'), function () { return _this.reorderTopDeck(); }, { id: 'reorderTopDeck-button' });
                     break;
                 case 'replaceOnTopDeck':
-                    this.statusBar.addActionButton(_('Skip'), function () { return _this.bgaPerformAction('actSkipReplaceOnTopDeck'); });
+                    this.bga.statusBar.addActionButton(_('Skip'), function () { return _this.bgaPerformAction('actSkipReplaceOnTopDeck'); });
                     break;
             }
         }
@@ -783,24 +783,6 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.setTooltipToClass = function (className, html) {
         this.addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
-    };
-    Noah.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_control_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-            _this.onPreferenceChange(prefId, prefValue);
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
     };
     Noah.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
@@ -1058,13 +1040,13 @@ var Noah = /** @class */ (function () {
     };
     Noah.prototype.setPoints = function (playerId, points) {
         var _a;
-        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
+        (_a = this.bga.gameui.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
         this.table.setPoints(playerId, points);
     };
     Noah.prototype.addHelp = function () {
         var _this = this;
         dojo.place("<button id=\"noah-help-button\">?</button>", 'left-side');
-        dojo.connect($('noah-help-button'), 'onclick', this, function () { return _this.showHelp(); });
+        document.getElementById('noah-help-button').addEventListener('click', function () { return _this.showHelp(); });
     };
     Noah.prototype.showHelp = function () {
         var _this = this;

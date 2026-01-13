@@ -51,41 +51,6 @@
 
 require_once("modules/php/constants.inc.php");
 
-$basicGameStates = [
-
-    // The initial state. Please do not modify.
-    ST_BGA_GAME_SETUP => [
-        "name" => "gameSetup",
-        "description" => clienttranslate("Game setup"),
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => [ "" => ST_START_ROUND ]
-    ],
-
-    ST_NEXT_PLAYER => [
-        "name" => "nextPlayer",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "transitions" => [
-            "nextPlayer" => ST_PLAYER_LOAD_ANIMAL, 
-            "endRound" => ST_END_ROUND,
-            "endGame" => ST_END_GAME, // for solo mode
-        ],
-    ],
-   
-    // Final state.
-    // Please do not modify.
-    ST_END_GAME => [
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd",
-    ],
-];
-
-
 $playerActionsGameStates = [
 
     ST_PLAYER_LOAD_ANIMAL => [
@@ -290,6 +255,18 @@ $gameGameStates = [
         ]
     ],
 
+    ST_NEXT_PLAYER => [
+        "name" => "nextPlayer",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextPlayer",
+        "transitions" => [
+            "nextPlayer" => ST_PLAYER_LOAD_ANIMAL, 
+            "endRound" => ST_END_ROUND,
+            "endGame" => ST_END_GAME, // for solo mode
+        ],
+    ],
+
     ST_END_ROUND => [
         "name" => "endRound",
         "description" => "",
@@ -302,4 +279,4 @@ $gameGameStates = [
     ],
 ];
  
-$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
+$machinestates = $playerActionsGameStates + $gameGameStates;

@@ -1,10 +1,3 @@
-declare const define;
-declare const ebg;
-declare const $;
-declare const dojo: Dojo;
-declare const _;
-declare const g_gamethemeurl;
-
 declare const board: HTMLDivElement;
 
 const ANIMATION_MS = 500;
@@ -42,6 +35,8 @@ class Noah implements NoahGame {
         currentWeights: null
     };
 
+    public bga: Bga;
+
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -63,7 +58,7 @@ class Noah implements NoahGame {
     */
 
     public setup(gamedatas: NoahGamedatas) {
-        document.getElementById('game_play_area').insertAdjacentHTML('beforeend', `
+        this.bga.gameArea.getElement().insertAdjacentHTML('beforeend', `
             <div id="zoom-wrapper">
                 <div id="full-table">
                     <div id="table">
@@ -129,8 +124,7 @@ class Noah implements NoahGame {
 
         this.addHelp();
         this.setupNotifications();
-
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = (prefId: number, prefValue: number) => this.onPreferenceChange(prefId, prefValue);
 
         document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
         document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
@@ -139,7 +133,7 @@ class Noah implements NoahGame {
             this.table.updateMargins(); 
         }
 
-        (this as any).onScreenWidthChange = () => {
+        this.bga.gameui.onScreenWidthChange = () => {
             this.setMaxZoom();
         }
 
@@ -191,7 +185,7 @@ class Noah implements NoahGame {
     
     private setGamestateDescription(property: string = '') {
         const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        (this as any).statusBar.setTitle(originalState[((this as any).isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);        
+        this.bga.statusBar.setTitle(originalState[((this as any).isCurrentPlayerActive() ? 'descriptionmyturn' : 'description') + property]);        
     }
     
     private onEnteringStateLoadAnimal(args: EnteringLoadAnimalArgs) {
@@ -383,28 +377,28 @@ class Noah implements NoahGame {
                 case 'loadAnimal':
                     const loadAnimalArgs = args as EnteringLoadAnimalArgs;
                     if (!loadAnimalArgs.selectableAnimals.length) {
-                        (this as any).statusBar.addActionButton(_('Take all animals'), () => (this as any).bgaPerformAction('actTakeAllAnimals'), { color: 'alert' });
+                        this.bga.statusBar.addActionButton(_('Take all animals'), () => (this as any).bgaPerformAction('actTakeAllAnimals'), { color: 'alert' });
                     }
                     break;
                 case 'viewCards':
-                    (this as any).statusBar.addActionButton(_('Seen'), () => (this as any).bgaPerformAction('actSeen'));
+                    this.bga.statusBar.addActionButton(_('Seen'), () => (this as any).bgaPerformAction('actSeen'));
                     break;
                 case 'chooseGender':
-                    (this as any).statusBar.addActionButton(_('Male'), () => this.setGender(1));
-                    (this as any).statusBar.addActionButton(_('Female'), () => this.setGender(2));
+                    this.bga.statusBar.addActionButton(_('Male'), () => this.setGender(1));
+                    this.bga.statusBar.addActionButton(_('Female'), () => this.setGender(2));
                     break;
 
                 case 'chooseWeight':
                     const chooseWeightArgs = args as EnteringChooseWeightArgs;
-                    (this as any).statusBar.addActionButton('1', () => this.setWeight(1));
-                    (this as any).statusBar.addActionButton(`${chooseWeightArgs.weightForDeparture}`, () => this.setWeight(chooseWeightArgs.weightForDeparture));
+                    this.bga.statusBar.addActionButton('1', () => this.setWeight(1));
+                    this.bga.statusBar.addActionButton(`${chooseWeightArgs.weightForDeparture}`, () => this.setWeight(chooseWeightArgs.weightForDeparture));
                     break;
 
                 case 'chooseOpponent':
                     const choosePlayerArgs = args as EnteringChooseOpponentArgs;
                     choosePlayerArgs.opponentsIds.forEach((playerId, index) => {
                         const player = this.getPlayer(playerId);
-                        const button = (this as any).statusBar.addActionButton(player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.chooseOpponent(playerId));
+                        const button = this.bga.statusBar.addActionButton(player.name + (index === 0 ? ` (${_('next player')})` : ''), () => this.chooseOpponent(playerId));
                         button.style.border = `3px solid #${player.color}`;
                     });
                     break;
@@ -412,7 +406,7 @@ class Noah implements NoahGame {
                 case 'optimalLoadingGiveCards':                    
                     this.clickAction = 'give';
                     this.onEnteringStateOptimalLoadingGiveCards(args as EnteringOptimalLoadingGiveCardsArgs);
-                    (this as any).statusBar.addActionButton(
+                    this.bga.statusBar.addActionButton(
                         this.getGiveCardsButtonText(), 
                         () => this.giveCards(), 
                         { id: 'giveCards-button', classes: 'disabled' }
@@ -420,11 +414,11 @@ class Noah implements NoahGame {
                     break;
 
                 case 'reorderTopDeck':
-                    (this as any).statusBar.addActionButton(_('Replace on top deck'), () => this.reorderTopDeck(), { id: 'reorderTopDeck-button' });
+                    this.bga.statusBar.addActionButton(_('Replace on top deck'), () => this.reorderTopDeck(), { id: 'reorderTopDeck-button' });
                     break;
 
                 case 'replaceOnTopDeck':
-                    (this as any).statusBar.addActionButton(_('Skip'), () => (this as any).bgaPerformAction('actSkipReplaceOnTopDeck'));
+                    this.bga.statusBar.addActionButton(_('Skip'), () => (this as any).bgaPerformAction('actSkipReplaceOnTopDeck'));
                     break;
             }
         }
@@ -440,30 +434,6 @@ class Noah implements NoahGame {
     }
     public setTooltipToClass(className: string, html: string) {
         (this as any).addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
-    }
-
-
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_control_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
     }
       
     private onPreferenceChange(prefId: number, prefValue: number) {
@@ -771,13 +741,13 @@ class Noah implements NoahGame {
     }
     
     private setPoints(playerId: number, points: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(points);
+        this.bga.gameui.scoreCtrl[playerId]?.toValue(points);
         this.table.setPoints(playerId, points);
     }
 
     private addHelp() {
         dojo.place(`<button id="noah-help-button">?</button>`, 'left-side');
-        dojo.connect( $('noah-help-button'), 'onclick', this, () => this.showHelp());
+        document.getElementById('noah-help-button').addEventListener('click', () => this.showHelp());
     }
 
     private showHelp() {

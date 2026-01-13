@@ -16,8 +16,9 @@
   *
   */
 
-
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
+use Bga\GameFramework\VisibleSystemException;
 
 require_once('modules/php/constants.inc.php');
 require_once('modules/php/utils.php');
@@ -67,11 +68,9 @@ class Noah extends Table {
             OPTION_SOLO_MODE_DIFFICULTY => 120,
         ]); 
 
-        $this->animals = $this->getNew("module.common.deck");
-        $this->animals->init("animal");
+        $this->animals = $this->deckFactory->createDeck("animal");
 
-        $this->ferries = $this->getNew("module.common.deck");
-        $this->ferries->init("ferry");  
+        $this->ferries = $this->deckFactory->createDeck("ferry");  
         
         $this->ANIMALS = [ // (int $cardsByGender, int $weight, int $points, int $power = 0)
             SNAIL => new AnimalCard([2 => 3, 3 => 3, 4 => 3, 5 => 5], 1, 2, POWER_HERMAPHRODITE),
@@ -91,12 +90,7 @@ class Noah extends Table {
             FROG => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 1, 5, POWER_ADJUSTABLE_WEIGHT),
             CROCODILE => new AnimalCard([2 => 1, 3 => 1, 4 => 1, 5 => 1], 6, 0, POWER_CROCODILE),
         ];
-	}
-	
-    protected function getGameName() {
-		// Used for translations and stuff. Please do not modify.
-        return "noah";
-    }	
+	}	
 
     /*
         setupNewGame:
@@ -134,26 +128,14 @@ class Noah extends Table {
         $this->setGameStateInitialValue(SOLO_DRAW_CARDS, 1);
         
         // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        $this->initStat('table', 'turnsNumber', 0);
-        $this->initStat('player', 'turnsNumber', 0);
-        $this->initStat('table', 'playedCards', 0);
-        $this->initStat('player', 'playedCards', 0);
-        $this->initStat('table', 'takeAllAnimals', 0);
-        $this->initStat('player', 'takeAllAnimals', 0);
-        $this->initStat('table', 'optimalLoading', 0);
-        $this->initStat('player', 'optimalLoading', 0);
-        $this->initStat('table', 'alternateGender', 0);
-        $this->initStat('player', 'alternateGender', 0);
-        $this->initStat('table', 'sameGender', 0);
-        $this->initStat('player', 'sameGender', 0);
+        $this->playerStats->init(['turnsNumber', 'playedCards', 'takeAllAnimals', 'optimalLoading', 'alternateGender', 'sameGender'], 0, updateTableStat: true);
         
         $this->setupCards($this->isSoloMode() ? intval($this->getGameStateValue(OPTION_SOLO_MODE_DIFFICULTY)) : count($players));
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
-        /************ End of the game initialization *****/
+        return \ST_START_ROUND;
     }
 
     /*
@@ -165,7 +147,7 @@ class Noah extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $result = [];
     
         $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
@@ -214,7 +196,7 @@ class Noah extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        $stateName = $this->gamestate->state()['name']; 
+        $stateName = $this->gamestate->getCurrentMainState()->name; 
         if ($stateName === 'gameEnd') {
             return 100;
         }
@@ -267,7 +249,7 @@ class Noah extends Table {
             return;
         }
 
-        throw new feException("Zombie mode not supported at this game state: ".$statename);
+        throw new VisibleSystemException("Zombie mode not supported at this game state: ".$statename);
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:
