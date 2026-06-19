@@ -61,11 +61,11 @@ trait DebugUtilTrait {
     }
 
     public function debug_SetPlayerPoints(int $playerId, int $score) {
-        $this->DbQuery("UPDATE player SET `player_score` = $score where `player_id` = $playerId");
+        $this->bga->playerScore->set($playerId, $score);
     }
 
     public function debug_SetPoints(int $score) {
-        $this->DbQuery("UPDATE player SET `player_score` = $score");
+        $this->bga->playerScore->setAll($score);
     }
 
     public function debug_GetAnimalByType($type, $subType, $index = 0) {

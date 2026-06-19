@@ -163,7 +163,7 @@ trait UtilTrait {
     }
 
     function incPlayerScore(int $playerId, int $incScore) {
-        $this->DbQuery("UPDATE player SET player_score = player_score - $incScore WHERE player_id = $playerId");
+        $this->bga->playerScore->inc($playerId, $incScore, null);
 
         $this->notifyAllPlayers('points', '', [
             'playerId' => $playerId,
@@ -173,7 +173,7 @@ trait UtilTrait {
 
     function decPlayerScore(int $playerId, int $decScore) {
         $newScore = min(0, $this->getPlayerScore($playerId) + 2);
-        $this->DbQuery("UPDATE player SET player_score = $newScore WHERE player_id = $playerId");
+        $this->bga->playerScore->set($playerId, $newScore, null);
 
         $this->notifyAllPlayers('points', '', [
             'playerId' => $playerId,
@@ -182,7 +182,7 @@ trait UtilTrait {
     }
 
     function setPlayerScore(int $playerId, int $score) {
-        $this->DbQuery("UPDATE player SET player_score = $score WHERE player_id = $playerId");
+        $this->bga->playerScore->set($playerId, $score, null);
     }
 
     function setupCards(int $playerCount) {

@@ -874,7 +874,7 @@ var Noah = /** @class */ (function () {
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             // hand cards counter
-            dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-" + player.id + "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-" + player.id + "\"></span>\n                </div>\n            </div>", "player_board_" + player.id);
+            _this.bga.playerPanels.getElement(playerId).insertAdjacentHTML('beforeend', "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-" + player.id + "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-" + player.id + "\"></span>\n                </div>\n            </div>");
             var handCounter = new ebg.counter();
             handCounter.create("playerhand-counter-" + playerId);
             handCounter.setValue(player.handCount);
@@ -982,8 +982,7 @@ var Noah = /** @class */ (function () {
         return Number(Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) != playerId; }).id);
     };
     Noah.prototype.getPlayerScore = function (playerId) {
-        var _a, _b;
-        return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
+        return this.bga.playerPanels.getScoreCounter(playerId).getValue();
     };
     Noah.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
@@ -1039,8 +1038,7 @@ var Noah = /** @class */ (function () {
         });
     };
     Noah.prototype.setPoints = function (playerId, points) {
-        var _a;
-        (_a = this.bga.gameui.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(points);
         this.table.setPoints(playerId, points);
     };
     Noah.prototype.addHelp = function () {

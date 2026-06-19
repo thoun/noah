@@ -539,12 +539,12 @@ class Noah implements NoahGame {
             const playerId = Number(player.id);   
 
             // hand cards counter
-            dojo.place(`<div class="counters">
+            this.bga.playerPanels.getElement(playerId).insertAdjacentHTML('beforeend', `<div class="counters">
                 <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
-            </div>`, `player_board_${player.id}`);
+            </div>`);
 
             const handCounter = new ebg.counter();
             handCounter.create(`playerhand-counter-${playerId}`);
@@ -672,7 +672,7 @@ class Noah implements NoahGame {
     }
 
     public getPlayerScore(playerId: number): number {
-        return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
+        return this.bga.playerPanels.getScoreCounter(playerId).getValue();
     }
 
     private getPlayer(playerId: number): NoahPlayer {
@@ -741,7 +741,7 @@ class Noah implements NoahGame {
     }
     
     private setPoints(playerId: number, points: number) {
-        this.bga.gameui.scoreCtrl[playerId]?.toValue(points);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(points);
         this.table.setPoints(playerId, points);
     }
 
