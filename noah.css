@@ -179,6 +179,13 @@
   overflow: hidden;
 }
 
+html[data-theme=dark] #popin_noahHelpDialog {
+  background-color: var(--game-palette-bga-gray-244);
+}
+html[data-theme=dark] #help-popin h1 {
+  color: var(--game-palette-bga-gray-950);
+}
+
 #help-popin {
   max-width: 35rem;
   max-height: calc(80vh - 80px);
@@ -241,13 +248,16 @@
   background-repeat: no-repeat;
   vertical-align: bottom;
 }
+.player-board .table-counter-wrapper {
+  color: unset;
+}
 
 html {
   background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
 }
 
-.mode_3d #game_play_area_background {
-  background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
+html[data-theme=dark] {
+  background: linear-gradient(180deg, #1577c6 0%, #003b6b 100%);
 }
 
 #globalaction_zoom_wrap {

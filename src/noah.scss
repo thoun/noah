@@ -8,8 +8,8 @@ html {
   background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
 }
 
-.mode_3d #game_play_area_background {
-  background: linear-gradient(180deg, #92dcf8 0%, #1577c6 100%);
+html[data-theme="dark"] {
+  background: linear-gradient(180deg, #1577c6 0%, #003b6b 100%);
 }
 
 #globalaction_zoom_wrap {

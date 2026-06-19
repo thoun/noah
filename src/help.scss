@@ -33,6 +33,18 @@ $animal-height: 179px;
     overflow: hidden;
 }
 
+html[data-theme="dark"] {
+    #popin_noahHelpDialog {
+        background-color: var(--game-palette-bga-gray-244);
+    }
+
+    #help-popin {
+        h1 {
+            color: var(--game-palette-bga-gray-950);
+        }
+    }
+}
+
 #help-popin {
     max-width: 35rem;
     max-height: calc(80vh - 80px);
