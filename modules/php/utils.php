@@ -163,7 +163,7 @@ trait UtilTrait {
     }
 
     function incPlayerScore(int $playerId, int $incScore) {
-        $this->bga->playerScore->inc($playerId, $incScore, null);
+        $this->bga->playerScore->inc($playerId, -$incScore, null);
 
         $this->notifyAllPlayers('points', '', [
             'playerId' => $playerId,
@@ -172,7 +172,7 @@ trait UtilTrait {
     }
 
     function decPlayerScore(int $playerId, int $decScore) {
-        $newScore = min(0, $this->getPlayerScore($playerId) + 2);
+        $newScore = min(0, $this->getPlayerScore($playerId) + $decScore);
         $this->bga->playerScore->set($playerId, $newScore, null);
 
         $this->notifyAllPlayers('points', '', [
